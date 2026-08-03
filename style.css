@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "Ethero";
+    src: url("fonts/Ethero.otf");
+}
+
+h1 {
+    font-family: Ethero;
+    color: #1d2a3d;
+}
+
+p {
+    font-family: Ethero;
+    color: #1d2a3d;
+}
