@@ -63,6 +63,14 @@ p {
   margin: 0;
 }
 
+/* Container for content */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
 img:not(.logo) {
   width: 100%;
   height: auto;
