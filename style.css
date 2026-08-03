@@ -1,16 +1,16 @@
 @font-face {
-    font-family: "Ethero";
-    src: url("fonts/Ethero.otf");
+  font-family: "Ethero";
+  src: url("fonts/Ethero.otf");
 }
 
 h1 {
-    font-family: Ethero;
-    color: #1d2a3d;
+  font-family: Ethero;
+  color: #1d2a3d;
 }
 
 p {
-    font-family: Ethero;
-    color: #1d2a3d;
+  font-family: Ethero;
+  color: #1d2a3d;
 }
 
 /* Navbar styling */
@@ -61,4 +61,16 @@ p {
 .left-item,
 .right-item {
   margin: 0;
+}
+
+img:not(.logo) {
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  width: auto;
+  height: 100%;
 }
