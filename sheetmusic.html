@@ -1,16 +1,2566 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Concertoi</title>
+
+    
+    <title>Sheet Music — Concertoi</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- MIDI.js -->
+    <script src="https://www.midijs.net/lib/midi.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
+    <link rel="shortcut icon" href="Images/favicon.ico?v=2">
+
+    <style>
+        /* =========================================
+       COMPACT MIDI PLAYER
+    ========================================== */
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: min(100%, 430px);
+            padding: 7px 10px;
+            background: rgba(12, 12, 12, 0.92);
+            border: 1px solid rgba(251, 255, 0, 0.10);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+            backdrop-filter: blur(14px);
+        }
+
+        .audio-player .controls-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .audio-player .controls-row button {
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            padding: 0;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            background: rgba(251, 255, 0, 0.08);
+            color: var(--accent);
+            transition:
+                background 0.15s ease,
+                transform 0.15s ease,
+                color 0.15s ease;
+        }
+
+        .audio-player .controls-row button:hover:not(:disabled) {
+            background: rgba(251, 255, 0, 0.18);
+            transform: scale(1.05);
+        }
+
+        .audio-player .controls-row button.playing {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .audio-player .controls-row button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .audio-player .time-display {
+            display: none;
+        }
+
+
+        /* =========================================
+       PROGRESS DISPLAY
+       NOT CLICKABLE
+    ========================================== */
+
+        .progress-container {
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-track {
+            flex: 1;
+            position: relative;
+            height: 4px;
+            min-width: 80px;
+            background: rgba(255, 255, 255, 0.10);
+            border-radius: 999px;
+            overflow: hidden;
+
+            /* IMPORTANT:
+           Progress bar is display-only.
+           It cannot be clicked or interacted with.
+        */
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 999px;
+            transition: width 0.2s linear;
+        }
+
+        .progress-label {
+            flex-shrink: 0;
+            min-width: 72px;
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-align: right;
+            white-space: nowrap;
+        }
+
+
+        /* =========================================
+       MOBILE
+    ========================================== */
+
+        @media (max-width: 600px) {
+
+            .audio-player {
+                width: 100%;
+                padding: 6px 8px;
+                gap: 7px;
+            }
+
+            .audio-player .controls-row button {
+                width: 28px;
+                height: 28px;
+                min-width: 28px;
+                font-size: 12px;
+            }
+
+            .progress-label {
+                min-width: 65px;
+                font-size: 0.68rem;
+            }
+
+        }
+    </style>
+    
+
 </head>
 
 <body>
 
-    <h1>Welcome to Concertoi</h1>
-    <p>My new website is being built!hi</p>
+    
+    <!-- NAVBAR -->
+
+    <header class="navbar">
+
+        <a class="brand" href="index.html">
+
+            <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
+
+            <span>Concertoi</span>
+
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="about.html">
+                About
+            </a>
+
+            <a href="sheetmusic.html" class="active">
+                Sheet Music
+            </a>
+
+            <a href="contact.html">
+                Contact
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- MAIN -->
+
+    <main class="sheetmusic-page">
+
+        <div class="sheetmusic-header">
+
+            <p class="eyebrow">
+                Concertoi Library
+            </p>
+
+            <h1>
+                Piano Sheet Music
+            </h1>
+
+            <p>
+                Explore our collection of piano pieces and find something new to play.
+            </p>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="sheet-search">
+
+            <input type="text" id="searchInput" placeholder="Search sheet music..." autocomplete="off">
+
+        </div>
+
+
+        <!-- SHEET MUSIC -->
+
+        <section id="sheetMusicGrid" class="sheet-grid"></section>
+
+        <p id="noResults" class="no-results">
+            No sheet music found.
+        </p>
+
+    </main>
+
+
+    <!-- PDF VIEWER -->
+
+    <div id="pdfModal" class="pdf-modal">
+
+        <div class="pdf-window">
+
+            <!-- PDF HEADER -->
+
+            <div class="pdf-header">
+
+                <div>
+
+                    <h2 id="pdfTitle">
+                        Sheet Music
+                    </h2>
+
+                    <span id="pdfDifficulty"></span>
+
+                </div>
+
+                <button id="closePdf" class="close-pdf" type="button" aria-label="Close">
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- PDF TOOLBAR -->
+
+            <div class="pdf-toolbar">
+
+                <!-- ZOOM -->
+
+                <div class="pdf-controls">
+
+                    <button id="zoomOut" class="pdf-tool" type="button">
+                        −
+                    </button>
+
+                    <span id="zoomLevel">
+                        100%
+                    </span>
+
+                    <button id="zoomIn" class="pdf-tool" type="button">
+                        +
+                    </button>
+
+                </div>
+
+
+                <!-- PAGE CONTROLS -->
+
+                <div class="page-controls">
+
+                    <button id="previousPage" class="pdf-tool" type="button">
+                        ←
+                    </button>
+
+                    <span>
+
+                        Page
+
+                        <span id="currentPage">
+                            1
+                        </span>
+
+                        /
+
+                        <span id="totalPages">
+                            1
+                        </span>
+
+                    </span>
+
+                    <button id="nextPage" class="pdf-tool" type="button">
+                        →
+                    </button>
+
+                </div>
+
+
+                <!-- MIDI PLAYER -->
+
+                <div class="audio-player" id="audioPlayer">
+
+                    <div class="controls-row">
+
+                        <button id="playBtn" title="Play/Pause" aria-label="Play or pause MIDI">
+                            ▶
+                        </button>
+
+                        <button id="stopBtn" title="Stop" aria-label="Stop MIDI">
+                            ⏹
+                        </button>
+
+                        <span class="time-display" id="timeDisplay">
+                            0:00
+                        </span>
+
+                    </div>
+
+
+                    <!-- DISPLAY ONLY PROGRESS BAR -->
+
+                    <div class="progress-container">
+
+                        <div class="progress-track">
+
+                            <div id="progressFill" class="progress-fill"></div>
+
+                        </div>
+
+                        <span class="progress-label" id="progressLabel">
+                            0:00 / 0:00
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DOWNLOAD -->
+
+                <div>
+
+                    <a id="downloadPdf" class="download-button" href="#" download>
+                        ↓ Download PDF
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- PDF VIEWER -->
+
+            <div id="pdfViewer" class="pdf-viewer"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONCERTOI AI BUTTON -->
+
+    <button type="button" class="concertoi-ai-button" id="concertoiAIButton" aria-label="Open Concertoi AI"
+        aria-expanded="false">
+
+        <span class="concertoi-ai-icon">
+            ✦
+        </span>
+
+        <span>
+            Ask Concertoi AI
+        </span>
+
+    </button>
+
+
+    <!-- CONCERTOI AI -->
+
+    <div class="concertoi-ai" id="concertoiAI" aria-hidden="true">
+
+        <div class="concertoi-ai-header">
+
+            <div class="concertoi-ai-title">
+
+                <div class="concertoi-ai-avatar">
+                    ✦
+                </div>
+
+                <div>
+
+                    <strong>
+                        Concertoi AI
+                    </strong>
+
+                    <span>
+                        Your music assistant
+                    </span>
+
+                </div>
+
+            </div>
+
+            <button type="button" class="concertoi-ai-close" id="concertoiAIClose" aria-label="Close Concertoi AI">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="concertoi-ai-messages" id="concertoiAIMessages">
+
+            <div class="concertoi-ai-message ai">
+
+                <div class="concertoi-ai-message-avatar">
+                    ✦
+                </div>
+
+                <div class="concertoi-ai-bubble">
+
+                    Hey! 👋 I'm Concertoi AI.
+                    Ask me anything about Concertoi,
+                    sheet music, or finding your next piece!
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <form class="concertoi-ai-form" id="concertoiAIForm">
+
+            <input type="text" id="concertoiAIInput" placeholder="Ask Concertoi AI..." autocomplete="off"
+                maxlength="500" required>
+
+            <button type="submit" id="concertoiAISend" aria-label="Send message">
+                →
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+            <p>
+                © 2026 Concertoi. All rights reserved.
+            </p>
+
+            <p>
+
+                <a href="mailto:concertoi2010@gmail.com">
+                    concertoi2010@gmail.com
+                </a>
+
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+        /* =========================================
+           PDF.JS SETUP
+        ========================================== */
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+
+        /* =========================================
+           SHEET MUSIC DATABASE
+        ========================================== */
+
+        const sheetMusic = [
+
+            {
+                title: "Where Is My Husband",
+                artist: "RAYE",
+                difficulty: "Intermediate",
+                image: "Images/raye image.png",
+                pdf: "PDFs/Where Is My Husband.pdf",
+                midi: "MIDIs/where is my husband midi.mid",
+                references: [
+                    "raye",
+                    "where is my husband"
+                ]
+            },
+
+            {
+                title: "Soda Pop",
+                artist: "Saja Boys",
+                difficulty: "Intermediate",
+                image: "Images/soda pop image.png",
+                pdf: "PDFs/Soda Pop.pdf",
+                midi: "MIDIs/soda pop midi.mid",
+                references: [
+                    "soda pop",
+                    "saja boys",
+                    "kpop demon hunters",
+                    "kpop demon hunters movie",
+                    "kpop demon hunters song"
+                ]
+            },
+
+            {
+                title: "My Heart Will Go On",
+                artist: "Celine Dion",
+                difficulty: "Advanced",
+                image: "Images/My heart will go on image.png",
+                pdf: "PDFs/My Heart Will Go On.pdf",
+                midi: "MIDIs/my heart will go on midi.mid",
+                references: [
+                    "my heart will go on",
+                    "celine dion",
+                    "titanic",
+                    "titanic movie",
+                    "titanic song"
+                ]
+            },
+
+            {
+                title: "Axel F",
+                artist: "Harold Faltermeyer",
+                difficulty: "Advanced",
+                image: "Images/axel f image.png",
+                pdf: "PDFs/Axel F.pdf",
+                midi: "MIDIs/axel f midi.mid",
+                references: [
+                    "axel f",
+                    "harold faltermeyer",
+                    "beverly hills cop",
+                    "beverly hills cop movie"
+                ]
+            },
+
+            {
+                title: "Immortals",
+                artist: "Fall Out Boy",
+                difficulty: "Advanced",
+                image: "Images/immortals image.png",
+                pdf: "PDFs/Immortals.pdf",
+                midi: "MIDIs/immortals midi.mid",
+                references: [
+                    "immortals",
+                    "fall out boy",
+                    "fob",
+                    "big hero 6",
+                    "big hero six",
+                    "big hero 6 movie"
+                ]
+            },
+
+            {
+                title: "Zoo",
+                artist: "",
+                difficulty: "Intermediate",
+                image: "Images/zoo image.png",
+                pdf: "PDFs/Zoo.pdf",
+                midi: "MIDIs/zoo midi.mid",
+                references: [
+                    "zoo"
+                ]
+            },
+
+            {
+                title: "Azizam",
+                artist: "Ed Sheeran",
+                difficulty: "Intermediate",
+                image: "Images/azizam image.png",
+                pdf: "PDFs/Azizam.pdf",
+                midi: "MIDIs/azizam midi.mid",
+                references: [
+                    "azizam",
+                    "ed sheeran"
+                ]
+            },
+
+            {
+                title: "Zombie",
+                artist: "The Cranberries",
+                difficulty: "Intermediate",
+                image: "Images/zombie image.png",
+                pdf: "PDFs/Zombie.pdf",
+                midi: "MIDIs/zombie midi.mid",
+                references: [
+                    "zombie",
+                    "the cranberries",
+                    "cranberries"
+                ]
+            },
+
+            {
+                title: "Despacito",
+                artist: "Luis Fonsi",
+                difficulty: "Intermediate",
+                image: "Images/despacito image.png",
+                pdf: "PDFs/Despacito.pdf",
+                midi: "MIDIs/despacito midi.mid",
+                references: [
+                    "despacito",
+                    "luis fonsi",
+                    "daddy yankee"
+                ]
+            },
+
+            {
+                title: "Let It Go",
+                artist: "Idina Menzel",
+                difficulty: "Advanced",
+                image: "Images/let it go image.png",
+                pdf: "PDFs/Let It Go.pdf",
+                midi: "MIDIs/let it go midi.mid",
+                references: [
+                    "let it go",
+                    "idina menzel",
+                    "frozen",
+                    "frozen movie",
+                    "frozen song",
+                    "disney frozen"
+                ]
+            },
+
+            {
+                title: "Snowman",
+                artist: "Sia",
+                difficulty: "Intermediate",
+                image: "Images/snowman image.png",
+                pdf: "PDFs/Snowman.pdf",
+                midi: "MIDIs/snowman midi.mid",
+                references: [
+                    "snowman",
+                    "sia"
+                ]
+            },
+
+            {
+                title: "Flashlight",
+                artist: "Jessie J",
+                difficulty: "Intermediate",
+                image: "Images/flashlight image.png",
+                pdf: "PDFs/Flashlight.pdf",
+                midi: "MIDIs/flashlight midi.mid",
+                references: [
+                    "flashlight",
+                    "jessie j",
+                    "pitch perfect 2",
+                    "pitch perfect"
+                ]
+            }
+
+        ];
+
+
+        /* =========================================
+           ELEMENTS
+        ========================================== */
+
+        const grid =
+            document.getElementById("sheetMusicGrid");
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const noResults =
+            document.getElementById("noResults");
+
+        const modal =
+            document.getElementById("pdfModal");
+
+        const closePdf =
+            document.getElementById("closePdf");
+
+        const pdfViewer =
+            document.getElementById("pdfViewer");
+
+        const pdfTitle =
+            document.getElementById("pdfTitle");
+
+        const pdfDifficulty =
+            document.getElementById("pdfDifficulty");
+
+        const downloadPdf =
+            document.getElementById("downloadPdf");
+
+        const zoomIn =
+            document.getElementById("zoomIn");
+
+        const zoomOut =
+            document.getElementById("zoomOut");
+
+        const zoomLevel =
+            document.getElementById("zoomLevel");
+
+        const previousPage =
+            document.getElementById("previousPage");
+
+        const nextPage =
+            document.getElementById("nextPage");
+
+        const currentPage =
+            document.getElementById("currentPage");
+
+        const totalPages =
+            document.getElementById("totalPages");
+
+        const playBtn =
+            document.getElementById("playBtn");
+
+        const stopBtn =
+            document.getElementById("stopBtn");
+
+        const timeDisplay =
+            document.getElementById("timeDisplay");
+
+        const progressFill =
+            document.getElementById("progressFill");
+
+        const progressLabel =
+            document.getElementById("progressLabel");
+
+
+        /* =========================================
+           VARIABLES
+        ========================================== */
+
+        let currentPDF = null;
+        let currentPageNumber = 1;
+        let scale = 1;
+
+        let currentMIDI = null;
+        let currentMIDIUrl = null;
+
+        let isPlaying = false;
+        let isPaused = false;
+
+        let midiInterval = null;
+
+        let currentTime = 0;
+        let totalDuration = 0;
+
+
+        /* =========================================
+           MIDI PATH HELPERS
+        ========================================== */
+
+        function getMidiUrl(path) {
+
+            if (!path) {
+                return null;
+            }
+
+            try {
+
+                return new URL(
+                    path,
+                    window.location.href
+                ).href;
+
+            } catch (error) {
+
+                return encodeURI(path);
+
+            }
+
+        }
+
+
+        function normalizeMidiPath(path) {
+
+            if (!path) {
+                return null;
+            }
+
+            return path
+                .replace(/\\/g, "/")
+                .split("/")
+                .map(segment =>
+                    encodeURIComponent(segment)
+                )
+                .join("/");
+
+        }
+
+
+        function normalizeMidiFileName(path) {
+
+            if (!path) {
+                return null;
+            }
+
+            const parts =
+                path
+                    .replace(/\\/g, "/")
+                    .split("/");
+
+            const fileName =
+                parts.pop();
+
+            const normalizedFileName =
+                fileName
+                    .toLowerCase()
+                    .replace(/\s+/g, "")
+                    .replace(/\.[^/.]+$/, match =>
+                        match.toLowerCase()
+                    );
+
+            return [
+                ...parts,
+                normalizedFileName
+            ].join("/");
+
+        }
+
+
+        async function resolveMidiPath(path) {
+
+            if (!path) {
+                return null;
+            }
+
+            const candidates = [
+
+                getMidiUrl(path),
+
+                getMidiUrl(
+                    path.replace(/ /g, "%20")
+                ),
+
+                getMidiUrl(
+                    normalizeMidiPath(path)
+                ),
+
+                getMidiUrl(
+                    normalizeMidiFileName(path)
+                )
+
+            ].filter(Boolean);
+
+
+            for (const candidate of candidates) {
+
+                try {
+
+                    const response =
+                        await fetch(
+                            candidate,
+                            {
+                                method: "HEAD"
+                            }
+                        );
+
+                    if (response.ok) {
+                        return candidate;
+                    }
+
+                } catch (error) {
+
+                    // Try next candidate.
+
+                }
+
+            }
+
+
+            console.error(
+                "MIDI file not found or accessible:",
+                path,
+                candidates
+            );
+
+
+            return candidates[0] || null;
+
+        }
+
+
+        /* =========================================
+           SEARCH
+        ========================================== */
+
+        function normaliseSearch(value) {
+
+            return String(value || "")
+                .toLowerCase()
+                .replace(/[?!.,]/g, "")
+                .replace(/\s+/g, " ")
+                .trim();
+
+        }
+
+
+        function findMatchingSheetMusic(query) {
+
+            const search =
+                normaliseSearch(query);
+
+            if (!search) {
+                return sheetMusic;
+            }
+
+
+            return sheetMusic.filter(piece => {
+
+                const title =
+                    normaliseSearch(piece.title);
+
+                const artist =
+                    normaliseSearch(piece.artist);
+
+                const references =
+                    piece.references || [];
+
+
+                if (title.includes(search)) {
+                    return true;
+                }
+
+
+                if (
+                    artist &&
+                    artist.includes(search)
+                ) {
+                    return true;
+                }
+
+
+                return references.some(reference => {
+
+                    const normalReference =
+                        normaliseSearch(reference);
+
+                    return (
+                        normalReference.includes(search) ||
+                        search.includes(normalReference)
+                    );
+
+                });
+
+            });
+
+        }
+
+
+        /* =========================================
+           CREATE SHEET MUSIC CARDS
+        ========================================== */
+
+        function displaySheetMusic(list) {
+
+            grid.innerHTML = "";
+
+            if (!list.length) {
+
+                noResults.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            noResults.style.display =
+                "none";
+
+
+            list.forEach(piece => {
+
+                const card =
+                    document.createElement("article");
+
+                card.className =
+                    "sheet-card";
+
+                card.dataset.title =
+                    piece.title;
+
+
+                card.innerHTML = `
+
+                <div class="sheet-image">
+
+                    <img
+                        src="${piece.image}"
+                        alt="${piece.title} sheet music"
+                        loading="lazy"
+                    >
+
+                </div>
+
+                <div class="sheet-info">
+
+                    <span class="difficulty">
+                        ${piece.difficulty}
+                    </span>
+
+                    <h3>
+                        ${piece.title}
+                    </h3>
+
+                    <p>
+                        ${piece.artist || "Piano Sheet Music"}
+                    </p>
+
+                    <button
+                        class="sheet-button"
+                        type="button"
+                    >
+                        View Sheet Music →
+                    </button>
+
+                </div>
+
+            `;
+
+
+                card.addEventListener(
+                    "click",
+                    () => openPDF(piece)
+                );
+
+
+                grid.appendChild(card);
+
+            });
+
+        }
+
+
+        /* =========================================
+           OPEN PDF
+        ========================================== */
+
+        async function openPDF(piece) {
+
+            modal.classList.add("open");
+
+            document.body.classList.add("modal-open");
+
+
+            pdfTitle.textContent =
+                piece.title;
+
+            pdfDifficulty.textContent =
+                piece.difficulty;
+
+            downloadPdf.href =
+                piece.pdf;
+
+
+            /* MIDI */
+
+            currentMIDI =
+                piece.midi || null;
+
+            currentMIDIUrl = null;
+
+
+            stopAudio();
+
+
+            playBtn.disabled =
+                !currentMIDI;
+
+            stopBtn.disabled =
+                true;
+
+
+            playBtn.textContent =
+                "▶";
+
+            playBtn.classList.remove(
+                "playing"
+            );
+
+
+            currentTime = 0;
+            totalDuration = 0;
+
+
+            timeDisplay.textContent =
+                "0:00";
+
+
+            updateProgressUI();
+
+
+            /* PDF */
+
+            pdfViewer.innerHTML = `
+
+            <div class="pdf-loading">
+
+                <div class="pdf-spinner"></div>
+
+                <p>
+                    Loading sheet music...
+                </p>
+
+            </div>
+
+        `;
+
+
+            scale = 1;
+            currentPageNumber = 1;
+            currentPDF = null;
+
+
+            updateZoom();
+
+
+            currentPage.textContent =
+                "1";
+
+            totalPages.textContent =
+                "1";
+
+
+            try {
+
+                const loadingTask =
+                    pdfjsLib.getDocument(
+                        piece.pdf
+                    );
+
+
+                currentPDF =
+                    await loadingTask.promise;
+
+
+                totalPages.textContent =
+                    currentPDF.numPages;
+
+
+                await renderAllPages();
+
+
+            } catch (error) {
+
+                console.error(
+                    "PDF loading error:",
+                    error
+                );
+
+
+                pdfViewer.innerHTML = `
+
+                <div class="pdf-error">
+
+                    <h3>
+                        Couldn't load this PDF
+                    </h3>
+
+                    <p>
+                        The PDF could not be loaded.
+                    </p>
+
+                    <small>
+                        ${error.message}
+                    </small>
+
+                </div>
+
+            `;
+
+            }
+
+        }
+
+
+        /* =========================================
+           RENDER PDF
+        ========================================== */
+
+        async function renderAllPages() {
+
+            if (!currentPDF) {
+                return;
+            }
+
+
+            pdfViewer.innerHTML = "";
+
+
+            for (
+                let pageNumber = 1;
+                pageNumber <= currentPDF.numPages;
+                pageNumber++
+            ) {
+
+                const page =
+                    await currentPDF.getPage(
+                        pageNumber
+                    );
+
+
+                const viewport =
+                    page.getViewport({
+                        scale: scale
+                    });
+
+
+                const canvas =
+                    document.createElement(
+                        "canvas"
+                    );
+
+
+                canvas.className =
+                    "pdf-page";
+
+
+                canvas.dataset.page =
+                    pageNumber;
+
+
+                const context =
+                    canvas.getContext("2d");
+
+
+                canvas.width =
+                    Math.ceil(
+                        viewport.width
+                    );
+
+                canvas.height =
+                    Math.ceil(
+                        viewport.height
+                    );
+
+
+                pdfViewer.appendChild(
+                    canvas
+                );
+
+
+                await page.render({
+
+                    canvasContext:
+                        context,
+
+                    viewport:
+                        viewport
+
+                }).promise;
+
+            }
+
+        }
+
+
+        /* =========================================
+           ZOOM
+        ========================================== */
+
+        function updateZoom() {
+
+            zoomLevel.textContent =
+                Math.round(scale * 100) + "%";
+
+        }
+
+
+        zoomIn.addEventListener(
+            "click",
+            async () => {
+
+                if (!currentPDF) {
+                    return;
+                }
+
+                if (scale >= 2.5) {
+                    return;
+                }
+
+                scale += 0.25;
+
+                updateZoom();
+
+                await renderAllPages();
+
+            }
+        );
+
+
+        zoomOut.addEventListener(
+            "click",
+            async () => {
+
+                if (!currentPDF) {
+                    return;
+                }
+
+                if (scale <= 0.5) {
+                    return;
+                }
+
+                scale -= 0.25;
+
+                updateZoom();
+
+                await renderAllPages();
+
+            }
+        );
+
+
+        /* =========================================
+           PAGE NAVIGATION
+        ========================================== */
+
+        previousPage.addEventListener(
+            "click",
+            () => {
+
+                if (!currentPDF) {
+                    return;
+                }
+
+                if (currentPageNumber <= 1) {
+                    return;
+                }
+
+                currentPageNumber--;
+
+                jumpToPage();
+
+            }
+        );
+
+
+        nextPage.addEventListener(
+            "click",
+            () => {
+
+                if (!currentPDF) {
+                    return;
+                }
+
+                if (
+                    currentPageNumber >=
+                    currentPDF.numPages
+                ) {
+                    return;
+                }
+
+                currentPageNumber++;
+
+                jumpToPage();
+
+            }
+        );
+
+
+        function jumpToPage() {
+
+            currentPage.textContent =
+                currentPageNumber;
+
+
+            const page =
+                document.querySelector(
+                    `.pdf-page[data-page="${currentPageNumber}"]`
+                );
+
+
+            if (page) {
+
+                page.scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "start"
+
+                });
+
+            }
+
+        }
+
+
+        /* =========================================
+           MIDI AUDIO PLAYER
+        ========================================== */
+
+        async function toggleAudio() {
+
+            if (!currentMIDI) {
+                return;
+            }
+
+
+            if (isPlaying) {
+
+                pauseAudio();
+
+                return;
+
+            }
+
+
+            if (isPaused) {
+
+                resumeAudio();
+
+                return;
+
+            }
+
+
+            startAudio();
+
+        }
+
+
+        async function startAudio() {
+
+            if (typeof MIDIjs === "undefined") {
+
+                console.error(
+                    "MIDI.js not loaded."
+                );
+
+                return;
+
+            }
+
+
+            currentMIDIUrl =
+                await resolveMidiPath(
+                    currentMIDI
+                );
+
+
+            if (!currentMIDIUrl) {
+
+                console.error(
+                    "MIDI file not found."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                MIDIjs.stop();
+
+
+                MIDIjs.play(
+                    currentMIDIUrl
+                );
+
+
+                isPlaying = true;
+                isPaused = false;
+
+
+                playBtn.disabled =
+                    false;
+
+                stopBtn.disabled =
+                    false;
+
+
+                playBtn.textContent =
+                    "⏸";
+
+
+                playBtn.classList.add(
+                    "playing"
+                );
+
+
+                currentTime = 0;
+
+
+                if (
+                    typeof MIDIjs.get_duration ===
+                    "function"
+                ) {
+
+                    try {
+
+                        MIDIjs.get_duration(
+                            currentMIDIUrl,
+                            function (duration) {
+
+                                if (
+                                    !isNaN(duration) &&
+                                    duration > 0
+                                ) {
+
+                                    totalDuration =
+                                        duration;
+
+                                    updateProgressUI();
+
+                                }
+
+                            }
+                        );
+
+                    } catch (error) {
+
+                        console.warn(
+                            "Unable to retrieve MIDI duration:",
+                            error
+                        );
+
+                    }
+
+                }
+
+
+                updateProgressUI();
+
+                startTimeTracking();
+
+
+            } catch (error) {
+
+                console.error(
+                    "MIDI playback error:",
+                    error
+                );
+
+
+                isPlaying = false;
+
+                playBtn.textContent =
+                    "▶";
+
+                playBtn.classList.remove(
+                    "playing"
+                );
+
+            }
+
+        }
+
+
+        function pauseAudio() {
+
+            if (
+                typeof MIDIjs !== "undefined"
+            ) {
+
+                try {
+
+                    if (
+                        typeof MIDIjs.pause ===
+                        "function"
+                    ) {
+
+                        MIDIjs.pause();
+
+                    } else {
+
+                        MIDIjs.stop();
+
+                    }
+
+                } catch (error) { }
+
+            }
+
+
+            isPlaying = false;
+            isPaused = true;
+
+
+            playBtn.disabled =
+                false;
+
+            stopBtn.disabled =
+                false;
+
+
+            playBtn.textContent =
+                "▶";
+
+
+            playBtn.classList.remove(
+                "playing"
+            );
+
+
+            if (midiInterval) {
+
+                clearInterval(
+                    midiInterval
+                );
+
+                midiInterval = null;
+
+            }
+
+        }
+
+
+        function resumeAudio() {
+
+            if (
+                typeof MIDIjs !== "undefined" &&
+                currentMIDIUrl
+            ) {
+
+                try {
+
+                    MIDIjs.play(
+                        currentMIDIUrl
+                    );
+
+
+                    isPlaying = true;
+                    isPaused = false;
+
+
+                    playBtn.textContent =
+                        "⏸";
+
+
+                    playBtn.classList.add(
+                        "playing"
+                    );
+
+
+                    startTimeTracking();
+
+                } catch (error) {
+
+                    console.error(
+                        "MIDI resume error:",
+                        error
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        function stopAudio() {
+
+            if (
+                typeof MIDIjs !== "undefined"
+            ) {
+
+                try {
+
+                    MIDIjs.stop();
+
+                } catch (error) { }
+
+            }
+
+
+            isPlaying = false;
+            isPaused = false;
+
+
+            currentTime = 0;
+
+
+            playBtn.disabled =
+                !currentMIDI;
+
+            stopBtn.disabled =
+                true;
+
+
+            playBtn.textContent =
+                "▶";
+
+
+            playBtn.classList.remove(
+                "playing"
+            );
+
+
+            timeDisplay.textContent =
+                "0:00";
+
+
+            updateProgressUI();
+
+
+            if (midiInterval) {
+
+                clearInterval(
+                    midiInterval
+                );
+
+                midiInterval = null;
+
+            }
+
+        }
+
+
+        function startTimeTracking() {
+
+            if (midiInterval) {
+
+                clearInterval(
+                    midiInterval
+                );
+
+            }
+
+
+            const startTime =
+                Date.now() -
+                (currentTime * 1000);
+
+
+            midiInterval =
+                setInterval(() => {
+
+                    if (isPlaying) {
+
+                        currentTime =
+                            (
+                                Date.now() -
+                                startTime
+                            ) / 1000;
+
+
+                        timeDisplay.textContent =
+                            formatTime(
+                                currentTime
+                            );
+
+
+                        updateProgressUI();
+
+
+                        /*
+                         * Stop tracking when the
+                         * duration has been reached.
+                         */
+                        if (
+                            totalDuration > 0 &&
+                            currentTime >=
+                            totalDuration
+                        ) {
+
+                            currentTime =
+                                totalDuration;
+
+                            updateProgressUI();
+
+                            clearInterval(
+                                midiInterval
+                            );
+
+                            midiInterval =
+                                null;
+
+                        }
+
+                    }
+
+                }, 500);
+
+        }
+
+
+        function formatTime(seconds) {
+
+            const mins =
+                Math.floor(
+                    seconds / 60
+                );
+
+
+            const secs =
+                Math.floor(
+                    seconds % 60
+                );
+
+
+            return (
+                mins +
+                ":" +
+                String(secs).padStart(
+                    2,
+                    "0"
+                )
+            );
+
+        }
+
+
+        /* =========================================
+           PROGRESS DISPLAY
+           DISPLAY ONLY — NO SEEKING
+        ========================================== */
+
+        function updateProgressUI() {
+
+            if (
+                !progressFill ||
+                !progressLabel
+            ) {
+                return;
+            }
+
+
+            const duration =
+                totalDuration || 0;
+
+
+            const percent =
+                duration > 0
+                    ? Math.min(
+                        100,
+                        (
+                            currentTime /
+                            duration
+                        ) * 100
+                    )
+                    : 0;
+
+
+            progressFill.style.width =
+                percent + "%";
+
+
+            progressLabel.textContent =
+                `${formatTime(currentTime)} / ${formatTime(duration)}`;
+
+        }
+
+
+        /* =========================================
+           PLAYER BUTTON EVENTS
+        ========================================== */
+
+        playBtn.addEventListener(
+            "click",
+            toggleAudio
+        );
+
+
+        stopBtn.addEventListener(
+            "click",
+            stopAudio
+        );
+
+
+        /*
+         * IMPORTANT:
+         *
+         * There is deliberately NO click event
+         * attached to .progress-track.
+         *
+         * The progress bar is display-only.
+         */
+
+
+        /* =========================================
+           CLOSE PDF VIEWER
+        ========================================== */
+
+        function closeViewer() {
+
+            stopAudio();
+
+
+            modal.classList.remove(
+                "open"
+            );
+
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+
+            pdfViewer.innerHTML =
+                "";
+
+
+            currentPDF =
+                null;
+
+
+            currentPageNumber =
+                1;
+
+
+            currentMIDI =
+                null;
+
+
+            currentMIDIUrl =
+                null;
+
+        }
+
+
+        closePdf.addEventListener(
+            "click",
+            closeViewer
+        );
+
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target === modal
+                ) {
+
+                    closeViewer();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           SEARCH
+        ========================================== */
+
+        searchInput.addEventListener(
+            "input",
+            () => {
+
+                const search =
+                    searchInput.value.trim();
+
+
+                const filtered =
+                    findMatchingSheetMusic(
+                        search
+                    );
+
+
+                displaySheetMusic(
+                    filtered
+                );
+
+            }
+        );
+
+
+        /* =========================================
+           AI SEARCH / URL SEARCH
+        ========================================== */
+
+        function loadRequestedSheetMusic() {
+
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+
+            const requestedSearch =
+                params.get("search");
+
+
+            if (!requestedSearch) {
+
+                displaySheetMusic(
+                    sheetMusic
+                );
+
+                return;
+
+            }
+
+
+            searchInput.value =
+                requestedSearch;
+
+
+            const matches =
+                findMatchingSheetMusic(
+                    requestedSearch
+                );
+
+
+            displaySheetMusic(
+                matches
+            );
+
+
+            searchInput.focus();
+
+        }
+
+
+        loadRequestedSheetMusic();
+
+
+        /* =========================================
+           CONCERTOI AI ELEMENTS
+        ========================================== */
+
+        const concertoiAIButton =
+            document.getElementById(
+                "concertoiAIButton"
+            );
+
+        const concertoiAI =
+            document.getElementById(
+                "concertoiAI"
+            );
+
+        const concertoiAIClose =
+            document.getElementById(
+                "concertoiAIClose"
+            );
+
+        const concertoiAIForm =
+            document.getElementById(
+                "concertoiAIForm"
+            );
+
+        const concertoiAIInput =
+            document.getElementById(
+                "concertoiAIInput"
+            );
+
+        const concertoiAIMessages =
+            document.getElementById(
+                "concertoiAIMessages"
+            );
+
+        const concertoiAISend =
+            document.getElementById(
+                "concertoiAISend"
+            );
+
+
+        /* =========================================
+           OPEN AI
+        ========================================== */
+
+        function openConcertoiAI() {
+
+            concertoiAI.classList.add(
+                "open"
+            );
+
+
+            concertoiAI.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+
+            concertoiAIButton.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    concertoiAIInput.focus();
+
+                },
+                250
+            );
+
+        }
+
+
+        /* =========================================
+           CLOSE AI
+        ========================================== */
+
+        function closeConcertoiAI() {
+
+            concertoiAI.classList.remove(
+                "open"
+            );
+
+
+            concertoiAI.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+
+            concertoiAIButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+
+        /* =========================================
+           ADD AI MESSAGE
+        ========================================== */
+
+        function addMessage(
+            message,
+            type
+        ) {
+
+            const messageWrapper =
+                document.createElement(
+                    "div"
+                );
+
+
+            messageWrapper.className =
+                `concertoi-ai-message ${type}`;
+
+
+            if (type === "ai") {
+
+                const avatar =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                avatar.className =
+                    "concertoi-ai-message-avatar";
+
+
+                avatar.textContent =
+                    "✦";
+
+
+                messageWrapper.appendChild(
+                    avatar
+                );
+
+            }
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+
+            bubble.className =
+                "concertoi-ai-bubble";
+
+
+            bubble.textContent =
+                message;
+
+
+            messageWrapper.appendChild(
+                bubble
+            );
+
+
+            concertoiAIMessages.appendChild(
+                messageWrapper
+            );
+
+
+            concertoiAIMessages.scrollTop =
+                concertoiAIMessages.scrollHeight;
+
+        }
+
+
+        /* =========================================
+           TYPING INDICATOR
+        ========================================== */
+
+        function addTypingMessage() {
+
+            const wrapper =
+                document.createElement(
+                    "div"
+                );
+
+
+            wrapper.className =
+                "concertoi-ai-message ai";
+
+
+            wrapper.id =
+                "concertoiAITyping";
+
+
+            const avatar =
+                document.createElement(
+                    "div"
+                );
+
+
+            avatar.className =
+                "concertoi-ai-message-avatar";
+
+
+            avatar.textContent =
+                "✦";
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+
+            bubble.className =
+                "concertoi-ai-bubble typing";
+
+
+            bubble.innerHTML =
+                "<span></span><span></span><span></span>";
+
+
+            wrapper.appendChild(
+                avatar
+            );
+
+
+            wrapper.appendChild(
+                bubble
+            );
+
+
+            concertoiAIMessages.appendChild(
+                wrapper
+            );
+
+
+            concertoiAIMessages.scrollTop =
+                concertoiAIMessages.scrollHeight;
+
+        }
+
+
+        function removeTypingMessage() {
+
+            const typing =
+                document.getElementById(
+                    "concertoiAITyping"
+                );
+
+
+            if (typing) {
+                typing.remove();
+            }
+
+        }
+
+
+        /* =========================================
+           AI BUTTON EVENTS
+        ========================================== */
+
+        concertoiAIButton.addEventListener(
+            "click",
+            openConcertoiAI
+        );
+
+
+        concertoiAIClose.addEventListener(
+            "click",
+            closeConcertoiAI
+        );
+
+
+        /* =========================================
+           AI CHAT
+        ========================================== */
+
+        concertoiAIForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                const message =
+                    concertoiAIInput.value.trim();
+
+
+                if (!message) {
+                    return;
+                }
+
+
+                addMessage(
+                    message,
+                    "user"
+                );
+
+
+                concertoiAIInput.value =
+                    "";
+
+
+                concertoiAISend.disabled =
+                    true;
+
+
+                concertoiAIInput.disabled =
+                    true;
+
+
+                addTypingMessage();
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/api/chat",
+                            {
+
+                                method:
+                                    "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+                                        "application/json"
+
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        message:
+                                            message
+
+                                    })
+
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    removeTypingMessage();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.error ||
+                            "Something went wrong."
+                        );
+
+                    }
+
+
+                    addMessage(
+                        data.response ||
+                        "I couldn't generate a response.",
+                        "ai"
+                    );
+
+
+                    /* AI NAVIGATION */
+
+                    if (
+                        data.navigate
+                    ) {
+
+                        let destination =
+                            null;
+
+
+                        switch (
+                        data.navigate
+                        ) {
+
+                            case "home":
+
+                                destination =
+                                    "index.html";
+
+                                break;
+
+
+                            case "about":
+
+                                destination =
+                                    "about.html";
+
+                                break;
+
+
+                            case "contact":
+
+                                destination =
+                                    "contact.html";
+
+                                break;
+
+
+                            case "sheetmusic":
+
+                                destination =
+                                    "sheetmusic.html";
+
+                                break;
+
+                        }
+
+
+                        if (destination) {
+
+                            setTimeout(
+                                () => {
+
+                                    window.location.href =
+                                        destination;
+
+                                },
+                                700
+                            );
+
+                            return;
+
+                        }
+
+                    }
+
+
+                    /* BACKWARDS COMPATIBILITY */
+
+                    if (
+                        data.redirect
+                    ) {
+
+                        setTimeout(
+                            () => {
+
+                                window.location.href =
+                                    data.redirect;
+
+                            },
+                            700
+                        );
+
+                        return;
+
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Concertoi AI error:",
+                        error
+                    );
+
+
+                    removeTypingMessage();
+
+
+                    addMessage(
+                        "Sorry! I couldn't connect to Concertoi AI right now. Please try again in a moment.",
+                        "ai"
+                    );
+
+                }
+
+
+                concertoiAISend.disabled =
+                    false;
+
+
+                concertoiAIInput.disabled =
+                    false;
+
+
+                concertoiAIInput.focus();
+
+            }
+        );
+
+
+        /* =========================================
+           ESCAPE KEY
+        ========================================== */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    if (
+                        concertoiAI.classList.contains(
+                            "open"
+                        )
+                    ) {
+
+                        closeConcertoiAI();
+
+                    }
+
+
+                    if (
+                        modal.classList.contains(
+                            "open"
+                        )
+                    ) {
+
+                        closeViewer();
+
+                    }
+
+                }
+
+            }
+        );
+
+    </script>
+    
 
 </body>
 

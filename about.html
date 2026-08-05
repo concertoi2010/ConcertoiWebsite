@@ -1,16 +1,1084 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Concertoi</title>
+
+    <title>About — Concertoi</title>
+
+    <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
+    <link rel="stylesheet" href="style.css">
+
+
 </head>
 
 <body>
 
-    <h1>Welcome to Concertoi</h1>
-    <p>My new website is being built!hi</p>
+    <header class="navbar">
+
+
+        <a class="brand" href="index.html">
+            <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
+            <span>Concertoi</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html" class="active">About</a>
+            <a href="sheetmusic.html">Sheet Music</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+
+
+    </header>
+
+    <main>
+
+        <section class="about-hero">
+
+            <div class="about-hero-content">
+
+
+                <p class="eyebrow">Behind Concertoi</p>
+
+                <h1>
+                    More Than<br>
+                    <span>Just Music.</span>
+                </h1>
+
+                <p>
+                    Concertoi is a growing collection of original
+                    music, ideas and creativity.
+                </p>
+
+                <a href="#story" class="about-scroll-button">
+                    Discover the story ↓
+                </a>
+
+
+            </div>
+
+        </section>
+
+        <section id="story" class="about-section">
+
+            <div class="section-heading">
+
+
+                <p class="eyebrow">The Story</p>
+
+                <h2>How Concertoi began</h2>
+
+                <p>
+                    Every project has a beginning. Here's how Concertoi
+                    started and where it's going.
+                </p>
+
+
+            </div>
+
+            <div class="timeline">
+
+
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-card">
+                        <span>2024</span>
+
+                        <h3>The Beginning</h3>
+
+                        <p>
+                            Concertoi begins as a place to bring
+                            music and creativity together.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-card">
+                        <span>01</span>
+
+                        <h3>Original Music</h3>
+
+                        <p>
+                            Original compositions begin forming the
+                            foundation of the Concertoi library.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-card">
+                        <span>02</span>
+
+                        <h3>The Website</h3>
+
+                        <p>
+                            Concertoi becomes an online home for
+                            music, sheet music and future projects.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+
+                    <div class="timeline-card">
+                        <span>03</span>
+
+                        <h3>What's Next?</h3>
+
+                        <p>
+                            More music, more ideas and more things
+                            to come.
+                        </p>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </section>
+
+        <section class="about-section why-section">
+
+            <div class="section-heading">
+
+
+                <p class="eyebrow">The Idea</p>
+
+                <h2>Why Concertoi?</h2>
+
+
+            </div>
+
+            <div class="about-cards">
+
+
+                <article class="about-card reveal">
+
+                    <div class="about-card-icon">🎹</div>
+
+                    <h3>Create</h3>
+
+                    <p>
+                        Turning musical ideas into something
+                        that can actually be played.
+                    </p>
+
+                </article>
+
+
+                <article class="about-card reveal">
+
+                    <div class="about-card-icon">✍️</div>
+
+                    <h3>Share</h3>
+
+                    <p>
+                        Giving original music a place where
+                        it can be discovered and enjoyed.
+                    </p>
+
+                </article>
+
+
+                <article class="about-card reveal">
+
+                    <div class="about-card-icon">🚀</div>
+
+                    <h3>Grow</h3>
+
+                    <p>
+                        Concertoi is always evolving, with
+                        new music and ideas still to come.
+                    </p>
+
+                </article>
+
+
+            </div>
+
+        </section>
+
+        <section class="composer-section">
+
+            <div class="composer-card reveal">
+
+
+                <div>
+
+                    <p class="eyebrow">Behind the Music</p>
+
+                    <h2>The Composer</h2>
+
+                    <p>
+                        Want to know more about the person
+                        behind Concertoi?
+                    </p>
+
+                    <button id="openComposer" class="composer-button">
+                        Meet the Composer →
+                    </button>
+
+                </div>
+
+
+                <div class="composer-symbol">
+                    ♪
+                </div>
+
+
+            </div>
+
+        </section>
+
+        <section class="about-final">
+
+
+            <p class="eyebrow">Concertoi</p>
+
+            <h2>
+                There's always<br>
+                <span>more music to come.</span>
+            </h2>
+
+            <p>
+                Thanks for visiting Concertoi.
+            </p>
+
+
+        </section>
+
+    </main>
+
+    <!-- COMPOSER MODAL -->
+
+    <div id="composerModal" class="composer-modal">
+
+        <div class="composer-popup">
+
+
+            <button id="closeComposer" class="composer-close">
+                ×
+            </button>
+
+            <p class="eyebrow">About the Composer</p>
+
+            <h2>Concertoi</h2>
+
+            <p>
+                Concertoi is an independent music project focused
+                on creating original piano music and sharing it
+                through an online collection of sheet music.
+            </p>
+
+            <p>
+                The project is continually growing, with new
+                compositions and ideas being added over time.
+            </p>
+
+
+        </div>
+
+    </div>
+
+    <!-- CONCERTOI AI BUTTON -->
+
+    <button type="button" class="concertoi-ai-button" id="concertoiAIButton" aria-label="Open Concertoi AI"
+        aria-expanded="false">
+
+
+        <span class="concertoi-ai-icon">✦</span>
+
+        <span>Ask Concertoi AI</span>
+
+
+    </button>
+
+    <!-- CONCERTOI AI -->
+
+    <div class="concertoi-ai" id="concertoiAI" aria-hidden="true">
+
+
+        <div class="concertoi-ai-header">
+
+            <div class="concertoi-ai-title">
+
+                <div class="concertoi-ai-avatar">
+                    ✦
+                </div>
+
+                <div>
+                    <strong>Concertoi AI</strong>
+                    <span>Your music assistant</span>
+                </div>
+
+            </div>
+
+            <button type="button" class="concertoi-ai-close" id="concertoiAIClose" aria-label="Close Concertoi AI">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="concertoi-ai-messages" id="concertoiAIMessages">
+
+            <div class="concertoi-ai-message ai">
+
+                <div class="concertoi-ai-message-avatar">
+                    ✦
+                </div>
+
+                <div class="concertoi-ai-bubble">
+                    Hey! 👋 I'm Concertoi AI. Ask me anything about Concertoi,
+                    sheet music, or finding your next piece!
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <form class="concertoi-ai-form" id="concertoiAIForm">
+
+            <input type="text" id="concertoiAIInput" placeholder="Ask Concertoi AI..." autocomplete="off"
+                maxlength="500" required>
+
+            <button type="submit" id="concertoiAISend" aria-label="Send message">
+                →
+            </button>
+
+        </form>
+
+
+    </div>
+
+    <!-- FOOTER -->
+
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+
+            <p>
+                © 2026 Concertoi. All rights reserved.
+            </p>
+
+            <p>
+                <a href="mailto:concertoi2010@gmail.com">
+                    concertoi2010@gmail.com
+                </a>
+            </p>
+
+
+        </div>
+
+    </footer>
+
+    <script>
+
+        /* =========================================
+           COMPOSER POPUP
+        ========================================= */
+
+        const composerModal =
+            document.getElementById("composerModal");
+
+        const openComposer =
+            document.getElementById("openComposer");
+
+        const closeComposer =
+            document.getElementById("closeComposer");
+
+
+        openComposer.addEventListener(
+            "click",
+            () => {
+                composerModal.classList.add("open");
+            }
+        );
+
+
+        closeComposer.addEventListener(
+            "click",
+            () => {
+                composerModal.classList.remove("open");
+            }
+        );
+
+
+        composerModal.addEventListener(
+            "click",
+            (event) => {
+
+                if (event.target === composerModal) {
+
+                    composerModal.classList.remove("open");
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           SCROLL REVEAL
+        ========================================= */
+
+        const revealElements =
+            document.querySelectorAll(".reveal");
+
+
+        const observer =
+            new IntersectionObserver(
+
+                (entries) => {
+
+                    entries.forEach((entry) => {
+
+                        if (entry.isIntersecting) {
+
+                            entry.target.classList.add(
+                                "visible"
+                            );
+
+                        }
+
+                    });
+
+                },
+
+                {
+                    threshold: 0.15
+                }
+
+            );
+
+
+        revealElements.forEach((element) => {
+
+            observer.observe(element);
+
+        });
+
+
+        /* =========================================
+           CONCERTOI AI
+        ========================================= */
+
+        const concertoiAIButton =
+            document.getElementById(
+                "concertoiAIButton"
+            );
+
+        const concertoiAI =
+            document.getElementById(
+                "concertoiAI"
+            );
+
+        const concertoiAIClose =
+            document.getElementById(
+                "concertoiAIClose"
+            );
+
+        const concertoiAIForm =
+            document.getElementById(
+                "concertoiAIForm"
+            );
+
+        const concertoiAIInput =
+            document.getElementById(
+                "concertoiAIInput"
+            );
+
+        const concertoiAIMessages =
+            document.getElementById(
+                "concertoiAIMessages"
+            );
+
+        const concertoiAISend =
+            document.getElementById(
+                "concertoiAISend"
+            );
+
+
+        /* =========================================
+           OPEN AI
+        ========================================= */
+
+        function openConcertoiAI() {
+
+            concertoiAI.classList.add("open");
+
+            concertoiAI.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            concertoiAIButton.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+
+            setTimeout(() => {
+
+                concertoiAIInput.focus();
+
+            }, 250);
+
+        }
+
+
+        /* =========================================
+           CLOSE AI
+        ========================================= */
+
+        function closeConcertoiAI() {
+
+            concertoiAI.classList.remove("open");
+
+            concertoiAI.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            concertoiAIButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+
+        /* =========================================
+           ADD MESSAGE
+        ========================================= */
+
+        function addAIMessage(message, type) {
+
+            const messageWrapper =
+                document.createElement("div");
+
+
+            messageWrapper.className =
+                `concertoi-ai-message ${type}`;
+
+
+            if (type === "ai") {
+
+                const avatar =
+                    document.createElement("div");
+
+
+                avatar.className =
+                    "concertoi-ai-message-avatar";
+
+
+                avatar.textContent =
+                    "✦";
+
+
+                messageWrapper.appendChild(
+                    avatar
+                );
+
+            }
+
+
+            const bubble =
+                document.createElement("div");
+
+
+            bubble.className =
+                "concertoi-ai-bubble";
+
+
+            bubble.textContent =
+                message;
+
+
+            messageWrapper.appendChild(
+                bubble
+            );
+
+
+            concertoiAIMessages.appendChild(
+                messageWrapper
+            );
+
+
+            concertoiAIMessages.scrollTop =
+                concertoiAIMessages.scrollHeight;
+
+        }
+
+
+        /* =========================================
+           TYPING INDICATOR
+        ========================================= */
+
+        function addTypingMessage() {
+
+            const wrapper =
+                document.createElement("div");
+
+
+            wrapper.className =
+                "concertoi-ai-message ai";
+
+
+            wrapper.id =
+                "concertoiAITyping";
+
+
+            const avatar =
+                document.createElement("div");
+
+
+            avatar.className =
+                "concertoi-ai-message-avatar";
+
+
+            avatar.textContent =
+                "✦";
+
+
+            const bubble =
+                document.createElement("div");
+
+
+            bubble.className =
+                "concertoi-ai-bubble typing";
+
+
+            bubble.innerHTML =
+                "<span></span><span></span><span></span>";
+
+
+            wrapper.appendChild(
+                avatar
+            );
+
+
+            wrapper.appendChild(
+                bubble
+            );
+
+
+            concertoiAIMessages.appendChild(
+                wrapper
+            );
+
+
+            concertoiAIMessages.scrollTop =
+                concertoiAIMessages.scrollHeight;
+
+        }
+
+
+        function removeTypingMessage() {
+
+            const typing =
+                document.getElementById(
+                    "concertoiAITyping"
+                );
+
+
+            if (typing) {
+
+                typing.remove();
+
+            }
+
+        }
+
+
+        /* =========================================
+           NAVIGATION
+        ========================================= */
+
+        function navigateConcertoi(
+            destination,
+            searchQuery = null
+        ) {
+
+            const pages = {
+
+                home: "index.html",
+
+                about: "about.html",
+
+                sheetmusic: "sheetmusic.html",
+
+                contact: "contact.html"
+
+            };
+
+
+            if (!destination) {
+
+                return;
+
+            }
+
+
+            let page =
+                String(destination)
+                    .toLowerCase()
+                    .trim();
+
+
+            if (page.endsWith(".html")) {
+
+                page =
+                    page.slice(0, -5);
+
+            }
+
+
+            if (!pages[page]) {
+
+                return;
+
+            }
+
+
+            /* =====================================
+               SHEET MUSIC SEARCH
+            ===================================== */
+
+            if (
+                page === "sheetmusic" &&
+                searchQuery
+            ) {
+
+                window.location.href =
+                    "sheetmusic.html?search=" +
+                    encodeURIComponent(searchQuery);
+
+                return;
+
+            }
+
+
+            window.location.href =
+                pages[page];
+
+        }
+
+
+        /* =========================================
+           HANDLE AI RESPONSE
+        ========================================= */
+
+        function handleAIResponse(data) {
+
+            removeTypingMessage();
+
+
+            const destination =
+                data.navigate ||
+                data.redirect;
+
+
+            /*
+               If AI wants to search for a
+               specific piece, send the search
+               term to Sheet Music.
+            */
+
+            const searchQuery =
+                data.search ||
+                data.query ||
+                null;
+
+
+            if (destination) {
+
+                let page =
+                    String(destination)
+                        .toLowerCase()
+                        .trim();
+
+
+                if (page.endsWith(".html")) {
+
+                    page =
+                        page.slice(0, -5);
+
+                }
+
+
+                const allowedPages = [
+
+                    "home",
+                    "about",
+                    "sheetmusic",
+                    "contact"
+
+                ];
+
+
+                if (
+                    allowedPages.includes(page)
+                ) {
+
+                    addAIMessage(
+
+                        data.response ||
+                        "Sure! Taking you there now.",
+
+                        "ai"
+
+                    );
+
+
+                    setTimeout(() => {
+
+                        navigateConcertoi(
+                            page,
+                            searchQuery
+                        );
+
+                    }, 700);
+
+
+                    return;
+
+                }
+
+            }
+
+
+            addAIMessage(
+
+                data.response ||
+                "Sorry, I couldn't think of a response.",
+
+                "ai"
+
+            );
+
+        }
+
+
+        /* =========================================
+           BUTTON EVENTS
+        ========================================= */
+
+        concertoiAIButton.addEventListener(
+            "click",
+            openConcertoiAI
+        );
+
+
+        concertoiAIClose.addEventListener(
+            "click",
+            closeConcertoiAI
+        );
+
+
+        /* =========================================
+           SEND MESSAGE
+        ========================================= */
+
+        concertoiAIForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const message =
+                    concertoiAIInput.value.trim();
+
+
+                if (!message) {
+
+                    return;
+
+                }
+
+
+                addAIMessage(
+                    message,
+                    "user"
+                );
+
+
+                concertoiAIInput.value =
+                    "";
+
+
+                concertoiAISend.disabled =
+                    true;
+
+
+                concertoiAIInput.disabled =
+                    true;
+
+
+                addTypingMessage();
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/api/chat",
+                            {
+
+                                method: "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+                                        "application/json"
+
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        message:
+                                            message
+
+                                    })
+
+                            }
+                        );
+
+
+                    const contentType =
+                        response.headers.get(
+                            "content-type"
+                        ) || "";
+
+
+                    let data;
+
+
+                    if (
+                        contentType.includes(
+                            "application/json"
+                        )
+                    ) {
+
+                        data =
+                            await response.json();
+
+                    } else {
+
+                        throw new Error(
+                            "The server returned an invalid response."
+                        );
+
+                    }
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+
+                            data.error ||
+                            "Something went wrong."
+
+                        );
+
+                    }
+
+
+                    handleAIResponse(data);
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Concertoi AI error:",
+                        error
+                    );
+
+
+                    removeTypingMessage();
+
+
+                    addAIMessage(
+
+                        "Sorry! I couldn't connect to Concertoi AI right now. Please try again in a moment.",
+
+                        "ai"
+
+                    );
+
+                }
+
+
+                concertoiAISend.disabled =
+                    false;
+
+
+                concertoiAIInput.disabled =
+                    false;
+
+
+                concertoiAIInput.focus();
+
+            }
+        );
+
+
+        /* =========================================
+           ESCAPE
+        ========================================= */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Escape" &&
+                    concertoiAI.classList.contains(
+                        "open"
+                    )
+                ) {
+
+                    closeConcertoiAI();
+
+                }
+
+
+                if (
+                    event.key === "Escape" &&
+                    composerModal.classList.contains(
+                        "open"
+                    )
+                ) {
+
+                    composerModal.classList.remove(
+                        "open"
+                    );
+
+                }
+
+            }
+        );
+
+    </script>
 
 </body>
 

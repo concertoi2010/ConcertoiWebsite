@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>Contact — Concertoi</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
+    <link rel="shortcut icon" href="Images/favicon.ico?v=2">
+
+
+</head>
+
+<body>
+
+    <header class="navbar">
+
+
+        <a class="brand" href="index.html">
+            <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
+            <span>Concertoi</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="sheetmusic.html">Sheet Music</a>
+            <a href="contact.html" class="active">Contact</a>
+        </nav>
+
+
+    </header>
+
+    <main class="contact-page">
+
+
+        <!-- HERO -->
+
+        <section class="contact-hero">
+
+            <div class="contact-hero-notes">
+                ♫
+            </div>
+
+            <p class="eyebrow">Get In Touch</p>
+
+            <h1>
+                Let's Talk
+                <span>Music.</span>
+            </h1>
+
+            <p>
+                Have a question about sheet music, found an issue,
+                or just want to get in touch? Send us a message.
+            </p>
+
+        </section>
+
+
+        <!-- CONTACT SECTION -->
+
+        <section class="contact-section">
+
+            <!-- FORM -->
+
+            <div class="contact-form-card">
+
+                <div class="contact-form-top">
+
+                    <div>
+                        <p class="eyebrow">Contact Concertoi</p>
+                        <h2>Send a message</h2>
+                    </div>
+
+                    <div class="contact-form-icon">
+                        ✉
+                    </div>
+
+                </div>
+
+
+                <form id="contactForm" class="modern-contact-form" action="https://api.web3forms.com/submit"
+                    method="POST">
+
+                    <input type="hidden" name="access_key" value="b4c24a29-98eb-4347-a15d-17f092c7cc99">
+
+                    <input type="hidden" name="subject" value="New Concertoi Website Message">
+
+                    <input type="checkbox" name="botcheck" style="display:none;">
+
+
+                    <!-- Name + Email -->
+
+                    <div class="contact-input-row">
+
+                        <div class="contact-field">
+
+                            <label for="name">
+                                Name
+                            </label>
+
+                            <input type="text" id="name" name="name" placeholder="Your name" required>
+
+                        </div>
+
+
+                        <div class="contact-field">
+
+                            <label for="email">
+                                Email
+                            </label>
+
+                            <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Topic -->
+
+                    <div class="contact-field">
+
+                        <label for="topic">
+                            What is this about?
+                        </label>
+
+                        <select id="topic" name="topic" required>
+
+                            <option value="" disabled selected>
+                                Select a topic
+                            </option>
+
+                            <option value="Sheet Music">
+                                Sheet Music
+                            </option>
+
+                            <option value="Website">
+                                Website
+                            </option>
+
+                            <option value="Bug / Problem">
+                                Bug / Problem
+                            </option>
+
+                            <option value="General Question">
+                                General Question
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Message -->
+
+                    <div class="contact-field">
+
+                        <label for="message">
+                            Message
+                        </label>
+
+                        <textarea id="message" name="message" placeholder="Write your message here..."
+                            required></textarea>
+
+                    </div>
+
+
+                    <!-- Send -->
+
+                    <button type="submit" class="contact-send" id="sendButton">
+
+                        <span id="sendText">
+                            Send Message
+                        </span>
+
+                        <span id="sendArrow">
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- SIDE CARDS -->
+
+            <div class="contact-side">
+
+                <a href="mailto:concertoi2010@gmail.com" class="contact-side-card">
+
+                    <div class="side-card-icon">
+                        ✉
+                    </div>
+
+                    <div>
+
+                        <span>EMAIL</span>
+
+                        <h3>
+                            concertoi2010@gmail.com
+                        </h3>
+
+                        <p>
+                            Send us an email directly.
+                        </p>
+
+                    </div>
+
+                    <strong>
+                        ↗
+                    </strong>
+
+                </a>
+
+
+                <a href="https://www.youtube.com/@Concertoi" target="_blank" rel="noopener noreferrer"
+                    class="contact-side-card">
+
+                    <div class="side-card-icon">
+                        ▶
+                    </div>
+
+                    <div>
+
+                        <span>YOUTUBE</span>
+
+                        <h3>
+                            @Concertoi
+                        </h3>
+
+                        <p>
+                            Follow Concertoi for updates and music.
+                        </p>
+
+                    </div>
+
+                    <strong>
+                        ↗
+                    </strong>
+
+                </a>
+
+
+                <div class="contact-quick-card">
+
+                    <div class="quick-number">
+                        ?
+                    </div>
+
+                    <div>
+
+                        <span>QUICK QUESTION?</span>
+
+                        <h3>
+                            Need help with sheet music?
+                        </h3>
+
+                        <p>
+                            Tell us what you're looking for
+                            and we'll do our best to help.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FAQ -->
+
+        <section class="contact-faq">
+
+            <div class="faq-heading">
+
+                <p class="eyebrow">
+                    FAQ
+                </p>
+
+                <h2>
+                    Before you<br>
+                    <span>message us.</span>
+                </h2>
+
+                <p>
+                    A few quick answers to common questions.
+                </p>
+
+            </div>
+
+
+            <div class="faq-list">
+
+                <details>
+
+                    <summary>
+                        Can I request a piece of sheet music?
+                        <span>+</span>
+                    </summary>
+
+                    <p>
+                        Absolutely! Send us a message with the
+                        piece you're looking for and we'll see
+                        what we can do.
+                    </p>
+
+                </details>
+
+
+                <details>
+
+                    <summary>
+                        I found a problem with a PDF.
+                        <span>+</span>
+                    </summary>
+
+                    <p>
+                        Let us know which piece is affected and
+                        describe the problem. We'll take a look.
+                    </p>
+
+                </details>
+
+
+                <details>
+
+                    <summary>
+                        How quickly will I get a reply?
+                        <span>+</span>
+                    </summary>
+
+                    <p>
+                        We'll get back to you as soon as we can.
+                        Response times may vary depending on the
+                        number of messages we receive.
+                    </p>
+
+                </details>
+
+            </div>
+
+        </section>
+
+
+        <!-- FINAL CTA -->
+
+        <section class="contact-final">
+
+            <p class="eyebrow">
+                Keep Playing
+            </p>
+
+            <h2>
+                Music is better
+                <span>shared.</span>
+            </h2>
+
+            <p>
+                Explore the Concertoi sheet music collection.
+            </p>
+
+            <a href="sheetmusic.html" class="contact-final-button">
+                Explore Sheet Music →
+            </a>
+
+        </section>
+
+
+    </main>
+
+    <!-- SUCCESS POPUP -->
+
+    <div id="successPopup" class="contact-popup" aria-hidden="true">
+
+
+        <div class="contact-popup-box">
+
+            <button type="button" class="contact-popup-close" id="closePopup" aria-label="Close">
+                ×
+            </button>
+
+            <div class="contact-popup-icon">
+                ✓
+            </div>
+
+            <p class="eyebrow">
+                Message Sent
+            </p>
+
+            <h2>
+                Thanks for reaching out!
+            </h2>
+
+            <p>
+                Your message has been sent successfully.
+                We'll get back to you as soon as possible.
+            </p>
+
+            <button type="button" class="contact-popup-button" id="popupDone">
+                Done
+            </button>
+
+        </div>
+
+
+    </div>
+
+    <!-- =========================================
+     CONCERTOI AI BUTTON
+========================================== -->
+
+    <button type="button" class="concertoi-ai-button" id="concertoiAIButton" aria-label="Open Concertoi AI"
+        aria-expanded="false">
+
+
+        <span class="concertoi-ai-icon">
+            ✦
+        </span>
+
+        <span>
+            Ask Concertoi AI
+        </span>
+
+
+    </button>
+
+    <!-- =========================================
+     CONCERTOI AI CHAT
+========================================== -->
+
+    <div class="concertoi-ai" id="concertoiAI" aria-hidden="true">
+
+
+        <div class="concertoi-ai-header">
+
+            <div class="concertoi-ai-title">
+
+                <div class="concertoi-ai-avatar">
+                    ✦
+                </div>
+
+                <div>
+
+                    <strong>
+                        Concertoi AI
+                    </strong>
+
+                    <span>
+                        Your music assistant
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button type="button" class="concertoi-ai-close" id="concertoiAIClose" aria-label="Close Concertoi AI">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div class="concertoi-ai-messages" id="concertoiAIMessages">
+
+            <div class="concertoi-ai-message ai">
+
+                <div class="concertoi-ai-message-avatar">
+                    ✦
+                </div>
+
+                <div class="concertoi-ai-bubble">
+
+                    Hey! 👋 I'm Concertoi AI.
+                    Ask me anything about Concertoi,
+                    sheet music, or finding your next piece!
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <form class="concertoi-ai-form" id="concertoiAIForm">
+
+            <input type="text" id="concertoiAIInput" placeholder="Ask Concertoi AI..." autocomplete="off"
+                maxlength="500" required>
+
+            <button type="submit" id="concertoiAISend" aria-label="Send message">
+
+                →
+
+            </button>
+
+        </form>
+
+
+    </div>
+
+    <!-- FOOTER -->
+
+    <footer class="site-footer">
+
+
+        <div class="footer-inner">
+
+            <p>
+                © 2026 Concertoi. All rights reserved.
+            </p>
+
+            <p>
+                <a href="mailto:concertoi2010@gmail.com">
+                    concertoi2010@gmail.com
+                </a>
+            </p>
+
+        </div>
+
+
+    </footer>
+
+    <script>
+
+        /* =========================================
+           CONTACT FORM
+        ========================================= */
+
+        const contactForm =
+            document.getElementById("contactForm");
+
+        const successPopup =
+            document.getElementById("successPopup");
+
+        const closePopup =
+            document.getElementById("closePopup");
+
+        const popupDone =
+            document.getElementById("popupDone");
+
+        const sendButton =
+            document.getElementById("sendButton");
+
+        const sendText =
+            document.getElementById("sendText");
+
+        const sendArrow =
+            document.getElementById("sendArrow");
+
+
+        function showSuccessPopup() {
+
+            successPopup.classList.add("open");
+
+            successPopup.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            document.body.classList.add("modal-open");
+
+        }
+
+
+        function hideSuccessPopup() {
+
+            successPopup.classList.remove("open");
+
+            successPopup.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            document.body.classList.remove("modal-open");
+
+        }
+
+
+        contactForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                sendButton.disabled = true;
+
+                sendText.textContent =
+                    "Sending...";
+
+                sendArrow.textContent =
+                    "⋯";
+
+                const formData =
+                    new FormData(contactForm);
+
+                try {
+
+                    const response =
+                        await fetch(
+                            contactForm.action,
+                            {
+                                method: "POST",
+                                body: formData,
+
+                                headers: {
+                                    "Accept":
+                                        "application/json"
+                                }
+                            }
+                        );
+
+                    const result =
+                        await response.json();
+
+                    if (
+                        response.ok &&
+                        result.success
+                    ) {
+
+                        contactForm.reset();
+
+                        sendText.textContent =
+                            "Send Message";
+
+                        sendArrow.textContent =
+                            "→";
+
+                        sendButton.disabled =
+                            false;
+
+                        showSuccessPopup();
+
+                    } else {
+
+                        throw new Error(
+                            result.message ||
+                            "Message failed to send."
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Web3Forms error:",
+                        error
+                    );
+
+                    sendText.textContent =
+                        "Try Again";
+
+                    sendArrow.textContent =
+                        "↻";
+
+                    sendButton.disabled =
+                        false;
+
+                    alert(
+                        "Sorry, your message could not be sent. Please try again."
+                    );
+
+                }
+
+            }
+        );
+
+
+        closePopup.addEventListener(
+            "click",
+            hideSuccessPopup
+        );
+
+        popupDone.addEventListener(
+            "click",
+            hideSuccessPopup
+        );
+
+
+        successPopup.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === successPopup) {
+                    hideSuccessPopup();
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           CONCERTOI AI
+        ========================================= */
+
+        const concertoiAIButton =
+            document.getElementById("concertoiAIButton");
+
+        const concertoiAI =
+            document.getElementById("concertoiAI");
+
+        const concertoiAIClose =
+            document.getElementById("concertoiAIClose");
+
+        const concertoiAIForm =
+            document.getElementById("concertoiAIForm");
+
+        const concertoiAIInput =
+            document.getElementById("concertoiAIInput");
+
+        const concertoiAIMessages =
+            document.getElementById("concertoiAIMessages");
+
+        const concertoiAISend =
+            document.getElementById("concertoiAISend");
+
+
+        /* =========================================
+           OPEN AI
+        ========================================= */
+
+        function openConcertoiAI() {
+
+            concertoiAI.classList.add("open");
+
+            concertoiAI.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            concertoiAIButton.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            setTimeout(() => {
+
+                concertoiAIInput.focus();
+
+            }, 250);
+
+        }
+
+
+        /* =========================================
+           CLOSE AI
+        ========================================= */
+
+        function closeConcertoiAI() {
+
+            concertoiAI.classList.remove("open");
+
+            concertoiAI.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            concertoiAIButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+
+        /* =========================================
+           ADD AI MESSAGE
+        ========================================= */
+
+        function addAIMessage(message, type) {
+
+            const messageWrapper =
+                document.createElement("div");
+
+            messageWrapper.className =
+                `concertoi-ai-message ${type}`;
+
+
+            if (type === "ai") {
+
+                const avatar =
+                    document.createElement("div");
+
+                avatar.className =
+                    "concertoi-ai-message-avatar";
+
+                avatar.textContent =
+                    "✦";
+
+                messageWrapper.appendChild(
+                    avatar
+                );
+
+            }
+
+
+            const bubble =
+                document.createElement("div");
+
+            bubble.className =
+                "concertoi-ai-bubble";
+
+            bubble.textContent =
+                message;
+
+            messageWrapper.appendChild(
+                bubble
+            );
+
+
+            concertoiAIMessages.appendChild(
+                messageWrapper
+            );
+
+
+            concertoiAIMessages.scrollTop =
+                concertoiAIMessages.scrollHeight;
+
+        }
+
+
+        /* =========================================
+           TYPING INDICATOR
+        ========================================= */
+
+        function addTypingMessage() {
+
+            const wrapper =
+                document.createElement("div");
+
+            wrapper.className =
+                "concertoi-ai-message ai";
+
+            wrapper.id =
+                "concertoiAITyping";
+
+
+            const avatar =
+                document.createElement("div");
+
+            avatar.className =
+                "concertoi-ai-message-avatar";
+
+            avatar.textContent =
+                "✦";
+
+
+            const bubble =
+                document.createElement("div");
+
+            bubble.className =
+                "concertoi-ai-bubble typing";
+
+            bubble.innerHTML =
+                "<span></span><span></span><span></span>";
+
+
+            wrapper.appendChild(avatar);
+
+            wrapper.appendChild(bubble);
+
+
+            concertoiAIMessages.appendChild(
+                wrapper
+            );
+
+
+            concertoiAIMessages.scrollTop =
+                concertoiAIMessages.scrollHeight;
+
+        }
+
+
+        /* =========================================
+           REMOVE TYPING
+        ========================================= */
+
+        function removeTypingMessage() {
+
+            const typing =
+                document.getElementById(
+                    "concertoiAITyping"
+                );
+
+            if (typing) {
+
+                typing.remove();
+
+            }
+
+        }
+
+
+        /* =========================================
+           NAVIGATION
+        ========================================= */
+
+        function navigateConcertoi(destination, searchTerm) {
+
+            const pages = {
+
+                home: "index.html",
+
+                about: "about.html",
+
+                sheetmusic: "sheetmusic.html",
+
+                contact: "contact.html"
+
+            };
+
+
+            if (!destination) {
+
+                return;
+
+            }
+
+
+            let page =
+                String(destination)
+                    .toLowerCase()
+                    .trim();
+
+
+            /*
+               Remove .html if supplied.
+            */
+
+            if (page.endsWith(".html")) {
+
+                page =
+                    page.slice(0, -5);
+
+            }
+
+
+            /*
+               Remove query string from the page name.
+            */
+
+            if (page.includes("?")) {
+
+                page =
+                    page.split("?")[0];
+
+            }
+
+
+            /*
+               Only allow Concertoi pages.
+            */
+
+            if (!pages[page]) {
+
+                return;
+
+            }
+
+
+            /*
+               SHEET MUSIC SEARCH
+               
+               If the AI returns a search term,
+               send it to sheetmusic.html.
+            */
+
+            if (
+                page === "sheetmusic" &&
+                searchTerm
+            ) {
+
+                const encodedSearch =
+                    encodeURIComponent(
+                        String(searchTerm).trim()
+                    );
+
+                window.location.href =
+                    `sheetmusic.html?search=${encodedSearch}`;
+
+                return;
+
+            }
+
+
+            window.location.href =
+                pages[page];
+
+        }
+
+
+        /* =========================================
+           HANDLE AI RESPONSE
+        ========================================= */
+
+        function handleAIResponse(data) {
+
+            removeTypingMessage();
+
+
+            /*
+               Show the AI's response first.
+            */
+
+            addAIMessage(
+                data.response ||
+                "Sorry, I couldn't think of a response.",
+                "ai"
+            );
+
+
+            /*
+               Possible navigation values:
+        
+               navigate: "sheetmusic"
+        
+               redirect: "sheetmusic.html"
+            */
+
+            const destination =
+                data.navigate ||
+                data.redirect;
+
+
+            /*
+               Possible search values:
+        
+               search: "My Heart Will Go On"
+        
+               searchTerm: "My Heart Will Go On"
+        
+               query: "My Heart Will Go On"
+            */
+
+            const searchTerm =
+                data.search ||
+                data.searchTerm ||
+                data.query ||
+                data.song;
+
+
+            if (destination) {
+
+                setTimeout(() => {
+
+                    navigateConcertoi(
+                        destination,
+                        searchTerm
+                    );
+
+                }, 700);
+
+                return;
+
+            }
+
+
+            /*
+               If the AI gives us a search term
+               but forgets to give "navigate",
+               automatically go to Sheet Music.
+            */
+
+            if (searchTerm) {
+
+                setTimeout(() => {
+
+                    navigateConcertoi(
+                        "sheetmusic",
+                        searchTerm
+                    );
+
+                }, 700);
+
+            }
+
+        }
+
+
+        /* =========================================
+           AI BUTTONS
+        ========================================= */
+
+        concertoiAIButton.addEventListener(
+            "click",
+            openConcertoiAI
+        );
+
+
+        concertoiAIClose.addEventListener(
+            "click",
+            closeConcertoiAI
+        );
+
+
+        /* =========================================
+           SEND AI MESSAGE
+        ========================================= */
+
+        concertoiAIForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const message =
+                    concertoiAIInput.value.trim();
+
+
+                if (!message) {
+
+                    return;
+
+                }
+
+
+                /*
+                   Add user's message.
+                */
+
+                addAIMessage(
+                    message,
+                    "user"
+                );
+
+
+                /*
+                   CLEAR INPUT IMMEDIATELY.
+                */
+
+                concertoiAIInput.value =
+                    "";
+
+
+                /*
+                   Disable controls while AI thinks.
+                */
+
+                concertoiAISend.disabled =
+                    true;
+
+                concertoiAIInput.disabled =
+                    true;
+
+
+                addTypingMessage();
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/api/chat",
+                            {
+
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body: JSON.stringify({
+                                    message: message
+                                })
+
+                            }
+                        );
+
+
+                    const contentType =
+                        response.headers.get(
+                            "content-type"
+                        ) || "";
+
+
+                    if (
+                        !contentType.includes(
+                            "application/json"
+                        )
+                    ) {
+
+                        throw new Error(
+                            "The server returned an invalid response."
+                        );
+
+                    }
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.error ||
+                            "Something went wrong."
+                        );
+
+                    }
+
+
+                    handleAIResponse(
+                        data
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Concertoi AI error:",
+                        error
+                    );
+
+
+                    removeTypingMessage();
+
+
+                    addAIMessage(
+                        "Sorry! I couldn't connect to Concertoi AI right now. Please try again in a moment.",
+                        "ai"
+                    );
+
+                }
+
+
+                concertoiAISend.disabled =
+                    false;
+
+                concertoiAIInput.disabled =
+                    false;
+
+                concertoiAIInput.focus();
+
+            }
+        );
+
+
+        /* =========================================
+           ESCAPE KEY
+        ========================================= */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Escape" &&
+                    concertoiAI.classList.contains("open")
+                ) {
+
+                    closeConcertoiAI();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
