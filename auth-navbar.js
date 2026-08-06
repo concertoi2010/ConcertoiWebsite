@@ -21,13 +21,29 @@ const concertoiSupabase =
         SUPABASE_PUBLISHABLE_KEY
     );
 
+/*
+ * Make the shared Supabase client available
+ * to other scripts on the page.
+ *
+ * This allows sheetmusic.html to use:
+ *
+ * window.concertoiSupabase.auth.getSession()
+ */
+
+window.concertoiSupabase =
+    concertoiSupabase;
+
 
 /* =========================================
    FIND AUTH LINK
 ========================================= */
 
 function getAuthLink() {
-    return document.getElementById("authLink");
+
+    return document.getElementById(
+        "authLink"
+    );
+
 }
 
 
@@ -45,6 +61,7 @@ function getUserAvatar(user) {
         metadata.picture ||
         null
     );
+
 }
 
 
@@ -57,7 +74,11 @@ function getCustomAvatarPath(user) {
     const metadata =
         user.user_metadata || {};
 
-    return metadata.avatar_path || null;
+    return (
+        metadata.avatar_path ||
+        null
+    );
+
 }
 
 
@@ -78,7 +99,11 @@ function getAvatarUrl(path) {
             .from(AVATAR_BUCKET)
             .getPublicUrl(path);
 
-    return data?.publicUrl || null;
+    return (
+        data?.publicUrl ||
+        null
+    );
+
 }
 
 
@@ -103,18 +128,24 @@ function createAvatar(user) {
         getUserAvatar(user);
 
 
-    let imageUrl = null;
+    let imageUrl =
+        null;
 
 
     if (customPath) {
 
         imageUrl =
-            getAvatarUrl(customPath);
+            getAvatarUrl(
+                customPath
+            );
 
     }
 
 
-    if (!imageUrl && googleAvatar) {
+    if (
+        !imageUrl &&
+        googleAvatar
+    ) {
 
         imageUrl =
             googleAvatar;
@@ -138,6 +169,7 @@ function createAvatar(user) {
         image.alt =
             "Profile avatar";
 
+
         image.onerror =
             function () {
 
@@ -149,7 +181,9 @@ function createAvatar(user) {
             };
 
 
-        avatar.appendChild(image);
+        avatar.appendChild(
+            image
+        );
 
     } else {
 
@@ -183,7 +217,9 @@ function closeAuthDropdown() {
 
     if (dropdown) {
 
-        dropdown.classList.remove("open");
+        dropdown.classList.remove(
+            "open"
+        );
 
     }
 
@@ -327,7 +363,9 @@ async function updateConcertoiNavbar() {
 
 
         const avatar =
-            createAvatar(user);
+            createAvatar(
+                user
+            );
 
 
         const nameSpan =
@@ -455,6 +493,7 @@ async function updateConcertoiNavbar() {
 
                 event.preventDefault();
 
+
                 const isOpen =
                     dropdown.classList.contains(
                         "open"
@@ -514,8 +553,12 @@ document.addEventListener(
         if (
             dropdown &&
             authLink &&
-            !authLink.contains(event.target) &&
-            !dropdown.contains(event.target)
+            !authLink.contains(
+                event.target
+            ) &&
+            !dropdown.contains(
+                event.target
+            )
         ) {
 
             closeAuthDropdown();
