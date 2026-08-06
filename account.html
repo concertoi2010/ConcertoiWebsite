@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Account — Concertoi</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
+    <link rel="shortcut icon" href="Images/favicon.ico?v=2">
+
+    <style>
+        .account-page {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+        }
+
+        .account-card {
+            width: 100%;
+            max-width: 600px;
+            padding: 45px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        .account-logo {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 20px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .account-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .account-eyebrow {
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .account-card h1 {
+            margin: 0 0 10px;
+            font-size: 38px;
+        }
+
+        .account-subtitle {
+            margin-bottom: 35px;
+            opacity: 0.7;
+        }
+
+        .account-details {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .account-detail {
+            padding: 18px 20px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .account-detail-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.55;
+        }
+
+        .account-detail-value {
+            display: block;
+            font-size: 16px;
+            word-break: break-word;
+        }
+
+        .logout-button {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            background: #fbff00;
+            color: #000;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .logout-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .logout-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .account-message {
+            min-height: 22px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .account-message.error {
+            color: #ff6b6b;
+        }
+
+        .account-message.success {
+            color: #8cff8c;
+        }
+
+        .loading {
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+
+            .account-page {
+                padding: 35px 15px;
+            }
+
+            .account-card {
+                padding: 30px 20px;
+            }
+
+            .account-card h1 {
+                font-size: 30px;
+            }
+
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <header class="navbar">
+
+        <a class="brand" href="index.html">
+
+            <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
+
+            <span>Concertoi</span>
+
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="about.html">
+                About
+            </a>
+
+            <a href="sheetmusic.html">
+                Sheet Music
+            </a>
+
+            <a href="contact.html">
+                Contact
+            </a>
+
+            <a href="account.html" class="active">
+                Account
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ACCOUNT -->
+
+    <main class="account-page">
+
+        <section class="account-card" id="accountCard">
+
+            <div class="account-logo">
+
+                <img src="Images/favicon.ico" alt="Concertoi">
+
+            </div>
+
+            <p class="account-eyebrow">
+                Concertoi Account
+            </p>
+
+            <h1 id="welcomeText">
+                Loading...
+            </h1>
+
+            <p class="account-subtitle">
+                Manage your Concertoi account.
+            </p>
+
+
+            <div class="account-details">
+
+                <div class="account-detail">
+
+                    <span class="account-detail-label">
+                        Name
+                    </span>
+
+                    <span class="account-detail-value" id="accountName">
+                        Loading...
+                    </span>
+
+                </div>
+
+
+                <div class="account-detail">
+
+                    <span class="account-detail-label">
+                        Email
+                    </span>
+
+                    <span class="account-detail-value" id="accountEmail">
+                        Loading...
+                    </span>
+
+                </div>
+
+
+                <div class="account-detail">
+
+                    <span class="account-detail-label">
+                        Sign-in method
+                    </span>
+
+                    <span class="account-detail-value" id="accountProvider">
+                        Loading...
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button type="button" class="logout-button" id="logoutButton">
+                Log Out
+            </button>
+
+            <p class="account-message" id="accountMessage"></p>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+            <p>
+                © 2026 Concertoi. All rights reserved.
+            </p>
+
+            <p>
+                <a href="mailto:concertoi2010@gmail.com">
+                    concertoi2010@gmail.com
+                </a>
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        /* =========================================
+           SUPABASE CONFIGURATION
+        ========================================= */
+
+        const SUPABASE_URL =
+            "https://rdgoryrmqyqmaigvfjay.supabase.co";
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_UYh6EWbtsiTtVSD4KvqEqA_-IbVA-c6";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+
+        /* =========================================
+           ELEMENTS
+        ========================================= */
+
+        const welcomeText =
+            document.getElementById("welcomeText");
+
+        const accountName =
+            document.getElementById("accountName");
+
+        const accountEmail =
+            document.getElementById("accountEmail");
+
+        const accountProvider =
+            document.getElementById("accountProvider");
+
+        const logoutButton =
+            document.getElementById("logoutButton");
+
+        const accountMessage =
+            document.getElementById("accountMessage");
+
+
+        /* =========================================
+           LOAD ACCOUNT
+        ========================================= */
+
+        async function loadAccount() {
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient.auth.getUser();
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                const user =
+                    data.user;
+
+
+                /*
+                 * No logged-in user.
+                 */
+
+                if (!user) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                /* =====================================
+                   NAME
+                ===================================== */
+
+                const metadata =
+                    user.user_metadata || {};
+
+
+                const name =
+                    metadata.full_name ||
+                    metadata.name ||
+                    "Concertoi User";
+
+
+                welcomeText.textContent =
+                    `Welcome, ${name}!`;
+
+                accountName.textContent =
+                    name;
+
+
+                /* =====================================
+                   EMAIL
+                ===================================== */
+
+                accountEmail.textContent =
+                    user.email || "No email available";
+
+
+                /* =====================================
+                   SIGN-IN METHOD
+                ===================================== */
+
+                const providers =
+                    user.app_metadata?.providers || [];
+
+
+                if (
+                    providers.includes("google")
+                ) {
+
+                    accountProvider.textContent =
+                        "Google";
+
+                } else {
+
+                    accountProvider.textContent =
+                        "Email and password";
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Account loading error:",
+                    error
+                );
+
+
+                accountMessage.textContent =
+                    "Unable to load your account.";
+
+                accountMessage.className =
+                    "account-message error";
+
+            }
+
+        }
+
+
+        /* =========================================
+           LOG OUT
+        ========================================= */
+
+        logoutButton.addEventListener(
+            "click",
+            async function () {
+
+                logoutButton.disabled =
+                    true;
+
+                logoutButton.textContent =
+                    "Logging out...";
+
+
+                try {
+
+                    const {
+                        error
+                    } = await supabaseClient.auth.signOut();
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    accountMessage.textContent =
+                        "Logged out successfully.";
+
+                    accountMessage.className =
+                        "account-message success";
+
+
+                    setTimeout(() => {
+
+                        window.location.href =
+                            "index.html";
+
+                    }, 500);
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Logout error:",
+                        error
+                    );
+
+
+                    accountMessage.textContent =
+                        "Could not log out. Please try again.";
+
+                    accountMessage.className =
+                        "account-message error";
+
+
+                    logoutButton.disabled =
+                        false;
+
+                    logoutButton.textContent =
+                        "Log Out";
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           START
+        ========================================= */
+
+        loadAccount();
+
+    </script>
+
+
+</body>
+
+</html>
