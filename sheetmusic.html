@@ -4472,7 +4472,7 @@
                     data,
                     error
                 } =
-                    await supabaseClient.auth.getSession();
+                    await window.concertoiSupabase.auth.getSession();
 
 
                 if (error) {
