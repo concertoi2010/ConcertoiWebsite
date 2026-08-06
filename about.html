@@ -4,7 +4,7 @@
 
 <head>
 
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -12,20 +12,23 @@
 
     <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
     <link rel="stylesheet" href="style.css">
-    
+
 
 </head>
 
 <body>
 
-    
+
     <!-- NAVBAR -->
 
     <header class="navbar">
 
         <a class="brand" href="index.html">
+
             <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
+
             <span>Concertoi</span>
+
         </a>
 
         <nav class="nav-links">
@@ -46,7 +49,8 @@
                 Contact
             </a>
 
-            <!-- AUTH LINK -->
+            <!-- SHARED AUTH LINK -->
+
             <a href="login.html" id="authLink">
                 Login
             </a>
@@ -59,6 +63,7 @@
     <!-- MAIN -->
 
     <main>
+
 
         <!-- ABOUT HERO -->
 
@@ -482,9 +487,11 @@
             </p>
 
             <p>
+
                 <a href="mailto:concertoi2010@gmail.com">
                     concertoi2010@gmail.com
                 </a>
+
             </p>
 
         </div>
@@ -492,112 +499,17 @@
     </footer>
 
 
-    <!-- SUPABASE -->
+    <!-- SUPABASE LIBRARY -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
+    <!-- SHARED AUTH NAVBAR -->
+
+    <script src="auth-navbar.js"></script>
+
+
     <script>
-
-        /* =========================================
-           SUPABASE
-        ========================================= */
-
-        const SUPABASE_URL =
-            "https://rdgoryrmqyqmaigvfjay.supabase.co";
-
-        const SUPABASE_PUBLISHABLE_KEY =
-            "sb_publishable_UYh6EWbtsiTtVSD4KvqEqA_-IbVA-c6";
-
-
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_PUBLISHABLE_KEY
-            );
-
-
-        /* =========================================
-           NAVBAR LOGIN / ACCOUNT
-        ========================================= */
-
-        const authLink =
-            document.getElementById("authLink");
-
-
-        async function updateNavbarAuth() {
-
-            if (!authLink) {
-                return;
-            }
-
-
-            try {
-
-                const {
-                    data,
-                    error
-                } = await supabaseClient.auth.getSession();
-
-
-                if (error) {
-
-                    console.error(
-                        "Could not check login status:",
-                        error
-                    );
-
-                    return;
-
-                }
-
-
-                if (data.session) {
-
-                    authLink.textContent =
-                        "Account";
-
-                    authLink.href =
-                        "account.html";
-
-                } else {
-
-                    authLink.textContent =
-                        "Login";
-
-                    authLink.href =
-                        "login.html";
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "Auth check error:",
-                    error
-                );
-
-            }
-
-        }
-
-
-        updateNavbarAuth();
-
-
-        /*
-         * Update immediately if the
-         * authentication state changes.
-         */
-
-        supabaseClient.auth.onAuthStateChange(
-            function () {
-
-                updateNavbarAuth();
-
-            }
-        );
-
 
         /* =========================================
            COMPOSER POPUP
@@ -1294,7 +1206,7 @@
         );
 
     </script>
-    
+
 
 </body>
 

@@ -4356,6 +4356,7 @@
 
     </script>
 
+    html
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -4380,26 +4381,56 @@
 
         async function updateNavbarAuth() {
 
-            const {
-                data
-            } = await supabaseClient.auth.getSession();
+            if (!authLink) {
+                return;
+            }
 
 
-            if (data.session) {
+            try {
 
-                authLink.textContent =
-                    "Account";
+                const {
+                    data,
+                    error
+                } = await supabaseClient.auth.getSession();
 
-                authLink.href =
-                    "account.html";
 
-            } else {
+                if (error) {
 
-                authLink.textContent =
-                    "Login";
+                    console.error(
+                        "Could not check login status:",
+                        error
+                    );
 
-                authLink.href =
-                    "login.html";
+                    return;
+
+                }
+
+
+                if (data.session) {
+
+                    authLink.textContent =
+                        "Account";
+
+                    authLink.href =
+                        "account.html";
+
+                } else {
+
+                    authLink.textContent =
+                        "Login";
+
+                    authLink.href =
+                        "login.html";
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Authentication error:",
+                    error
+                );
 
             }
 
@@ -4408,6 +4439,14 @@
 
         updateNavbarAuth();
 
+
+        supabaseClient.auth.onAuthStateChange(
+            function () {
+
+                updateNavbarAuth();
+
+            }
+        );
 
     </script>
 

@@ -4,7 +4,7 @@
 
 <head>
 
-  <meta name="google-site-verification" content="AC9ZemD9n8HOuVP6ROOyadataNn_6bIL6WBYGNxTPmY" />
+  <meta name="google-site-verification" content="AC9ZemD9n8HOuVP6ROOyadataNn_6bIL6WBYGNxTPmY">
 
   <meta charset="UTF-8">
 
@@ -20,9 +20,7 @@
 
 </head>
 
-
 <body>
-
 
   <!-- ================================
        NAVBAR
@@ -30,6 +28,7 @@
 
   <header class="navbar">
 
+    ```
     <a class="brand" href="index.html">
 
       <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
@@ -57,17 +56,16 @@
         Contact
       </a>
 
-      <!-- This changes automatically when logged in -->
+      <!-- Changes automatically to Account when logged in -->
 
       <a href="login.html" id="authLink">
         Login
       </a>
 
     </nav>
+    ```
 
   </header>
-
-
 
   <!-- ================================
        MAIN
@@ -75,7 +73,7 @@
 
   <main>
 
-
+    ```
     <section class="hero">
 
       <div class="hero-copy">
@@ -99,8 +97,8 @@
 
 
         <!-- ================================
-             FEATURED SHEET MUSIC
-        ================================= -->
+         FEATURED SHEET MUSIC
+    ================================= -->
 
         <section class="featured">
 
@@ -243,8 +241,8 @@
 
 
         <!-- ================================
-             SHEET MUSIC CTA
-        ================================= -->
+         SHEET MUSIC CTA
+    ================================= -->
 
         <section class="sheet-cta">
 
@@ -277,8 +275,8 @@
 
 
     <!-- ================================
-         CARDS
-    ================================= -->
+     CARDS
+================================= -->
 
     <section class="cards">
 
@@ -328,11 +326,9 @@
 
 
     </section>
-
+    ```
 
   </main>
-
-
 
   <!-- ================================
        CONCERTOI AI BUTTON
@@ -341,6 +337,7 @@
   <button type="button" class="concertoi-ai-button" id="concertoiAIButton" aria-label="Open Concertoi AI"
     aria-expanded="false">
 
+    ```
     <span class="concertoi-ai-icon">
       ✦
     </span>
@@ -348,10 +345,9 @@
     <span>
       Ask Concertoi AI
     </span>
+    ```
 
   </button>
-
-
 
   <!-- ================================
        CONCERTOI AI
@@ -359,7 +355,7 @@
 
   <div class="concertoi-ai" id="concertoiAI" aria-hidden="true">
 
-
+    ```
     <div class="concertoi-ai-header">
 
 
@@ -436,11 +432,9 @@
 
 
     </form>
-
+    ```
 
   </div>
-
-
 
   <!-- ================================
        FOOTER
@@ -448,7 +442,7 @@
 
   <footer class="site-footer">
 
-
+    ```
     <div class="footer-inner">
 
 
@@ -467,11 +461,9 @@
 
 
     </div>
-
+    ```
 
   </footer>
-
-
 
   <!-- ================================
        SUPABASE
@@ -479,14 +471,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-
-  <!-- ================================
-       CONCERTOI JAVASCRIPT
-  ================================= -->
-
   <script>
-
 
     /* =========================================
        SUPABASE SETUP
@@ -518,10 +503,15 @@
 
 
     /* =========================================
-       CHECK LOGIN SESSION
+       UPDATE NAVBAR
     ========================================= */
 
-    async function updateAuthUI() {
+    async function updateNavbarAuth() {
+
+      if (!authLink) {
+        return;
+      }
+
 
       try {
 
@@ -534,7 +524,7 @@
         if (error) {
 
           console.error(
-            "Session error:",
+            "Could not check login status:",
             error
           );
 
@@ -545,22 +535,13 @@
 
         if (data.session) {
 
-          /*
-           * User is logged in.
-           */
-
           authLink.textContent =
             "Account";
 
           authLink.href =
             "account.html";
 
-
         } else {
-
-          /*
-           * User is logged out.
-           */
 
           authLink.textContent =
             "Login";
@@ -569,7 +550,6 @@
             "login.html";
 
         }
-
 
       } catch (error) {
 
@@ -585,71 +565,13 @@
 
 
     /* =========================================
-       CLEAN SUPABASE AUTH URL
-    ========================================= */
-
-    async function cleanAuthUrl() {
-
-      /*
-       * Supabase can place authentication
-       * tokens in the URL hash after email
-       * confirmation.
-       *
-       * The Supabase client reads the hash
-       * automatically.
-       *
-       * After that, remove the token from
-       * the visible URL.
-       */
-
-      if (
-        window.location.hash &&
-        window.location.hash.includes("access_token")
-      ) {
-
-        window.history.replaceState(
-          {},
-          document.title,
-          window.location.pathname +
-          window.location.search
-        );
-
-      }
-
-    }
-
-
-
-    /* =========================================
        AUTH STATE CHANGES
     ========================================= */
 
     supabaseClient.auth.onAuthStateChange(
-      function (event, session) {
+      function () {
 
-        console.log(
-          "Concertoi auth event:",
-          event
-        );
-
-
-        if (session) {
-
-          authLink.textContent =
-            "Account";
-
-          authLink.href =
-            "account.html";
-
-        } else {
-
-          authLink.textContent =
-            "Login";
-
-          authLink.href =
-            "login.html";
-
-        }
+        updateNavbarAuth();
 
       }
     );
@@ -657,12 +579,10 @@
 
 
     /* =========================================
-       START AUTH
+       START AUTH CHECK
     ========================================= */
 
-    cleanAuthUrl();
-
-    updateAuthUI();
+    updateNavbarAuth();
 
 
 
@@ -763,7 +683,6 @@
       type
     ) {
 
-
       const messageWrapper =
         document.createElement("div");
 
@@ -772,9 +691,7 @@
         `concertoi-ai-message ${type}`;
 
 
-
       if (type === "ai") {
-
 
         const avatar =
           document.createElement("div");
@@ -793,7 +710,6 @@
         );
 
       }
-
 
 
       const bubble =
@@ -831,7 +747,6 @@
 
     function addTypingMessage() {
 
-
       const wrapper =
         document.createElement("div");
 
@@ -842,7 +757,6 @@
 
       wrapper.id =
         "concertoiAITyping";
-
 
 
       const avatar =
@@ -857,7 +771,6 @@
         "✦";
 
 
-
       const bubble =
         document.createElement("div");
 
@@ -868,7 +781,6 @@
 
       bubble.innerHTML =
         "<span></span><span></span><span></span>";
-
 
 
       wrapper.appendChild(
@@ -899,7 +811,6 @@
 
     function removeTypingMessage() {
 
-
       const typing =
         document.getElementById(
           "concertoiAITyping"
@@ -925,7 +836,6 @@
       searchTerm = null
     ) {
 
-
       const pages = {
 
         home: "index.html",
@@ -939,7 +849,6 @@
       };
 
 
-
       if (!pages[page]) {
 
         return;
@@ -947,10 +856,8 @@
       }
 
 
-
       let destination =
         pages[page];
-
 
 
       if (
@@ -967,7 +874,6 @@
       }
 
 
-
       window.location.href =
         destination;
 
@@ -981,21 +887,17 @@
 
     function handleAIResponse(data) {
 
-
       const destination =
         data.navigate ||
         data.redirect;
 
 
-
       if (destination) {
-
 
         let page =
           String(destination)
             .toLowerCase()
             .trim();
-
 
 
         if (page.endsWith(".html")) {
@@ -1006,14 +908,12 @@
         }
 
 
-
         const searchTerm =
           data.search ||
           data.query ||
           data.sheet ||
           data.searchTerm ||
           null;
-
 
 
         const allowedPages = [
@@ -1029,11 +929,9 @@
         ];
 
 
-
         if (
           allowedPages.includes(page)
         ) {
-
 
           addMessage(
 
@@ -1045,18 +943,14 @@
           );
 
 
-
           setTimeout(() => {
-
 
             navigateToPage(
               page,
               searchTerm
             );
 
-
           }, 700);
-
 
 
           return;
@@ -1064,7 +958,6 @@
         }
 
       }
-
 
 
       addMessage(
@@ -1085,11 +978,8 @@
     ========================================= */
 
     concertoiAIButton.addEventListener(
-
       "click",
-
       openConcertoiAI
-
     );
 
 
@@ -1099,11 +989,8 @@
     ========================================= */
 
     concertoiAIClose.addEventListener(
-
       "click",
-
       closeConcertoiAI
-
     );
 
 
@@ -1113,19 +1000,14 @@
     ========================================= */
 
     concertoiAIForm.addEventListener(
-
       "submit",
-
       async function (event) {
-
 
         event.preventDefault();
 
 
-
         const message =
           concertoiAIInput.value.trim();
-
 
 
         if (!message) {
@@ -1135,15 +1017,14 @@
         }
 
 
-
         addMessage(
           message,
           "user"
         );
 
 
-
-        concertoiAIInput.value = "";
+        concertoiAIInput.value =
+          "";
 
 
         concertoiAISend.disabled =
@@ -1157,15 +1038,11 @@
         addTypingMessage();
 
 
-
         try {
-
 
           const response =
             await fetch(
-
               "/api/chat",
-
               {
 
                 method: "POST",
@@ -1185,9 +1062,7 @@
                 })
 
               }
-
             );
-
 
 
           const contentType =
@@ -1196,9 +1071,7 @@
             ) || "";
 
 
-
           let data;
-
 
 
           if (
@@ -1219,9 +1092,7 @@
           }
 
 
-
           removeTypingMessage();
-
 
 
           if (!response.ok) {
@@ -1236,28 +1107,20 @@
           }
 
 
-
           handleAIResponse(
             data
           );
 
 
-
         } catch (error) {
 
-
           console.error(
-
             "Concertoi AI error:",
-
             error
-
           );
 
 
-
           removeTypingMessage();
-
 
 
           addMessage(
@@ -1271,7 +1134,6 @@
         }
 
 
-
         concertoiAISend.disabled =
           false;
 
@@ -1283,7 +1145,6 @@
         concertoiAIInput.focus();
 
       }
-
     );
 
 
@@ -1293,11 +1154,8 @@
     ========================================= */
 
     document.addEventListener(
-
       "keydown",
-
       function (event) {
-
 
         if (
 
@@ -1314,12 +1172,9 @@
         }
 
       }
-
     );
 
-
   </script>
-
 
 </body>
 
