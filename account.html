@@ -134,10 +134,6 @@
             color: #8cff8c;
         }
 
-        .loading {
-            opacity: 0.7;
-        }
-
         @media (max-width: 600px) {
 
             .account-page {
@@ -204,7 +200,7 @@
 
     <main class="account-page">
 
-        <section class="account-card" id="accountCard">
+        <section class="account-card">
 
             <div class="account-logo">
 
@@ -308,7 +304,7 @@
     <script>
 
         /* =========================================
-           SUPABASE CONFIGURATION
+           SUPABASE
         ========================================= */
 
         const SUPABASE_URL =
@@ -363,19 +359,14 @@
 
 
                 if (error) {
-
                     throw error;
-
                 }
 
 
-                const user =
-                    data.user;
+                const user = data.user;
 
 
-                /*
-                 * No logged-in user.
-                 */
+                /* Not logged in */
 
                 if (!user) {
 
@@ -413,7 +404,8 @@
                 ===================================== */
 
                 accountEmail.textContent =
-                    user.email || "No email available";
+                    user.email ||
+                    "No email available";
 
 
                 /* =====================================
@@ -424,9 +416,7 @@
                     user.app_metadata?.providers || [];
 
 
-                if (
-                    providers.includes("google")
-                ) {
+                if (providers.includes("google")) {
 
                     accountProvider.textContent =
                         "Google";
@@ -438,14 +428,12 @@
 
                 }
 
-
             } catch (error) {
 
                 console.error(
                     "Account loading error:",
                     error
                 );
-
 
                 accountMessage.textContent =
                     "Unable to load your account.";
@@ -466,8 +454,7 @@
             "click",
             async function () {
 
-                logoutButton.disabled =
-                    true;
+                logoutButton.disabled = true;
 
                 logoutButton.textContent =
                     "Logging out...";
@@ -481,9 +468,7 @@
 
 
                     if (error) {
-
                         throw error;
-
                     }
 
 
@@ -517,8 +502,7 @@
                         "account-message error";
 
 
-                    logoutButton.disabled =
-                        false;
+                    logoutButton.disabled = false;
 
                     logoutButton.textContent =
                         "Log Out";
