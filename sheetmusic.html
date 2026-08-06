@@ -415,20 +415,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth-navbar.js"></script>
 
-    <script>
-        const SUPABASE_URL =
-            "https://rdgoryrmqyqmaigvfjay.supabase.co";
-
-        const SUPABASE_PUBLISHABLE_KEY =
-            "sb_publishable_UYh6EWbtsiTtVSD4KvqEqA_-IbVA-c6";
-
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_PUBLISHABLE_KEY
-            );
-    </script>
-
 </head>
 
 <body>
@@ -1402,7 +1388,7 @@
                 const {
                     data,
                     error
-                } = await supabaseClient.auth.getSession();
+                } = await window.concertoiSupabase.auth.getSession();
 
                 if (error) {
 
