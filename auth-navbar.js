@@ -1,3 +1,4 @@
+javascript
 /* =========================================
    CONCERTOI SHARED AUTH NAVBAR
 ========================================= */
@@ -21,13 +22,10 @@ const concertoiSupabase =
         SUPABASE_PUBLISHABLE_KEY
     );
 
+
 /*
  * Make the shared Supabase client available
  * to other scripts on the page.
- *
- * This allows sheetmusic.html to use:
- *
- * window.concertoiSupabase.auth.getSession()
  */
 
 window.concertoiSupabase =
@@ -209,10 +207,8 @@ function closeAuthDropdown() {
             "authDropdown"
         );
 
-    const authButton =
-        document.getElementById(
-            "authButton"
-        );
+    const authLink =
+        getAuthLink();
 
 
     if (dropdown) {
@@ -224,9 +220,9 @@ function closeAuthDropdown() {
     }
 
 
-    if (authButton) {
+    if (authLink) {
 
-        authButton.setAttribute(
+        authLink.setAttribute(
             "aria-expanded",
             "false"
         );
@@ -237,7 +233,7 @@ function closeAuthDropdown() {
 
 
 /* =========================================
-   CREATE LOGOUT
+   LOGOUT
 ========================================= */
 
 async function logoutConcertoi() {
@@ -283,6 +279,12 @@ async function updateConcertoiNavbar() {
         getAuthLink();
 
 
+    /*
+     * If the navbar HTML hasn't been created
+     * yet, wait for DOMContentLoaded instead
+     * of simply giving up.
+     */
+
     if (!authLink) {
 
         return;
@@ -322,6 +324,19 @@ async function updateConcertoiNavbar() {
                 "logged-in"
             );
 
+            authLink.removeAttribute(
+                "aria-expanded"
+            );
+
+            const oldDropdown =
+                document.getElementById(
+                    "authDropdown"
+                );
+
+            if (oldDropdown) {
+                oldDropdown.remove();
+            }
+
             return;
 
         }
@@ -347,7 +362,7 @@ async function updateConcertoiNavbar() {
 
 
         /* =====================================
-           TURN LINK INTO BUTTON
+           TURN LINK INTO ACCOUNT BUTTON
         ===================================== */
 
         authLink.href =
@@ -357,16 +372,29 @@ async function updateConcertoiNavbar() {
             "logged-in"
         );
 
+        authLink.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
 
         authLink.innerHTML =
             "";
 
+
+        /* =====================================
+           AVATAR
+        ===================================== */
 
         const avatar =
             createAvatar(
                 user
             );
 
+
+        /* =====================================
+           NAME
+        ===================================== */
 
         const nameSpan =
             document.createElement("span");
@@ -377,6 +405,10 @@ async function updateConcertoiNavbar() {
         nameSpan.textContent =
             name;
 
+
+        /* =====================================
+           ARROW
+        ===================================== */
 
         const arrow =
             document.createElement("span");
@@ -428,7 +460,9 @@ async function updateConcertoiNavbar() {
             "auth-dropdown";
 
 
-        /* ACCOUNT */
+        /* =====================================
+           ACCOUNT LINK
+        ===================================== */
 
         const accountLink =
             document.createElement("a");
@@ -446,7 +480,9 @@ async function updateConcertoiNavbar() {
             `;
 
 
-        /* LOGOUT */
+        /* =====================================
+           LOGOUT BUTTON
+        ===================================== */
 
         const logoutButton =
             document.createElement("button");
@@ -479,13 +515,17 @@ async function updateConcertoiNavbar() {
         );
 
 
-        authLink.parentElement.appendChild(
-            dropdown
-        );
+        if (authLink.parentElement) {
+
+            authLink.parentElement.appendChild(
+                dropdown
+            );
+
+        }
 
 
         /* =====================================
-           BUTTON CLICK
+           ACCOUNT BUTTON CLICK
         ===================================== */
 
         authLink.onclick =
@@ -540,9 +580,7 @@ document.addEventListener(
     function (event) {
 
         const authLink =
-            document.getElementById(
-                "authLink"
-            );
+            getAuthLink();
 
         const dropdown =
             document.getElementById(
@@ -570,10 +608,45 @@ document.addEventListener(
 
 
 /* =========================================
-   INITIAL CHECK
+   INITIALISE AFTER HTML EXISTS
 ========================================= */
 
-updateConcertoiNavbar();
+function initialiseConcertoiNavbar() {
+
+    updateConcertoiNavbar();
+
+}
+
+
+/*
+ * This is the important part.
+ *
+ * auth-navbar.js is loaded inside <head>
+ * on sheetmusic.html, so the navbar doesn't
+ * exist yet.
+ *
+ * Wait until the DOM is ready before checking
+ * the session.
+ */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initialiseConcertoiNavbar,
+        {
+            once: true
+        }
+    );
+
+} else {
+
+    initialiseConcertoiNavbar();
+
+}
 
 
 /* =========================================
@@ -582,6 +655,11 @@ updateConcertoiNavbar();
 
 concertoiSupabase.auth.onAuthStateChange(
     function () {
+
+        /*
+         * Wait until the current auth event
+         * has completed before updating the UI.
+         */
 
         setTimeout(
             updateConcertoiNavbar,
