@@ -4528,7 +4528,7 @@
            WATCH FOR LOGIN / LOGOUT
         ========================================================= */
 
-        supabaseClient.auth.onAuthStateChange(
+        window.concertoiSupabase.auth.onAuthStateChange(
             () => {
 
                 updateNavbarAuth();
