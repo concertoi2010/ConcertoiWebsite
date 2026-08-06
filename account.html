@@ -15,6 +15,10 @@
     <link rel="shortcut icon" href="Images/favicon.ico?v=2">
 
     <style>
+        /* =========================================
+       ACCOUNT PAGE
+    ========================================= */
+
         .account-page {
             min-height: calc(100vh - 80px);
             display: flex;
@@ -34,19 +38,115 @@
             text-align: center;
         }
 
-        .account-logo {
-            width: 75px;
-            height: 75px;
-            margin: 0 auto 20px;
-            border-radius: 20px;
-            overflow: hidden;
+
+        /* =========================================
+       AVATAR
+    ========================================= */
+
+        .account-avatar-wrapper {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 22px;
         }
 
-        .account-logo img {
+        .account-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #6f42c1;
+            border: 3px solid rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .account-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
+
+        .default-avatar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-family: Arial, sans-serif;
+            font-weight: 400;
+        }
+
+        .avatar-edit-button {
+            position: absolute;
+            right: -4px;
+            bottom: -4px;
+            width: 38px;
+            height: 38px;
+            border: 3px solid #111;
+            border-radius: 50%;
+            background: #fbff00;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 700;
+            transition: transform 0.2s ease;
+        }
+
+        .avatar-edit-button:hover {
+            transform: scale(1.08);
+        }
+
+        #avatarInput {
+            display: none;
+        }
+
+        .avatar-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 30px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-action-button {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: inherit;
+            padding: 9px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .avatar-action-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .avatar-action-button.remove {
+            color: #ff7777;
+        }
+
+        .avatar-help {
+            margin: -20px auto 28px;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+
+        /* =========================================
+       ACCOUNT TEXT
+    ========================================= */
 
         .account-eyebrow {
             margin-bottom: 8px;
@@ -66,6 +166,11 @@
             margin-bottom: 35px;
             opacity: 0.7;
         }
+
+
+        /* =========================================
+       ACCOUNT DETAILS
+    ========================================= */
 
         .account-details {
             display: flex;
@@ -98,6 +203,11 @@
             word-break: break-word;
         }
 
+
+        /* =========================================
+       LOGOUT
+    ========================================= */
+
         .logout-button {
             width: 100%;
             padding: 15px 20px;
@@ -120,6 +230,11 @@
             cursor: not-allowed;
         }
 
+
+        /* =========================================
+       MESSAGE
+    ========================================= */
+
         .account-message {
             min-height: 22px;
             margin-top: 15px;
@@ -133,6 +248,11 @@
         .account-message.success {
             color: #8cff8c;
         }
+
+
+        /* =========================================
+       MOBILE
+    ========================================= */
 
         @media (max-width: 600px) {
 
@@ -157,7 +277,9 @@
 <body>
 
 
-    <!-- NAVBAR -->
+    <!-- =========================================
+     NAVBAR
+========================================= -->
 
     <header class="navbar">
 
@@ -168,6 +290,7 @@
             <span>Concertoi</span>
 
         </a>
+
 
         <nav class="nav-links">
 
@@ -196,17 +319,63 @@
     </header>
 
 
-    <!-- ACCOUNT -->
+    <!-- =========================================
+     ACCOUNT
+========================================= -->
 
     <main class="account-page">
 
         <section class="account-card">
 
-            <div class="account-logo">
 
-                <img src="Images/favicon.ico" alt="Concertoi">
+            <!-- AVATAR -->
+
+            <div class="account-avatar-wrapper">
+
+                <div class="account-avatar" id="accountAvatar">
+
+                    <div class="default-avatar" id="defaultAvatar">
+                        👤
+                    </div>
+
+                </div>
+
+
+                <label for="avatarInput" class="avatar-edit-button" title="Change avatar" aria-label="Change avatar">
+
+                    ✎
+
+                </label>
+
+                <input type="file" id="avatarInput" accept="image/jpeg,image/png">
+
 
             </div>
+
+
+            <div class="avatar-actions">
+
+                <label for="avatarInput" class="avatar-action-button">
+
+                    Change Avatar
+
+                </label>
+
+                <button type="button" class="avatar-action-button remove" id="removeAvatarButton">
+
+                    Remove Avatar
+
+                </button>
+
+            </div>
+
+
+            <p class="avatar-help">
+                JPG or PNG • Maximum 5 MB
+            </p>
+
+
+            <!-- ACCOUNT HEADER -->
 
             <p class="account-eyebrow">
                 Concertoi Account
@@ -221,7 +390,10 @@
             </p>
 
 
+            <!-- DETAILS -->
+
             <div class="account-details">
+
 
                 <div class="account-detail">
 
@@ -230,7 +402,9 @@
                     </span>
 
                     <span class="account-detail-value" id="accountName">
+
                         Loading...
+
                     </span>
 
                 </div>
@@ -243,7 +417,9 @@
                     </span>
 
                     <span class="account-detail-value" id="accountEmail">
+
                         Loading...
+
                     </span>
 
                 </div>
@@ -256,26 +432,39 @@
                     </span>
 
                     <span class="account-detail-value" id="accountProvider">
+
                         Loading...
+
                     </span>
 
                 </div>
 
+
             </div>
 
 
+            <!-- LOGOUT -->
+
             <button type="button" class="logout-button" id="logoutButton">
+
                 Log Out
+
             </button>
 
-            <p class="account-message" id="accountMessage"></p>
+
+            <p class="account-message" id="accountMessage">
+
+            </p>
+
 
         </section>
 
     </main>
 
 
-    <!-- FOOTER -->
+    <!-- =========================================
+     FOOTER
+========================================= -->
 
     <footer class="site-footer">
 
@@ -286,9 +475,11 @@
             </p>
 
             <p>
+
                 <a href="mailto:concertoi2010@gmail.com">
                     concertoi2010@gmail.com
                 </a>
+
             </p>
 
         </div>
@@ -296,7 +487,9 @@
     </footer>
 
 
-    <!-- SUPABASE -->
+    <!-- =========================================
+     SUPABASE
+========================================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -322,6 +515,22 @@
 
 
         /* =========================================
+           SETTINGS
+        ========================================= */
+
+        const AVATAR_BUCKET =
+            "avatars";
+
+        const MAX_AVATAR_SIZE =
+            5 * 1024 * 1024;
+
+        const ALLOWED_AVATAR_TYPES = [
+            "image/jpeg",
+            "image/png"
+        ];
+
+
+        /* =========================================
            ELEMENTS
         ========================================= */
 
@@ -343,6 +552,228 @@
         const accountMessage =
             document.getElementById("accountMessage");
 
+        const accountAvatar =
+            document.getElementById("accountAvatar");
+
+        const defaultAvatar =
+            document.getElementById("defaultAvatar");
+
+        const avatarInput =
+            document.getElementById("avatarInput");
+
+        const removeAvatarButton =
+            document.getElementById("removeAvatarButton");
+
+
+        /* =========================================
+           MESSAGE
+        ========================================= */
+
+        function showMessage(
+            message,
+            type = ""
+        ) {
+
+            accountMessage.textContent =
+                message;
+
+            accountMessage.className =
+                "account-message " + type;
+
+        }
+
+
+        /* =========================================
+           GET GOOGLE AVATAR
+        ========================================= */
+
+        function getGoogleAvatar(user) {
+
+            const metadata =
+                user.user_metadata || {};
+
+            return (
+                metadata.avatar_url ||
+                metadata.picture ||
+                null
+            );
+
+        }
+
+
+        /* =========================================
+           DISPLAY AVATAR
+        ========================================= */
+
+        function displayAvatar(
+            imageUrl
+        ) {
+
+            const existingImage =
+                accountAvatar.querySelector(
+                    "img"
+                );
+
+
+            if (existingImage) {
+
+                existingImage.remove();
+
+            }
+
+
+            if (imageUrl) {
+
+                defaultAvatar.style.display =
+                    "none";
+
+
+                const image =
+                    document.createElement("img");
+
+                image.src =
+                    imageUrl;
+
+                image.alt =
+                    "Profile avatar";
+
+
+                image.onerror =
+                    function () {
+
+                        image.remove();
+
+                        defaultAvatar.style.display =
+                            "flex";
+
+                    };
+
+
+                accountAvatar.appendChild(
+                    image
+                );
+
+            } else {
+
+                defaultAvatar.style.display =
+                    "flex";
+
+            }
+
+        }
+
+
+        /* =========================================
+           FIND CUSTOM AVATAR
+        ========================================= */
+
+        function getCustomAvatarPath(user) {
+
+            const metadata =
+                user.user_metadata || {};
+
+            return (
+                metadata.avatar_path ||
+                null
+            );
+
+        }
+
+
+        /* =========================================
+           GET PUBLIC AVATAR URL
+        ========================================= */
+
+        function getAvatarUrl(path) {
+
+            if (!path) {
+
+                return null;
+
+            }
+
+
+            const {
+                data
+            } =
+                supabaseClient.storage
+                    .from(AVATAR_BUCKET)
+                    .getPublicUrl(path);
+
+
+            return data?.publicUrl || null;
+
+        }
+
+
+        /* =========================================
+           LOAD AVATAR
+        ========================================= */
+
+        function loadAvatar(user) {
+
+            const customAvatarPath =
+                getCustomAvatarPath(user);
+
+
+            if (customAvatarPath) {
+
+                const customAvatarUrl =
+                    getAvatarUrl(
+                        customAvatarPath
+                    );
+
+
+                if (customAvatarUrl) {
+
+                    displayAvatar(
+                        customAvatarUrl +
+                        "?t=" +
+                        Date.now()
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            /*
+    
+               No custom avatar.
+    
+               Try Google profile image.
+    
+            */
+
+            const googleAvatar =
+                getGoogleAvatar(user);
+
+
+            if (googleAvatar) {
+
+                displayAvatar(
+                    googleAvatar
+                );
+
+                return;
+
+            }
+
+
+            /*
+    
+               No image available.
+    
+               Show default avatar.
+    
+            */
+
+            displayAvatar(null);
+
+        }
+
 
         /* =========================================
            LOAD ACCOUNT
@@ -355,18 +786,22 @@
                 const {
                     data,
                     error
-                } = await supabaseClient.auth.getUser();
+                } =
+                    await supabaseClient.auth.getUser();
 
 
                 if (error) {
+
                     throw error;
+
                 }
 
 
-                const user = data.user;
+                const user =
+                    data.user;
 
 
-                /* Not logged in */
+                /* NOT LOGGED IN */
 
                 if (!user) {
 
@@ -389,6 +824,7 @@
                 const name =
                     metadata.full_name ||
                     metadata.name ||
+                    user.email?.split("@")[0] ||
                     "Concertoi User";
 
 
@@ -416,7 +852,9 @@
                     user.app_metadata?.providers || [];
 
 
-                if (providers.includes("google")) {
+                if (
+                    providers.includes("google")
+                ) {
 
                     accountProvider.textContent =
                         "Google";
@@ -428,6 +866,13 @@
 
                 }
 
+
+                /* =====================================
+                   AVATAR
+                ===================================== */
+
+                loadAvatar(user);
+
             } catch (error) {
 
                 console.error(
@@ -435,15 +880,404 @@
                     error
                 );
 
-                accountMessage.textContent =
-                    "Unable to load your account.";
 
-                accountMessage.className =
-                    "account-message error";
+                showMessage(
+                    "Unable to load your account.",
+                    "error"
+                );
 
             }
 
         }
+
+
+        /* =========================================
+           UPLOAD AVATAR
+        ========================================= */
+
+        avatarInput.addEventListener(
+            "change",
+            async function () {
+
+                const file =
+                    avatarInput.files?.[0];
+
+
+                if (!file) {
+
+                    return;
+
+                }
+
+
+                /* =====================================
+                   CHECK MIME TYPE
+                ===================================== */
+
+                if (
+                    !ALLOWED_AVATAR_TYPES.includes(
+                        file.type
+                    )
+                ) {
+
+                    showMessage(
+                        "Please choose a JPG or PNG image.",
+                        "error"
+                    );
+
+                    avatarInput.value =
+                        "";
+
+                    return;
+
+                }
+
+
+                /* =====================================
+                   CHECK FILE SIZE
+                ===================================== */
+
+                if (
+                    file.size >
+                    MAX_AVATAR_SIZE
+                ) {
+
+                    showMessage(
+                        "Your avatar must be 5 MB or smaller.",
+                        "error"
+                    );
+
+                    avatarInput.value =
+                        "";
+
+                    return;
+
+                }
+
+
+                try {
+
+                    showMessage(
+                        "Uploading avatar..."
+                    );
+
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient.auth.getUser();
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    const user =
+                        data.user;
+
+
+                    if (!user) {
+
+                        window.location.href =
+                            "login.html";
+
+                        return;
+
+                    }
+
+
+                    /* =================================
+                       FILE EXTENSION
+                    ================================= */
+
+                    const extension =
+                        file.type ===
+                            "image/png"
+                            ? "png"
+                            : "jpg";
+
+
+                    const avatarPath =
+                        `${user.id}/avatar.${extension}`;
+
+
+                    /* =================================
+                       UPLOAD
+                    ================================= */
+
+                    const {
+                        error: uploadError
+                    } =
+                        await supabaseClient.storage
+                            .from(AVATAR_BUCKET)
+                            .upload(
+                                avatarPath,
+                                file,
+                                {
+                                    cacheControl: "3600",
+                                    upsert: true,
+                                    contentType: file.type
+                                }
+                            );
+
+
+                    if (uploadError) {
+
+                        throw uploadError;
+
+                    }
+
+
+                    /* =================================
+                       REMOVE OTHER EXTENSION
+                    ================================= */
+
+                    const otherExtension =
+                        extension === "png"
+                            ? "jpg"
+                            : "png";
+
+
+                    const oldPath =
+                        `${user.id}/avatar.${otherExtension}`;
+
+
+                    await supabaseClient.storage
+                        .from(AVATAR_BUCKET)
+                        .remove([
+                            oldPath
+                        ]);
+
+
+                    /* =================================
+                       SAVE PATH TO USER METADATA
+                    ================================= */
+
+                    const {
+                        error: metadataError
+                    } =
+                        await supabaseClient.auth
+                            .updateUser({
+
+                                data: {
+
+                                    avatar_path:
+                                        avatarPath
+
+                                }
+
+                            });
+
+
+                    if (metadataError) {
+
+                        throw metadataError;
+
+                    }
+
+
+                    /* =================================
+                       DISPLAY
+                    ================================= */
+
+                    const avatarUrl =
+                        getAvatarUrl(
+                            avatarPath
+                        );
+
+
+                    displayAvatar(
+                        avatarUrl +
+                        "?t=" +
+                        Date.now()
+                    );
+
+
+                    showMessage(
+                        "Avatar updated successfully.",
+                        "success"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Avatar upload error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        "Could not upload your avatar. Please try again.",
+                        "error"
+                    );
+
+                }
+
+
+                avatarInput.value =
+                    "";
+
+            }
+        );
+
+
+        /* =========================================
+           REMOVE AVATAR
+        ========================================= */
+
+        removeAvatarButton.addEventListener(
+            "click",
+            async function () {
+
+                removeAvatarButton.disabled =
+                    true;
+
+                removeAvatarButton.textContent =
+                    "Removing...";
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient.auth.getUser();
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    const user =
+                        data.user;
+
+
+                    if (!user) {
+
+                        window.location.href =
+                            "login.html";
+
+                        return;
+
+                    }
+
+
+                    const customAvatarPath =
+                        getCustomAvatarPath(user);
+
+
+                    /* =================================
+                       REMOVE STORED AVATAR
+                    ================================= */
+
+                    if (customAvatarPath) {
+
+                        const {
+                            error: removeError
+                        } =
+                            await supabaseClient.storage
+                                .from(AVATAR_BUCKET)
+                                .remove([
+                                    customAvatarPath
+                                ]);
+
+
+                        if (removeError) {
+
+                            throw removeError;
+
+                        }
+
+                    }
+
+
+                    /* =================================
+                       REMOVE PATH FROM USER
+                       METADATA
+                    ================================= */
+
+                    const {
+                        error: metadataError
+                    } =
+                        await supabaseClient.auth
+                            .updateUser({
+
+                                data: {
+
+                                    avatar_path: null
+
+                                }
+
+                            });
+
+
+                    if (metadataError) {
+
+                        throw metadataError;
+
+                    }
+
+
+                    /* =================================
+                       GOOGLE FALLBACK
+                    ================================= */
+
+                    const googleAvatar =
+                        getGoogleAvatar(user);
+
+
+                    if (googleAvatar) {
+
+                        displayAvatar(
+                            googleAvatar
+                        );
+
+                    } else {
+
+                        displayAvatar(null);
+
+                    }
+
+
+                    showMessage(
+                        "Avatar removed.",
+                        "success"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Avatar removal error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        "Could not remove your avatar. Please try again.",
+                        "error"
+                    );
+
+                }
+
+
+                removeAvatarButton.disabled =
+                    false;
+
+                removeAvatarButton.textContent =
+                    "Remove Avatar";
+
+            }
+        );
 
 
         /* =========================================
@@ -454,7 +1288,8 @@
             "click",
             async function () {
 
-                logoutButton.disabled = true;
+                logoutButton.disabled =
+                    true;
 
                 logoutButton.textContent =
                     "Logging out...";
@@ -464,27 +1299,33 @@
 
                     const {
                         error
-                    } = await supabaseClient.auth.signOut();
+                    } =
+                        await supabaseClient.auth
+                            .signOut();
 
 
                     if (error) {
+
                         throw error;
+
                     }
 
 
-                    accountMessage.textContent =
-                        "Logged out successfully.";
+                    showMessage(
+                        "Logged out successfully.",
+                        "success"
+                    );
 
-                    accountMessage.className =
-                        "account-message success";
 
+                    setTimeout(
+                        () => {
 
-                    setTimeout(() => {
+                            window.location.href =
+                                "index.html";
 
-                        window.location.href =
-                            "index.html";
-
-                    }, 500);
+                        },
+                        500
+                    );
 
 
                 } catch (error) {
@@ -495,14 +1336,14 @@
                     );
 
 
-                    accountMessage.textContent =
-                        "Could not log out. Please try again.";
+                    showMessage(
+                        "Could not log out. Please try again.",
+                        "error"
+                    );
 
-                    accountMessage.className =
-                        "account-message error";
 
-
-                    logoutButton.disabled = false;
+                    logoutButton.disabled =
+                        false;
 
                     logoutButton.textContent =
                         "Log Out";
