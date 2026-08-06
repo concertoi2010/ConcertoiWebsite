@@ -427,7 +427,7 @@
                 SUPABASE_PUBLISHABLE_KEY
             );
     </script>
-    
+
 </head>
 
 <body>
@@ -1383,6 +1383,88 @@
 
 
         /* =========================================================
+           DOWNLOAD PDF (auth-gated)
+
+           This is the ONLY place PDF downloads are triggered.
+           It is wired up as the downloadPdf button's click handler
+           inside openMusicXML(), and it only runs when the user
+           explicitly clicks the "↓ PDF" button — never when the
+           MusicXML/MIDI player is opened.
+        ========================================================= */
+
+        async function handleDownloadPdfClick(piece, event) {
+
+            event.preventDefault();
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient.auth.getSession();
+
+                if (error) {
+
+                    console.error(
+                        "Could not check login status:",
+                        error
+                    );
+
+                    alert(
+                        "We couldn't check your login status. Please try again."
+                    );
+
+                    return;
+
+                }
+
+                if (!data.session) {
+
+                    const returnUrl =
+                        window.location.pathname +
+                        window.location.search;
+
+                    window.location.href =
+                        "login.html?returnTo=" +
+                        encodeURIComponent(returnUrl);
+
+                    return;
+
+                }
+
+                // User is logged in — download normally
+                const link =
+                    document.createElement("a");
+
+                link.href =
+                    piece.pdf;
+
+                link.download = "";
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                link.remove();
+
+            } catch (error) {
+
+                console.error(
+                    "PDF download authentication error:",
+                    error
+                );
+
+                alert(
+                    "PDF download error: " +
+                    (error.message || error)
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
            OPEN MUSICXML
         ========================================================= */
 
@@ -1431,78 +1513,20 @@
                 "Piano Sheet Music";
 
             /* Keep existing PDF download functionality,
-               but display the link in the top toolbar. */
+               but display the link in the top toolbar.
+
+               IMPORTANT: this only ATTACHES the click handler —
+               it does not run the login check or download itself.
+               The download/auth logic only executes when the
+               user explicitly clicks the "↓ PDF" button. */
 
             downloadPdf.href = "#";
 
-            downloadPdf.onclick = async event => {
-
-                event.preventDefault();
-
-            }
-
-            try {
-
-                const {
-                    data,
-                    error
-                } = await supabaseClient.auth.getSession();
-
-                if (error) {
-                    console.error(
-                        "Could not check login status:",
-                        error
-                    );
-
-                    alert(
-                        "We couldn't check your login status. Please try again."
-                    );
-
-                    return;
-                }
-
-                if (!data.session) {
-
-                    const returnUrl =
-                        window.location.pathname +
-                        window.location.search;
-
-                    window.location.href =
-                        "login.html?returnTo=" +
-                        encodeURIComponent(returnUrl);
-
-                    return;
-
-                }
-
-                // User is logged in — download normally
-                const link =
-                    document.createElement("a");
-
-                link.href =
-                    piece.pdf;
-
-                link.download = "";
-
-                document.body.appendChild(link);
-
-                link.click();
-
-                link.remove();
-
-            } catch (error) {
-
-                console.error(
-                    "PDF download authentication error:",
-                    error
+            downloadPdf.onclick = event =>
+                handleDownloadPdfClick(
+                    piece,
+                    event
                 );
-
-                alert(
-                    "PDF download error: " +
-                    (error.message || error)
-                );
-
-            }
 
             downloadPdf.setAttribute(
                 "download",
