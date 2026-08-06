@@ -18,6 +18,8 @@
     <!-- Tone.js -->
     <script src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.js"></script>
 
+
+
     <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="Images/favicon.ico?v=2">
 
@@ -409,6 +411,23 @@
 
         }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL =
+            "https://rdgoryrmqyqmaigvfjay.supabase.co";
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_UYh6EWbtsiTtVSD4KvqEqA_-IbVA-c6";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+    </script>
+    
 </head>
 
 <body>
@@ -1422,102 +1441,102 @@
 
             }
 
-                try {
+            try {
 
-                    const {
-                        data,
-                        error
-                    } = await supabaseClient.auth.getSession();
+                const {
+                    data,
+                    error
+                } = await supabaseClient.auth.getSession();
 
-                    if (error) {
-                        console.error(
-                            "Could not check login status:",
-                            error
-                        );
-
-                        alert(
-                            "We couldn't check your login status. Please try again."
-                        );
-
-                        return;
-                    }
-
-                    if (!data.session) {
-
-                        const returnUrl =
-                            window.location.pathname +
-                            window.location.search;
-
-                        window.location.href =
-                            "login.html?returnTo=" +
-                            encodeURIComponent(returnUrl);
-
-                        return;
-
-                    }
-
-                    // User is logged in — download normally
-                    const link =
-                        document.createElement("a");
-
-                    link.href =
-                        piece.pdf;
-
-                    link.download = "";
-
-                    document.body.appendChild(link);
-
-                    link.click();
-
-                    link.remove();
-
-                } catch (error) {
-
+                if (error) {
                     console.error(
-                        "PDF download authentication error:",
+                        "Could not check login status:",
                         error
                     );
 
                     alert(
-                        "PDF download error: " +
-                        (error.message || error)
+                        "We couldn't check your login status. Please try again."
                     );
+
+                    return;
+                }
+
+                if (!data.session) {
+
+                    const returnUrl =
+                        window.location.pathname +
+                        window.location.search;
+
+                    window.location.href =
+                        "login.html?returnTo=" +
+                        encodeURIComponent(returnUrl);
+
+                    return;
 
                 }
 
-                downloadPdf.setAttribute(
-                    "download",
-                    ""
+                // User is logged in — download normally
+                const link =
+                    document.createElement("a");
+
+                link.href =
+                    piece.pdf;
+
+                link.download = "";
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                link.remove();
+
+            } catch (error) {
+
+                console.error(
+                    "PDF download authentication error:",
+                    error
                 );
 
-                musicStatus.textContent =
-                    "Loading...";
-
-                musicPlay.disabled = true;
-
-                musicPause.disabled = true;
-
-                musicStop.disabled = true;
-
-                musicProgress.value = 0;
-
-                musicCurrentTime.textContent =
-                    "0:00";
-
-                musicDurationText.textContent =
-                    "0:00";
-
-                musicLoopEnabled = false;
-
-                musicLoopStart = 0;
-
-                musicLoopEnd = 0;
-
-                loopToggleButton.classList.remove(
-                    "active"
+                alert(
+                    "PDF download error: " +
+                    (error.message || error)
                 );
 
-                musicViewer.innerHTML = `
+            }
+
+            downloadPdf.setAttribute(
+                "download",
+                ""
+            );
+
+            musicStatus.textContent =
+                "Loading...";
+
+            musicPlay.disabled = true;
+
+            musicPause.disabled = true;
+
+            musicStop.disabled = true;
+
+            musicProgress.value = 0;
+
+            musicCurrentTime.textContent =
+                "0:00";
+
+            musicDurationText.textContent =
+                "0:00";
+
+            musicLoopEnabled = false;
+
+            musicLoopStart = 0;
+
+            musicLoopEnd = 0;
+
+            loopToggleButton.classList.remove(
+                "active"
+            );
+
+            musicViewer.innerHTML = `
 
                 <div class="pdf-loading">
 
@@ -1531,177 +1550,177 @@
 
             `;
 
-                try {
+            try {
 
-                    const response =
-                        await fetch(
-                            piece.musicxml,
-                            {
-                                cache: "no-cache"
-                            }
-                        );
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            "MusicXML returned HTTP " +
-                            response.status
-                        );
-
-                    }
-
-                    musicXMLText =
-                        await response.text();
-
-                    if (!musicXMLText.trim()) {
-
-                        throw new Error(
-                            "The MusicXML file is empty."
-                        );
-
-                    }
-
-                    parseMusicXML(
-                        musicXMLText
+                const response =
+                    await fetch(
+                        piece.musicxml,
+                        {
+                            cache: "no-cache"
+                        }
                     );
 
-                    if (!musicNotes.length) {
+                if (!response.ok) {
 
-                        throw new Error(
-                            "No playable piano notes were found."
-                        );
-
-                    }
-
-                    musicOSMD =
-                        new opensheetmusicdisplay.OpenSheetMusicDisplay(
-                            musicViewer,
-                            {
-
-                                autoResize: true,
-
-                                backend: "svg",
-
-                                drawTitle: false,
-
-                                drawComposer: false,
-
-                                drawPartNames: false,
-
-                                followCursor: false,
-
-                                disableCursor: false,
-
-                                cursorsOptions: [
-
-                                    {
-
-                                        type: 0,
-
-                                        color: "#fbff00",
-
-                                        alpha: 0.75,
-
-                                        follow: false
-
-                                    }
-
-                                ]
-
-                            }
-                        );
-
-                    await musicOSMD.load(
-                        musicXMLText
+                    throw new Error(
+                        "MusicXML returned HTTP " +
+                        response.status
                     );
 
-                    musicOSMD.render();
+                }
 
-                    await new Promise(resolve => {
+                musicXMLText =
+                    await response.text();
 
-                        requestAnimationFrame(() => {
+                if (!musicXMLText.trim()) {
 
-                            requestAnimationFrame(resolve);
+                    throw new Error(
+                        "The MusicXML file is empty."
+                    );
 
-                        });
+                }
+
+                parseMusicXML(
+                    musicXMLText
+                );
+
+                if (!musicNotes.length) {
+
+                    throw new Error(
+                        "No playable piano notes were found."
+                    );
+
+                }
+
+                musicOSMD =
+                    new opensheetmusicdisplay.OpenSheetMusicDisplay(
+                        musicViewer,
+                        {
+
+                            autoResize: true,
+
+                            backend: "svg",
+
+                            drawTitle: false,
+
+                            drawComposer: false,
+
+                            drawPartNames: false,
+
+                            followCursor: false,
+
+                            disableCursor: false,
+
+                            cursorsOptions: [
+
+                                {
+
+                                    type: 0,
+
+                                    color: "#fbff00",
+
+                                    alpha: 0.75,
+
+                                    follow: false
+
+                                }
+
+                            ]
+
+                        }
+                    );
+
+                await musicOSMD.load(
+                    musicXMLText
+                );
+
+                musicOSMD.render();
+
+                await new Promise(resolve => {
+
+                    requestAnimationFrame(() => {
+
+                        requestAnimationFrame(resolve);
 
                     });
 
-                    if (musicOSMD.cursor) {
+                });
 
-                        try {
+                if (musicOSMD.cursor) {
 
-                            musicOSMD.cursor.reset();
+                    try {
 
-                            musicOSMD.cursor.show();
+                        musicOSMD.cursor.reset();
 
-                            buildMusicCursorTimeline();
+                        musicOSMD.cursor.show();
 
-                        } catch (error) {
+                        buildMusicCursorTimeline();
 
-                            console.warn(
-                                "Cursor initialisation failed:",
-                                error
-                            );
+                    } catch (error) {
 
-                            cursorTimelineReady = false;
+                        console.warn(
+                            "Cursor initialisation failed:",
+                            error
+                        );
 
-                        }
+                        cursorTimelineReady = false;
 
                     }
 
-                    createMusicPart();
+                }
 
-                    musicDurationText.textContent =
-                        formatMusicTime(
-                            musicDuration
-                        );
+                createMusicPart();
 
-                    musicStatus.textContent =
-                        "Ready";
-
-                    musicPlay.disabled = false;
-
-                    musicPause.disabled = true;
-
-                    musicStop.disabled = false;
-
-                    console.log(
-                        "MusicXML loaded:",
-                        piece.title
-                    );
-
-                    console.log(
-                        "Playable notes:",
-                        musicNotes.length
-                    );
-
-                    console.log(
-                        "Tempo:",
-                        musicTempo
-                    );
-
-                    console.log(
-                        "Duration:",
+                musicDurationText.textContent =
+                    formatMusicTime(
                         musicDuration
                     );
 
-                    console.log(
-                        "OSMD cursor positions:",
-                        cursorTimeline.length
-                    );
+                musicStatus.textContent =
+                    "Ready";
 
-                } catch (error) {
+                musicPlay.disabled = false;
 
-                    console.error(
-                        "MusicXML loading error:",
-                        error
-                    );
+                musicPause.disabled = true;
 
-                    musicStatus.textContent =
-                        "Error";
+                musicStop.disabled = false;
 
-                    musicViewer.innerHTML = `
+                console.log(
+                    "MusicXML loaded:",
+                    piece.title
+                );
+
+                console.log(
+                    "Playable notes:",
+                    musicNotes.length
+                );
+
+                console.log(
+                    "Tempo:",
+                    musicTempo
+                );
+
+                console.log(
+                    "Duration:",
+                    musicDuration
+                );
+
+                console.log(
+                    "OSMD cursor positions:",
+                    cursorTimeline.length
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "MusicXML loading error:",
+                    error
+                );
+
+                musicStatus.textContent =
+                    "Error";
+
+                musicViewer.innerHTML = `
 
                     <div class="music-error">
 
@@ -1715,68 +1734,93 @@
 
                         <code>
                             ${escapeHTML(
-                        piece.musicxml
-                    )}
+                    piece.musicxml
+                )}
                         </code>
 
                         <p>
                             ${escapeHTML(
-                        error.message
-                    )}
+                    error.message
+                )}
                         </p>
 
                     </div>
 
                 `;
 
+            }
+
+        }
+
+
+        /* =========================================================
+           MUSICXML PARSER
+        ========================================================= */
+
+        function parseMusicXML(xmlText) {
+
+            musicNotes = [];
+
+            musicDuration = 0;
+
+            musicTempo = 100;
+
+            const parser =
+                new DOMParser();
+
+            const xml =
+                parser.parseFromString(
+                    xmlText,
+                    "application/xml"
+                );
+
+            if (
+                xml.querySelector("parsererror")
+            ) {
+
+                throw new Error(
+                    "The MusicXML file could not be parsed."
+                );
+
+            }
+
+            const soundTempo =
+                xml.querySelector(
+                    "sound[tempo]"
+                );
+
+            if (soundTempo) {
+
+                const value =
+                    parseFloat(
+                        soundTempo.getAttribute(
+                            "tempo"
+                        )
+                    );
+
+                if (
+                    Number.isFinite(value) &&
+                    value > 0
+                ) {
+
+                    musicTempo = value;
+
                 }
 
             }
 
+            if (musicTempo === 100) {
 
-            /* =========================================================
-               MUSICXML PARSER
-            ========================================================= */
-
-            function parseMusicXML(xmlText) {
-
-                musicNotes = [];
-
-                musicDuration = 0;
-
-                musicTempo = 100;
-
-                const parser =
-                    new DOMParser();
-
-                const xml =
-                    parser.parseFromString(
-                        xmlText,
-                        "application/xml"
-                    );
-
-                if (
-                    xml.querySelector("parsererror")
-                ) {
-
-                    throw new Error(
-                        "The MusicXML file could not be parsed."
-                    );
-
-                }
-
-                const soundTempo =
+                const perMinute =
                     xml.querySelector(
-                        "sound[tempo]"
+                        "per-minute"
                     );
 
-                if (soundTempo) {
+                if (perMinute) {
 
                     const value =
                         parseFloat(
-                            soundTempo.getAttribute(
-                                "tempo"
-                            )
+                            perMinute.textContent
                         );
 
                     if (
@@ -1790,179 +1834,90 @@
 
                 }
 
-                if (musicTempo === 100) {
+            }
 
-                    const perMinute =
-                        xml.querySelector(
-                            "per-minute"
+            const parts =
+                Array.from(
+                    xml.querySelectorAll("part")
+                );
+
+            let globalMaximum = 0;
+
+            parts.forEach(part => {
+
+                let partTime = 0;
+
+                let divisions = 1;
+
+                const measures =
+                    Array.from(
+                        part.children
+                    ).filter(
+                        child =>
+                            child.localName ===
+                            "measure"
+                    );
+
+                measures.forEach(measure => {
+
+                    let localTime = 0;
+
+                    let measureMaximum = 0;
+
+                    let previousNoteStart = 0;
+
+                    const attributes =
+                        Array.from(
+                            measure.children
+                        ).find(
+                            child =>
+                                child.localName ===
+                                "attributes"
                         );
 
-                    if (perMinute) {
+                    if (attributes) {
 
-                        const value =
-                            parseFloat(
-                                perMinute.textContent
+                        const divisionNode =
+                            Array.from(
+                                attributes.children
+                            ).find(
+                                child =>
+                                    child.localName ===
+                                    "divisions"
                             );
 
-                        if (
-                            Number.isFinite(value) &&
-                            value > 0
-                        ) {
+                        if (divisionNode) {
 
-                            musicTempo = value;
+                            const value =
+                                parseFloat(
+                                    divisionNode.textContent
+                                );
+
+                            if (
+                                Number.isFinite(value) &&
+                                value > 0
+                            ) {
+
+                                divisions =
+                                    value;
+
+                            }
 
                         }
 
                     }
 
-                }
-
-                const parts =
-                    Array.from(
-                        xml.querySelectorAll("part")
-                    );
-
-                let globalMaximum = 0;
-
-                parts.forEach(part => {
-
-                    let partTime = 0;
-
-                    let divisions = 1;
-
-                    const measures =
+                    const children =
                         Array.from(
-                            part.children
-                        ).filter(
-                            child =>
-                                child.localName ===
-                                "measure"
+                            measure.children
                         );
 
-                    measures.forEach(measure => {
+                    children.forEach(child => {
 
-                        let localTime = 0;
+                        const tag =
+                            child.localName;
 
-                        let measureMaximum = 0;
-
-                        let previousNoteStart = 0;
-
-                        const attributes =
-                            Array.from(
-                                measure.children
-                            ).find(
-                                child =>
-                                    child.localName ===
-                                    "attributes"
-                            );
-
-                        if (attributes) {
-
-                            const divisionNode =
-                                Array.from(
-                                    attributes.children
-                                ).find(
-                                    child =>
-                                        child.localName ===
-                                        "divisions"
-                                );
-
-                            if (divisionNode) {
-
-                                const value =
-                                    parseFloat(
-                                        divisionNode.textContent
-                                    );
-
-                                if (
-                                    Number.isFinite(value) &&
-                                    value > 0
-                                ) {
-
-                                    divisions =
-                                        value;
-
-                                }
-
-                            }
-
-                        }
-
-                        const children =
-                            Array.from(
-                                measure.children
-                            );
-
-                        children.forEach(child => {
-
-                            const tag =
-                                child.localName;
-
-                            if (tag === "backup") {
-
-                                const durationNode =
-                                    Array.from(
-                                        child.children
-                                    ).find(
-                                        node =>
-                                            node.localName ===
-                                            "duration"
-                                    );
-
-                                const duration =
-                                    durationNode
-                                        ? parseFloat(
-                                            durationNode.textContent
-                                        ) / divisions
-                                        : 0;
-
-                                localTime -= duration;
-
-                                if (
-                                    localTime < 0
-                                ) {
-
-                                    localTime = 0;
-
-                                }
-
-                                return;
-
-                            }
-
-                            if (tag === "forward") {
-
-                                const durationNode =
-                                    Array.from(
-                                        child.children
-                                    ).find(
-                                        node =>
-                                            node.localName ===
-                                            "duration"
-                                    );
-
-                                const duration =
-                                    durationNode
-                                        ? parseFloat(
-                                            durationNode.textContent
-                                        ) / divisions
-                                        : 0;
-
-                                localTime += duration;
-
-                                measureMaximum =
-                                    Math.max(
-                                        measureMaximum,
-                                        localTime
-                                    );
-
-                                return;
-
-                            }
-
-                            if (tag !== "note") {
-                                return;
-                            }
+                        if (tag === "backup") {
 
                             const durationNode =
                                 Array.from(
@@ -1973,158 +1928,46 @@
                                         "duration"
                                 );
 
-                            const rawDuration =
+                            const duration =
                                 durationNode
                                     ? parseFloat(
                                         durationNode.textContent
-                                    )
+                                    ) / divisions
                                     : 0;
+
+                            localTime -= duration;
+
+                            if (
+                                localTime < 0
+                            ) {
+
+                                localTime = 0;
+
+                            }
+
+                            return;
+
+                        }
+
+                        if (tag === "forward") {
+
+                            const durationNode =
+                                Array.from(
+                                    child.children
+                                ).find(
+                                    node =>
+                                        node.localName ===
+                                        "duration"
+                                );
 
                             const duration =
-                                Number.isFinite(
-                                    rawDuration
-                                )
-                                    ? rawDuration /
-                                    divisions
+                                durationNode
+                                    ? parseFloat(
+                                        durationNode.textContent
+                                    ) / divisions
                                     : 0;
 
-                            const isRest =
-                                Array.from(
-                                    child.children
-                                ).some(
-                                    node =>
-                                        node.localName ===
-                                        "rest"
-                                );
-
-                            const isChord =
-                                Array.from(
-                                    child.children
-                                ).some(
-                                    node =>
-                                        node.localName ===
-                                        "chord"
-                                );
-
-                            const noteStart =
-                                isChord
-                                    ? previousNoteStart
-                                    : localTime;
-
-                            if (!isRest) {
-
-                                const pitch =
-                                    Array.from(
-                                        child.children
-                                    ).find(
-                                        node =>
-                                            node.localName ===
-                                            "pitch"
-                                    );
-
-                                if (pitch) {
-
-                                    const stepNode =
-                                        Array.from(
-                                            pitch.children
-                                        ).find(
-                                            node =>
-                                                node.localName ===
-                                                "step"
-                                        );
-
-                                    const octaveNode =
-                                        Array.from(
-                                            pitch.children
-                                        ).find(
-                                            node =>
-                                                node.localName ===
-                                                "octave"
-                                        );
-
-                                    const alterNode =
-                                        Array.from(
-                                            pitch.children
-                                        ).find(
-                                            node =>
-                                                node.localName ===
-                                                "alter"
-                                        );
-
-                                    if (
-                                        stepNode &&
-                                        octaveNode
-                                    ) {
-
-                                        const step =
-                                            stepNode.textContent
-                                                .trim()
-                                                .toUpperCase();
-
-                                        const octave =
-                                            parseInt(
-                                                octaveNode.textContent,
-                                                10
-                                            );
-
-                                        const alter =
-                                            alterNode
-                                                ? parseFloat(
-                                                    alterNode.textContent
-                                                )
-                                                : 0;
-
-                                        const midi =
-                                            musicPitchToMidi(
-                                                step,
-                                                octave,
-                                                Number.isFinite(alter)
-                                                    ? alter
-                                                    : 0
-                                            );
-
-                                        if (
-                                            Number.isFinite(midi) &&
-                                            midi >= 21 &&
-                                            midi <= 108
-                                        ) {
-
-                                            musicNotes.push({
-
-                                                midi:
-                                                    Math.round(midi),
-
-                                                start:
-                                                    partTime +
-                                                    Math.max(
-                                                        0,
-                                                        noteStart
-                                                    ),
-
-                                                duration:
-                                                    Math.max(
-                                                        0.05,
-                                                        duration
-                                                    )
-
-                                            });
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-
-                            if (!isChord) {
-
-                                previousNoteStart =
-                                    localTime;
-
-                                localTime += duration;
-
-                            }
+                            localTime += duration;
 
                             measureMaximum =
                                 Math.max(
@@ -2132,403 +1975,160 @@
                                     localTime
                                 );
 
-                        });
+                            return;
 
-                        partTime +=
-                            Math.max(
-                                0,
-                                measureMaximum
+                        }
+
+                        if (tag !== "note") {
+                            return;
+                        }
+
+                        const durationNode =
+                            Array.from(
+                                child.children
+                            ).find(
+                                node =>
+                                    node.localName ===
+                                    "duration"
                             );
 
-                    });
-
-                    globalMaximum =
-                        Math.max(
-                            globalMaximum,
-                            partTime
-                        );
-
-                });
-
-                const secondsPerQuarter =
-                    60 / musicTempo;
-
-                musicNotes.forEach(note => {
-
-                    note.startSeconds =
-                        note.start *
-                        secondsPerQuarter;
-
-                    note.durationSeconds =
-                        note.duration *
-                        secondsPerQuarter;
-
-                });
-
-                musicNotes.sort(
-                    (a, b) =>
-                        a.startSeconds -
-                        b.startSeconds
-                );
-
-                musicDuration =
-                    globalMaximum *
-                    secondsPerQuarter;
-
-                musicNotes.forEach(note => {
-
-                    musicDuration =
-                        Math.max(
-                            musicDuration,
-                            note.startSeconds +
-                            note.durationSeconds
-                        );
-
-                });
-
-                musicDuration += 0.1;
-
-            }
-
-
-            /* =========================================================
-               PITCH
-            ========================================================= */
-
-            function musicPitchToMidi(
-                step,
-                octave,
-                alter
-            ) {
-
-                const semitones = {
-
-                    C: 0,
-                    D: 2,
-                    E: 4,
-                    F: 5,
-                    G: 7,
-                    A: 9,
-                    B: 11
-
-                };
-
-                if (
-                    !Object.prototype.hasOwnProperty.call(
-                        semitones,
-                        step
-                    )
-                ) {
-
-                    return NaN;
-
-                }
-
-                return (
-                    (octave + 1) * 12 +
-                    semitones[step] +
-                    alter
-                );
-
-            }
-
-
-            /* =========================================================
-               PIANO SETUP
-            ========================================================= */
-
-            async function setupPiano() {
-
-                if (pianoReady && piano) {
-                    return;
-                }
-
-                if (pianoLoading) {
-                    await pianoLoading;
-                    return;
-                }
-
-                pianoLoading =
-                    (async () => {
-
-                        musicStatus.textContent =
-                            "Loading piano...";
-
-                        await Tone.start();
-
-                        piano =
-                            new Tone.Sampler({
-
-                                urls: {
-
-                                    C1: "C1.mp3",
-                                    C2: "C2.mp3",
-                                    C3: "C3.mp3",
-                                    C4: "C4.mp3",
-                                    C5: "C5.mp3",
-                                    C6: "C6.mp3",
-                                    C7: "C7.mp3"
-
-                                },
-
-                                release: 1.2,
-
-                                baseUrl:
-                                    "https://tonejs.github.io/audio/salamander/"
-
-                            });
-
-                        const reverb =
-                            new Tone.Reverb({
-
-                                decay: 1.4,
-
-                                wet: 0.04
-
-                            });
-
-                        piano.volume.value = -7;
-
-                        piano.chain(
-                            reverb,
-                            Tone.Destination
-                        );
-
-                        await Tone.loaded();
-
-                        pianoReady = true;
-
-                        console.log(
-                            "Piano samples loaded."
-                        );
-
-                    })();
-
-                try {
-
-                    await pianoLoading;
-
-                } finally {
-
-                    pianoLoading = null;
-
-                }
-
-            }
-
-
-            /* =========================================================
-               TONE.PART
-            ========================================================= */
-
-            function destroyMusicPart() {
-
-                if (!musicPart) {
-                    return;
-                }
-
-                try {
-                    musicPart.stop();
-                } catch (error) {
-                    console.warn(
-                        "Could not stop music part:",
-                        error
-                    );
-                }
-
-                try {
-                    musicPart.dispose();
-                } catch (error) {
-                    console.warn(
-                        "Could not dispose music part:",
-                        error
-                    );
-                }
-
-                musicPart = null;
-
-            }
-
-
-            function createMusicPart() {
-
-                destroyMusicPart();
-
-                Tone.Transport.cancel();
-
-                const events = [];
-
-                musicNotes.forEach(note => {
-
-                    const midi =
-                        Number(note.midi);
-
-                    const start =
-                        Number(note.startSeconds);
-
-                    const duration =
-                        Number(note.durationSeconds);
-
-                    if (!Number.isFinite(midi)) {
-                        return;
-                    }
-
-                    if (midi < 21 || midi > 108) {
-                        return;
-                    }
-
-                    if (
-                        !Number.isFinite(start) ||
-                        start < 0
-                    ) {
-                        return;
-                    }
-
-                    if (
-                        !Number.isFinite(duration) ||
-                        duration <= 0
-                    ) {
-                        return;
-                    }
-
-                    const noteName =
-                        Tone.Frequency(
-                            midi,
-                            "midi"
-                        ).toNote();
-
-                    if (
-                        typeof noteName !== "string" ||
-                        noteName.includes("NaN")
-                    ) {
-                        return;
-                    }
-
-                    events.push({
-
-                        time: start,
-
-                        note: noteName,
-
-                        duration: duration
-
-                    });
-
-                });
-
-                musicPart =
-                    new Tone.Part(
-                        (time, event) => {
-
-                            if (!piano || !pianoReady) {
-                                return;
-                            }
-
-                            try {
-
-                                piano.triggerAttackRelease(
-                                    event.note,
-                                    event.duration,
-                                    time
-                                );
-
-                            } catch (error) {
-
-                                console.warn(
-                                    "Piano note skipped:",
-                                    event.note,
-                                    error
-                                );
-
-                            }
-
-                        },
-                        events
-                    );
-
-                musicPart.loop = false;
-
-                musicPart.start(0);
-
-                console.log(
-                    "Tone music part created:",
-                    events.length,
-                    "valid notes"
-                );
-
-            }
-
-
-            /* =========================================================
-               BUILD CURSOR TIMELINE
-            ========================================================= */
-
-            function buildMusicCursorTimeline() {
-
-                cursorTimeline = [];
-
-                cursorTimelineReady = false;
-
-                if (
-                    !musicOSMD ||
-                    !musicOSMD.cursor ||
-                    !musicOSMD.cursor.iterator
-                ) {
-
-                    console.warn(
-                        "OSMD cursor is not available."
-                    );
-
-                    return;
-
-                }
-
-                try {
-
-                    const cursor =
-                        musicOSMD.cursor;
-
-                    cursor.reset();
-
-                    let safety = 0;
-
-                    while (
-                        !cursor.iterator.EndReached &&
-                        safety < 100000
-                    ) {
-
-                        const timestamp =
-                            cursor.iterator.currentTimeStamp;
-
-                        if (timestamp) {
-
-                            const realValue =
-                                Number(
-                                    timestamp.RealValue
-                                );
-
-                            if (
-                                Number.isFinite(
-                                    realValue
+                        const rawDuration =
+                            durationNode
+                                ? parseFloat(
+                                    durationNode.textContent
                                 )
-                            ) {
+                                : 0;
 
-                                const previous =
-                                    cursorTimeline[
-                                    cursorTimeline.length - 1
-                                    ];
+                        const duration =
+                            Number.isFinite(
+                                rawDuration
+                            )
+                                ? rawDuration /
+                                divisions
+                                : 0;
+
+                        const isRest =
+                            Array.from(
+                                child.children
+                            ).some(
+                                node =>
+                                    node.localName ===
+                                    "rest"
+                            );
+
+                        const isChord =
+                            Array.from(
+                                child.children
+                            ).some(
+                                node =>
+                                    node.localName ===
+                                    "chord"
+                            );
+
+                        const noteStart =
+                            isChord
+                                ? previousNoteStart
+                                : localTime;
+
+                        if (!isRest) {
+
+                            const pitch =
+                                Array.from(
+                                    child.children
+                                ).find(
+                                    node =>
+                                        node.localName ===
+                                        "pitch"
+                                );
+
+                            if (pitch) {
+
+                                const stepNode =
+                                    Array.from(
+                                        pitch.children
+                                    ).find(
+                                        node =>
+                                            node.localName ===
+                                            "step"
+                                    );
+
+                                const octaveNode =
+                                    Array.from(
+                                        pitch.children
+                                    ).find(
+                                        node =>
+                                            node.localName ===
+                                            "octave"
+                                    );
+
+                                const alterNode =
+                                    Array.from(
+                                        pitch.children
+                                    ).find(
+                                        node =>
+                                            node.localName ===
+                                            "alter"
+                                    );
 
                                 if (
-                                    cursorTimeline.length === 0 ||
-                                    Math.abs(
-                                        previous -
-                                        realValue
-                                    ) > 0.000001
+                                    stepNode &&
+                                    octaveNode
                                 ) {
 
-                                    cursorTimeline.push(
-                                        realValue
-                                    );
+                                    const step =
+                                        stepNode.textContent
+                                            .trim()
+                                            .toUpperCase();
+
+                                    const octave =
+                                        parseInt(
+                                            octaveNode.textContent,
+                                            10
+                                        );
+
+                                    const alter =
+                                        alterNode
+                                            ? parseFloat(
+                                                alterNode.textContent
+                                            )
+                                            : 0;
+
+                                    const midi =
+                                        musicPitchToMidi(
+                                            step,
+                                            octave,
+                                            Number.isFinite(alter)
+                                                ? alter
+                                                : 0
+                                        );
+
+                                    if (
+                                        Number.isFinite(midi) &&
+                                        midi >= 21 &&
+                                        midi <= 108
+                                    ) {
+
+                                        musicNotes.push({
+
+                                            midi:
+                                                Math.round(midi),
+
+                                            start:
+                                                partTime +
+                                                Math.max(
+                                                    0,
+                                                    noteStart
+                                                ),
+
+                                            duration:
+                                                Math.max(
+                                                    0.05,
+                                                    duration
+                                                )
+
+                                        });
+
+                                    }
 
                                 }
 
@@ -2536,123 +2136,669 @@
 
                         }
 
-                        cursor.next();
+                        if (!isChord) {
 
-                        safety++;
+                            previousNoteStart =
+                                localTime;
 
-                    }
+                            localTime += duration;
 
-                    cursor.reset();
+                        }
 
-                    cursor.show();
+                        measureMaximum =
+                            Math.max(
+                                measureMaximum,
+                                localTime
+                            );
 
-                    cursorRealValue = 0;
+                    });
 
-                    cursorTimelineReady =
-                        cursorTimeline.length > 0;
-
-                    console.log(
-                        "Built OSMD cursor timeline:",
-                        cursorTimeline.length,
-                        "positions"
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "Cursor timeline error:",
-                        error
-                    );
-
-                    cursorTimelineReady = false;
-
-                }
-
-            }
-
-
-            /* =========================================================
-               FIND CURSOR POSITION
-            ========================================================= */
-
-            function findCursorIndexForSeconds(seconds) {
-
-                if (!cursorTimeline.length) {
-                    return 0;
-                }
-
-                if (seconds <= 0) {
-                    return 0;
-                }
-
-                const secondsPerQuarter =
-                    60 / musicTempo;
-
-                const quarterPosition =
-                    seconds / secondsPerQuarter;
-
-                const wholeNotePosition =
-                    quarterPosition / 4;
-
-                const lastIndex =
-                    cursorTimeline.length - 1;
-
-                if (
-                    wholeNotePosition <=
-                    cursorTimeline[0]
-                ) {
-                    return 0;
-                }
-
-                if (
-                    wholeNotePosition >=
-                    cursorTimeline[lastIndex]
-                ) {
-                    return lastIndex;
-                }
-
-                let low = 0;
-
-                let high = lastIndex;
-
-                while (low < high) {
-
-                    const middle =
-                        Math.ceil(
-                            (low + high) / 2
+                    partTime +=
+                        Math.max(
+                            0,
+                            measureMaximum
                         );
 
-                    if (
-                        cursorTimeline[middle] <=
-                        wholeNotePosition
-                    ) {
+                });
 
-                        low = middle;
+                globalMaximum =
+                    Math.max(
+                        globalMaximum,
+                        partTime
+                    );
 
-                    } else {
+            });
 
-                        high = middle - 1;
+            const secondsPerQuarter =
+                60 / musicTempo;
 
-                    }
+            musicNotes.forEach(note => {
 
-                }
+                note.startSeconds =
+                    note.start *
+                    secondsPerQuarter;
 
-                return low;
+                note.durationSeconds =
+                    note.duration *
+                    secondsPerQuarter;
+
+            });
+
+            musicNotes.sort(
+                (a, b) =>
+                    a.startSeconds -
+                    b.startSeconds
+            );
+
+            musicDuration =
+                globalMaximum *
+                secondsPerQuarter;
+
+            musicNotes.forEach(note => {
+
+                musicDuration =
+                    Math.max(
+                        musicDuration,
+                        note.startSeconds +
+                        note.durationSeconds
+                    );
+
+            });
+
+            musicDuration += 0.1;
+
+        }
+
+
+        /* =========================================================
+           PITCH
+        ========================================================= */
+
+        function musicPitchToMidi(
+            step,
+            octave,
+            alter
+        ) {
+
+            const semitones = {
+
+                C: 0,
+                D: 2,
+                E: 4,
+                F: 5,
+                G: 7,
+                A: 9,
+                B: 11
+
+            };
+
+            if (
+                !Object.prototype.hasOwnProperty.call(
+                    semitones,
+                    step
+                )
+            ) {
+
+                return NaN;
 
             }
 
+            return (
+                (octave + 1) * 12 +
+                semitones[step] +
+                alter
+            );
 
-            /* =========================================================
-               RESET CURSOR
-            ========================================================= */
+        }
 
-            function resetMusicCursor() {
 
-                if (!musicOSMD || !musicOSMD.cursor) {
+        /* =========================================================
+           PIANO SETUP
+        ========================================================= */
+
+        async function setupPiano() {
+
+            if (pianoReady && piano) {
+                return;
+            }
+
+            if (pianoLoading) {
+                await pianoLoading;
+                return;
+            }
+
+            pianoLoading =
+                (async () => {
+
+                    musicStatus.textContent =
+                        "Loading piano...";
+
+                    await Tone.start();
+
+                    piano =
+                        new Tone.Sampler({
+
+                            urls: {
+
+                                C1: "C1.mp3",
+                                C2: "C2.mp3",
+                                C3: "C3.mp3",
+                                C4: "C4.mp3",
+                                C5: "C5.mp3",
+                                C6: "C6.mp3",
+                                C7: "C7.mp3"
+
+                            },
+
+                            release: 1.2,
+
+                            baseUrl:
+                                "https://tonejs.github.io/audio/salamander/"
+
+                        });
+
+                    const reverb =
+                        new Tone.Reverb({
+
+                            decay: 1.4,
+
+                            wet: 0.04
+
+                        });
+
+                    piano.volume.value = -7;
+
+                    piano.chain(
+                        reverb,
+                        Tone.Destination
+                    );
+
+                    await Tone.loaded();
+
+                    pianoReady = true;
+
+                    console.log(
+                        "Piano samples loaded."
+                    );
+
+                })();
+
+            try {
+
+                await pianoLoading;
+
+            } finally {
+
+                pianoLoading = null;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           TONE.PART
+        ========================================================= */
+
+        function destroyMusicPart() {
+
+            if (!musicPart) {
+                return;
+            }
+
+            try {
+                musicPart.stop();
+            } catch (error) {
+                console.warn(
+                    "Could not stop music part:",
+                    error
+                );
+            }
+
+            try {
+                musicPart.dispose();
+            } catch (error) {
+                console.warn(
+                    "Could not dispose music part:",
+                    error
+                );
+            }
+
+            musicPart = null;
+
+        }
+
+
+        function createMusicPart() {
+
+            destroyMusicPart();
+
+            Tone.Transport.cancel();
+
+            const events = [];
+
+            musicNotes.forEach(note => {
+
+                const midi =
+                    Number(note.midi);
+
+                const start =
+                    Number(note.startSeconds);
+
+                const duration =
+                    Number(note.durationSeconds);
+
+                if (!Number.isFinite(midi)) {
                     return;
                 }
 
-                try {
+                if (midi < 21 || midi > 108) {
+                    return;
+                }
+
+                if (
+                    !Number.isFinite(start) ||
+                    start < 0
+                ) {
+                    return;
+                }
+
+                if (
+                    !Number.isFinite(duration) ||
+                    duration <= 0
+                ) {
+                    return;
+                }
+
+                const noteName =
+                    Tone.Frequency(
+                        midi,
+                        "midi"
+                    ).toNote();
+
+                if (
+                    typeof noteName !== "string" ||
+                    noteName.includes("NaN")
+                ) {
+                    return;
+                }
+
+                events.push({
+
+                    time: start,
+
+                    note: noteName,
+
+                    duration: duration
+
+                });
+
+            });
+
+            musicPart =
+                new Tone.Part(
+                    (time, event) => {
+
+                        if (!piano || !pianoReady) {
+                            return;
+                        }
+
+                        try {
+
+                            piano.triggerAttackRelease(
+                                event.note,
+                                event.duration,
+                                time
+                            );
+
+                        } catch (error) {
+
+                            console.warn(
+                                "Piano note skipped:",
+                                event.note,
+                                error
+                            );
+
+                        }
+
+                    },
+                    events
+                );
+
+            musicPart.loop = false;
+
+            musicPart.start(0);
+
+            console.log(
+                "Tone music part created:",
+                events.length,
+                "valid notes"
+            );
+
+        }
+
+
+        /* =========================================================
+           BUILD CURSOR TIMELINE
+        ========================================================= */
+
+        function buildMusicCursorTimeline() {
+
+            cursorTimeline = [];
+
+            cursorTimelineReady = false;
+
+            if (
+                !musicOSMD ||
+                !musicOSMD.cursor ||
+                !musicOSMD.cursor.iterator
+            ) {
+
+                console.warn(
+                    "OSMD cursor is not available."
+                );
+
+                return;
+
+            }
+
+            try {
+
+                const cursor =
+                    musicOSMD.cursor;
+
+                cursor.reset();
+
+                let safety = 0;
+
+                while (
+                    !cursor.iterator.EndReached &&
+                    safety < 100000
+                ) {
+
+                    const timestamp =
+                        cursor.iterator.currentTimeStamp;
+
+                    if (timestamp) {
+
+                        const realValue =
+                            Number(
+                                timestamp.RealValue
+                            );
+
+                        if (
+                            Number.isFinite(
+                                realValue
+                            )
+                        ) {
+
+                            const previous =
+                                cursorTimeline[
+                                cursorTimeline.length - 1
+                                ];
+
+                            if (
+                                cursorTimeline.length === 0 ||
+                                Math.abs(
+                                    previous -
+                                    realValue
+                                ) > 0.000001
+                            ) {
+
+                                cursorTimeline.push(
+                                    realValue
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                    cursor.next();
+
+                    safety++;
+
+                }
+
+                cursor.reset();
+
+                cursor.show();
+
+                cursorRealValue = 0;
+
+                cursorTimelineReady =
+                    cursorTimeline.length > 0;
+
+                console.log(
+                    "Built OSMD cursor timeline:",
+                    cursorTimeline.length,
+                    "positions"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Cursor timeline error:",
+                    error
+                );
+
+                cursorTimelineReady = false;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           FIND CURSOR POSITION
+        ========================================================= */
+
+        function findCursorIndexForSeconds(seconds) {
+
+            if (!cursorTimeline.length) {
+                return 0;
+            }
+
+            if (seconds <= 0) {
+                return 0;
+            }
+
+            const secondsPerQuarter =
+                60 / musicTempo;
+
+            const quarterPosition =
+                seconds / secondsPerQuarter;
+
+            const wholeNotePosition =
+                quarterPosition / 4;
+
+            const lastIndex =
+                cursorTimeline.length - 1;
+
+            if (
+                wholeNotePosition <=
+                cursorTimeline[0]
+            ) {
+                return 0;
+            }
+
+            if (
+                wholeNotePosition >=
+                cursorTimeline[lastIndex]
+            ) {
+                return lastIndex;
+            }
+
+            let low = 0;
+
+            let high = lastIndex;
+
+            while (low < high) {
+
+                const middle =
+                    Math.ceil(
+                        (low + high) / 2
+                    );
+
+                if (
+                    cursorTimeline[middle] <=
+                    wholeNotePosition
+                ) {
+
+                    low = middle;
+
+                } else {
+
+                    high = middle - 1;
+
+                }
+
+            }
+
+            return low;
+
+        }
+
+
+        /* =========================================================
+           RESET CURSOR
+        ========================================================= */
+
+        function resetMusicCursor() {
+
+            if (!musicOSMD || !musicOSMD.cursor) {
+                return;
+            }
+
+            try {
+
+                musicOSMD.cursor.reset();
+
+                musicOSMD.cursor.show();
+
+                cursorRealValue = 0;
+
+                scrollCursorIntoView(true);
+
+            } catch (error) {
+
+                console.warn(
+                    "Cursor reset failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           AUTO-SCROLL
+        ========================================================= */
+
+        function scrollCursorIntoView(instant) {
+
+            if (!musicOSMD || !musicOSMD.cursor) {
+                return;
+            }
+
+            const cursorElement =
+                musicOSMD.cursor.cursorElement ||
+                musicViewer.querySelector(
+                    '[id*="cursor"]'
+                );
+
+            if (!cursorElement) {
+                return;
+            }
+
+            const margin = 32;
+
+            const cursorTop =
+                cursorElement.offsetTop;
+
+            const cursorBottom =
+                cursorTop +
+                cursorElement.offsetHeight;
+
+            const viewTop =
+                musicViewer.scrollTop;
+
+            const viewBottom =
+                viewTop +
+                musicViewer.clientHeight;
+
+            const outOfView =
+                cursorBottom > viewBottom - margin ||
+                cursorTop < viewTop + margin;
+
+            if (!outOfView) {
+                return;
+            }
+
+            const targetTop =
+                Math.max(
+                    0,
+                    cursorTop - margin
+                );
+
+            try {
+
+                musicViewer.scrollTo({
+
+                    top: targetTop,
+
+                    behavior:
+                        instant ? "auto" : "smooth"
+
+                });
+
+            } catch (error) {
+
+                musicViewer.scrollTop =
+                    targetTop;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           UPDATE CURSOR
+        ========================================================= */
+
+        function updateMusicCursor(seconds) {
+
+            if (
+                !musicOSMD ||
+                !musicOSMD.cursor ||
+                !musicOSMD.cursor.iterator ||
+                !cursorTimelineReady
+            ) {
+                return;
+            }
+
+            if (!Number.isFinite(seconds)) {
+                return;
+            }
+
+            const targetIndex =
+                findCursorIndexForSeconds(seconds);
+
+            if (
+                targetIndex < 0 ||
+                targetIndex >= cursorTimeline.length
+            ) {
+                return;
+            }
+
+            const targetRealValue =
+                cursorTimeline[targetIndex];
+
+            try {
+
+                if (targetRealValue < cursorRealValue) {
 
                     musicOSMD.cursor.reset();
 
@@ -2660,577 +2806,177 @@
 
                     cursorRealValue = 0;
 
-                    scrollCursorIntoView(true);
-
-                } catch (error) {
-
-                    console.warn(
-                        "Cursor reset failed:",
-                        error
-                    );
-
                 }
 
-            }
+                let safety = 0;
 
-
-            /* =========================================================
-               AUTO-SCROLL
-            ========================================================= */
-
-            function scrollCursorIntoView(instant) {
-
-                if (!musicOSMD || !musicOSMD.cursor) {
-                    return;
-                }
-
-                const cursorElement =
-                    musicOSMD.cursor.cursorElement ||
-                    musicViewer.querySelector(
-                        '[id*="cursor"]'
-                    );
-
-                if (!cursorElement) {
-                    return;
-                }
-
-                const margin = 32;
-
-                const cursorTop =
-                    cursorElement.offsetTop;
-
-                const cursorBottom =
-                    cursorTop +
-                    cursorElement.offsetHeight;
-
-                const viewTop =
-                    musicViewer.scrollTop;
-
-                const viewBottom =
-                    viewTop +
-                    musicViewer.clientHeight;
-
-                const outOfView =
-                    cursorBottom > viewBottom - margin ||
-                    cursorTop < viewTop + margin;
-
-                if (!outOfView) {
-                    return;
-                }
-
-                const targetTop =
-                    Math.max(
-                        0,
-                        cursorTop - margin
-                    );
-
-                try {
-
-                    musicViewer.scrollTo({
-
-                        top: targetTop,
-
-                        behavior:
-                            instant ? "auto" : "smooth"
-
-                    });
-
-                } catch (error) {
-
-                    musicViewer.scrollTop =
-                        targetTop;
-
-                }
-
-            }
-
-
-            /* =========================================================
-               UPDATE CURSOR
-            ========================================================= */
-
-            function updateMusicCursor(seconds) {
-
-                if (
-                    !musicOSMD ||
-                    !musicOSMD.cursor ||
-                    !musicOSMD.cursor.iterator ||
-                    !cursorTimelineReady
+                while (
+                    !musicOSMD.cursor.iterator.EndReached &&
+                    safety < 20000
                 ) {
-                    return;
-                }
 
-                if (!Number.isFinite(seconds)) {
-                    return;
-                }
+                    const timestamp =
+                        musicOSMD.cursor.iterator.currentTimeStamp;
 
-                const targetIndex =
-                    findCursorIndexForSeconds(seconds);
-
-                if (
-                    targetIndex < 0 ||
-                    targetIndex >= cursorTimeline.length
-                ) {
-                    return;
-                }
-
-                const targetRealValue =
-                    cursorTimeline[targetIndex];
-
-                try {
-
-                    if (targetRealValue < cursorRealValue) {
-
-                        musicOSMD.cursor.reset();
-
-                        musicOSMD.cursor.show();
-
-                        cursorRealValue = 0;
-
+                    if (!timestamp) {
+                        break;
                     }
 
-                    let safety = 0;
+                    const currentRealValue =
+                        Number(timestamp.RealValue);
 
-                    while (
-                        !musicOSMD.cursor.iterator.EndReached &&
-                        safety < 20000
-                    ) {
-
-                        const timestamp =
-                            musicOSMD.cursor.iterator.currentTimeStamp;
-
-                        if (!timestamp) {
-                            break;
-                        }
-
-                        const currentRealValue =
-                            Number(timestamp.RealValue);
-
-                        if (!Number.isFinite(currentRealValue)) {
-                            break;
-                        }
-
-                        if (currentRealValue >= targetRealValue) {
-                            break;
-                        }
-
-                        musicOSMD.cursor.next();
-
-                        safety++;
-
+                    if (!Number.isFinite(currentRealValue)) {
+                        break;
                     }
 
-                    cursorRealValue =
-                        targetRealValue;
+                    if (currentRealValue >= targetRealValue) {
+                        break;
+                    }
 
-                    musicOSMD.cursor.show();
+                    musicOSMD.cursor.next();
 
-                    scrollCursorIntoView(false);
-
-                } catch (error) {
-
-                    console.warn(
-                        "Cursor update failed:",
-                        error
-                    );
+                    safety++;
 
                 }
 
-            }
+                cursorRealValue =
+                    targetRealValue;
 
+                musicOSMD.cursor.show();
 
-            /* =========================================================
-               TIME FORMAT
-            ========================================================= */
+                scrollCursorIntoView(false);
 
-            function formatMusicTime(seconds) {
+            } catch (error) {
 
-                seconds =
-                    Math.max(
-                        0,
-                        Number(seconds) || 0
-                    );
-
-                const minutes =
-                    Math.floor(
-                        seconds / 60
-                    );
-
-                const remaining =
-                    Math.floor(
-                        seconds % 60
-                    );
-
-                return (
-                    minutes +
-                    ":" +
-                    String(
-                        remaining
-                    ).padStart(
-                        2,
-                        "0"
-                    )
+                console.warn(
+                    "Cursor update failed:",
+                    error
                 );
 
             }
 
+        }
 
-            /* =========================================================
-               CURRENT PLAYBACK POSITION
-            ========================================================= */
 
-            function getCurrentMusicPosition() {
+        /* =========================================================
+           TIME FORMAT
+        ========================================================= */
 
-                if (!musicPlaying) {
-                    return musicPausePosition;
-                }
+        function formatMusicTime(seconds) {
 
-                return Math.max(
+            seconds =
+                Math.max(
                     0,
-                    Math.min(
-                        musicDuration,
-                        Tone.Transport.seconds
-                    )
+                    Number(seconds) || 0
                 );
+
+            const minutes =
+                Math.floor(
+                    seconds / 60
+                );
+
+            const remaining =
+                Math.floor(
+                    seconds % 60
+                );
+
+            return (
+                minutes +
+                ":" +
+                String(
+                    remaining
+                ).padStart(
+                    2,
+                    "0"
+                )
+            );
+
+        }
+
+
+        /* =========================================================
+           CURRENT PLAYBACK POSITION
+        ========================================================= */
+
+        function getCurrentMusicPosition() {
+
+            if (!musicPlaying) {
+                return musicPausePosition;
+            }
+
+            return Math.max(
+                0,
+                Math.min(
+                    musicDuration,
+                    Tone.Transport.seconds
+                )
+            );
+
+        }
+
+
+        /* =========================================================
+           PLAY
+        ========================================================= */
+
+        async function playMusic() {
+
+            if (startingPlayback) {
+                return;
+            }
+
+            if (!musicOSMD || !musicNotes.length) {
+
+                musicStatus.textContent =
+                    "Sheet music is not ready";
+
+                return;
 
             }
 
+            startingPlayback = true;
 
-            /* =========================================================
-               PLAY
-            ========================================================= */
+            try {
 
-            async function playMusic() {
+                await Tone.start();
 
-                if (startingPlayback) {
-                    return;
+                await setupPiano();
+
+                if (!musicPart) {
+                    createMusicPart();
                 }
 
-                if (!musicOSMD || !musicNotes.length) {
+                let startPosition =
+                    musicPaused
+                        ? musicPausePosition
+                        : 0;
 
-                    musicStatus.textContent =
-                        "Sheet music is not ready";
-
-                    return;
-
+                if (startPosition >= musicDuration) {
+                    startPosition = 0;
                 }
 
-                startingPlayback = true;
-
-                try {
-
-                    await Tone.start();
-
-                    await setupPiano();
-
-                    if (!musicPart) {
-                        createMusicPart();
-                    }
-
-                    let startPosition =
-                        musicPaused
-                            ? musicPausePosition
-                            : 0;
-
-                    if (startPosition >= musicDuration) {
-                        startPosition = 0;
-                    }
+                if (
+                    musicLoopEnabled &&
+                    musicLoopEnd > musicLoopStart
+                ) {
 
                     if (
-                        musicLoopEnabled &&
-                        musicLoopEnd > musicLoopStart
+                        startPosition < musicLoopStart ||
+                        startPosition >= musicLoopEnd
                     ) {
 
-                        if (
-                            startPosition < musicLoopStart ||
-                            startPosition >= musicLoopEnd
-                        ) {
-
-                            startPosition =
-                                musicLoopStart;
-
-                        }
+                        startPosition =
+                            musicLoopStart;
 
                     }
 
-                    if (startPosition <= 0.001 && !musicPaused) {
-
-                        Tone.Transport.stop();
-
-                        Tone.Transport.cancel();
-
-                        createMusicPart();
-
-                    }
-
-                    resetMusicCursor();
-
-                    updateMusicCursor(
-                        startPosition
-                    );
-
-                    Tone.Transport.seconds =
-                        startPosition;
-
-                    Tone.Transport.start();
-
-                    musicPlaying = true;
-
-                    musicPaused = false;
-
-                    musicStatus.textContent =
-                        "Playing";
-
-                    musicPlay.disabled = true;
-
-                    musicPause.disabled = false;
-
-                    musicStop.disabled = false;
-
-                    updateMusicPlayback();
-
-                } catch (error) {
-
-                    console.error(
-                        "Playback error:",
-                        error
-                    );
-
-                    musicStatus.textContent =
-                        "Click Play again to enable audio";
-
-                } finally {
-
-                    startingPlayback = false;
-
                 }
 
-            }
+                if (startPosition <= 0.001 && !musicPaused) {
 
+                    Tone.Transport.stop();
 
-            /* =========================================================
-               PLAYBACK LOOP
-            ========================================================= */
-
-            function updateMusicPlayback() {
-
-                if (!musicPlaying) {
-                    return;
-                }
-
-                const elapsed =
-                    Tone.Transport.seconds;
-
-                if (
-                    musicLoopEnabled &&
-                    musicLoopEnd > musicLoopStart &&
-                    elapsed >= musicLoopEnd
-                ) {
-
-                    Tone.Transport.seconds =
-                        musicLoopStart;
-
-                    resetMusicCursor();
-
-                    updateMusicCursor(
-                        musicLoopStart
-                    );
-
-                    musicProgress.value =
-                        (musicLoopStart / musicDuration) * 100;
-
-                    musicCurrentTime.textContent =
-                        formatMusicTime(
-                            musicLoopStart
-                        );
-
-                    musicAnimationFrame =
-                        requestAnimationFrame(
-                            updateMusicPlayback
-                        );
-
-                    return;
-
-                }
-
-                if (elapsed >= musicDuration) {
-
-                    finishMusicPlayback();
-
-                    return;
-
-                }
-
-                if (musicProgress) {
-
-                    musicProgress.value =
-                        (elapsed / musicDuration) * 100;
-
-                }
-
-                if (musicCurrentTime) {
-
-                    musicCurrentTime.textContent =
-                        formatMusicTime(elapsed);
-
-                }
-
-                if (musicDurationText) {
-
-                    musicDurationText.textContent =
-                        formatMusicTime(
-                            musicDuration
-                        );
-
-                }
-
-                updateMusicCursor(elapsed);
-
-                musicAnimationFrame =
-                    requestAnimationFrame(
-                        updateMusicPlayback
-                    );
-
-            }
-
-
-            /* =========================================================
-               FINISH
-            ========================================================= */
-
-            function finishMusicPlayback() {
-
-                musicPlaying = false;
-
-                musicPaused = false;
-
-                musicPausePosition = 0;
-
-                if (musicAnimationFrame) {
-
-                    cancelAnimationFrame(
-                        musicAnimationFrame
-                    );
-
-                    musicAnimationFrame = null;
-
-                }
-
-                Tone.Transport.stop();
-
-                updateMusicCursor(
-                    musicDuration
-                );
-
-                musicProgress.value = 100;
-
-                musicCurrentTime.textContent =
-                    formatMusicTime(
-                        musicDuration
-                    );
-
-                musicStatus.textContent =
-                    "Finished";
-
-                musicPlay.disabled = false;
-
-                musicPause.disabled = true;
-
-            }
-
-
-            /* =========================================================
-               PAUSE
-            ========================================================= */
-
-            function pauseMusic() {
-
-                if (!musicPlaying) {
-                    return;
-                }
-
-                const position =
-                    getCurrentMusicPosition();
-
-                musicPausePosition =
-                    position;
-
-                if (
-                    musicLoopEnabled &&
-                    musicLoopEnd > musicLoopStart &&
-                    musicPausePosition >= musicLoopEnd
-                ) {
-
-                    musicPausePosition =
-                        musicLoopStart;
-
-                }
-
-                musicPlaying = false;
-
-                musicPaused = true;
-
-                if (musicAnimationFrame) {
-
-                    cancelAnimationFrame(
-                        musicAnimationFrame
-                    );
-
-                    musicAnimationFrame = null;
-
-                }
-
-                Tone.Transport.pause();
-
-                updateMusicCursor(
-                    musicPausePosition
-                );
-
-                musicProgress.value =
-                    (musicPausePosition / musicDuration) * 100;
-
-                musicCurrentTime.textContent =
-                    formatMusicTime(
-                        musicPausePosition
-                    );
-
-                musicStatus.textContent =
-                    "Paused";
-
-                musicPlay.disabled = false;
-
-                musicPause.disabled = true;
-
-            }
-
-
-            /* =========================================================
-               STOP
-            ========================================================= */
-
-            function stopMusicPlayback() {
-
-                musicPlaying = false;
-
-                musicPaused = false;
-
-                musicPausePosition = 0;
-
-                if (musicAnimationFrame) {
-
-                    cancelAnimationFrame(
-                        musicAnimationFrame
-                    );
-
-                    musicAnimationFrame = null;
-
-                }
-
-                Tone.Transport.stop();
-
-                Tone.Transport.cancel();
-
-                if (musicNotes.length) {
+                    Tone.Transport.cancel();
 
                     createMusicPart();
 
@@ -3238,122 +2984,376 @@
 
                 resetMusicCursor();
 
-                if (musicProgress) {
+                updateMusicCursor(
+                    startPosition
+                );
 
-                    musicProgress.value = 0;
+                Tone.Transport.seconds =
+                    startPosition;
 
-                }
+                Tone.Transport.start();
 
-                if (musicCurrentTime) {
+                musicPlaying = true;
 
-                    musicCurrentTime.textContent =
-                        "0:00";
-
-                }
+                musicPaused = false;
 
                 musicStatus.textContent =
-                    "Ready";
+                    "Playing";
 
-                musicPlay.disabled =
-                    !musicOSMD;
+                musicPlay.disabled = true;
 
-                musicPause.disabled = true;
+                musicPause.disabled = false;
 
-                musicStop.disabled =
-                    !musicOSMD;
+                musicStop.disabled = false;
+
+                updateMusicPlayback();
+
+            } catch (error) {
+
+                console.error(
+                    "Playback error:",
+                    error
+                );
+
+                musicStatus.textContent =
+                    "Click Play again to enable audio";
+
+            } finally {
+
+                startingPlayback = false;
 
             }
 
+        }
 
-            /* =========================================================
-               MUSIC BUTTONS
-            ========================================================= */
 
-            musicPlay.addEventListener(
-                "click",
-                playMusic
+        /* =========================================================
+           PLAYBACK LOOP
+        ========================================================= */
+
+        function updateMusicPlayback() {
+
+            if (!musicPlaying) {
+                return;
+            }
+
+            const elapsed =
+                Tone.Transport.seconds;
+
+            if (
+                musicLoopEnabled &&
+                musicLoopEnd > musicLoopStart &&
+                elapsed >= musicLoopEnd
+            ) {
+
+                Tone.Transport.seconds =
+                    musicLoopStart;
+
+                resetMusicCursor();
+
+                updateMusicCursor(
+                    musicLoopStart
+                );
+
+                musicProgress.value =
+                    (musicLoopStart / musicDuration) * 100;
+
+                musicCurrentTime.textContent =
+                    formatMusicTime(
+                        musicLoopStart
+                    );
+
+                musicAnimationFrame =
+                    requestAnimationFrame(
+                        updateMusicPlayback
+                    );
+
+                return;
+
+            }
+
+            if (elapsed >= musicDuration) {
+
+                finishMusicPlayback();
+
+                return;
+
+            }
+
+            if (musicProgress) {
+
+                musicProgress.value =
+                    (elapsed / musicDuration) * 100;
+
+            }
+
+            if (musicCurrentTime) {
+
+                musicCurrentTime.textContent =
+                    formatMusicTime(elapsed);
+
+            }
+
+            if (musicDurationText) {
+
+                musicDurationText.textContent =
+                    formatMusicTime(
+                        musicDuration
+                    );
+
+            }
+
+            updateMusicCursor(elapsed);
+
+            musicAnimationFrame =
+                requestAnimationFrame(
+                    updateMusicPlayback
+                );
+
+        }
+
+
+        /* =========================================================
+           FINISH
+        ========================================================= */
+
+        function finishMusicPlayback() {
+
+            musicPlaying = false;
+
+            musicPaused = false;
+
+            musicPausePosition = 0;
+
+            if (musicAnimationFrame) {
+
+                cancelAnimationFrame(
+                    musicAnimationFrame
+                );
+
+                musicAnimationFrame = null;
+
+            }
+
+            Tone.Transport.stop();
+
+            updateMusicCursor(
+                musicDuration
             );
 
-            musicPause.addEventListener(
-                "click",
-                pauseMusic
+            musicProgress.value = 100;
+
+            musicCurrentTime.textContent =
+                formatMusicTime(
+                    musicDuration
+                );
+
+            musicStatus.textContent =
+                "Finished";
+
+            musicPlay.disabled = false;
+
+            musicPause.disabled = true;
+
+        }
+
+
+        /* =========================================================
+           PAUSE
+        ========================================================= */
+
+        function pauseMusic() {
+
+            if (!musicPlaying) {
+                return;
+            }
+
+            const position =
+                getCurrentMusicPosition();
+
+            musicPausePosition =
+                position;
+
+            if (
+                musicLoopEnabled &&
+                musicLoopEnd > musicLoopStart &&
+                musicPausePosition >= musicLoopEnd
+            ) {
+
+                musicPausePosition =
+                    musicLoopStart;
+
+            }
+
+            musicPlaying = false;
+
+            musicPaused = true;
+
+            if (musicAnimationFrame) {
+
+                cancelAnimationFrame(
+                    musicAnimationFrame
+                );
+
+                musicAnimationFrame = null;
+
+            }
+
+            Tone.Transport.pause();
+
+            updateMusicCursor(
+                musicPausePosition
             );
 
-            musicStop.addEventListener(
-                "click",
-                stopMusicPlayback
-            );
+            musicProgress.value =
+                (musicPausePosition / musicDuration) * 100;
+
+            musicCurrentTime.textContent =
+                formatMusicTime(
+                    musicPausePosition
+                );
+
+            musicStatus.textContent =
+                "Paused";
+
+            musicPlay.disabled = false;
+
+            musicPause.disabled = true;
+
+        }
 
 
-            /* =========================================================
-               PROGRESS BAR SEEK
-            ========================================================= */
+        /* =========================================================
+           STOP
+        ========================================================= */
 
-            musicProgress.addEventListener(
-                "input",
-                () => {
+        function stopMusicPlayback() {
 
-                    if (!musicDuration) {
-                        return;
-                    }
+            musicPlaying = false;
 
-                    let position =
-                        (
-                            Number(
-                                musicProgress.value
-                            ) / 100
-                        ) *
-                        musicDuration;
+            musicPaused = false;
 
-                    position =
-                        Math.max(
-                            0,
-                            Math.min(
-                                musicDuration,
-                                position
-                            )
-                        );
+            musicPausePosition = 0;
 
-                    musicCurrentTime.textContent =
-                        formatMusicTime(position);
+            if (musicAnimationFrame) {
 
-                    if (musicPlaying) {
+                cancelAnimationFrame(
+                    musicAnimationFrame
+                );
 
-                        if (
-                            musicLoopEnabled &&
-                            musicLoopEnd > musicLoopStart
-                        ) {
+                musicAnimationFrame = null;
 
-                            if (position < musicLoopStart) {
-                                position =
-                                    musicLoopStart;
-                            }
+            }
 
-                            if (position >= musicLoopEnd) {
-                                position =
-                                    musicLoopStart;
-                            }
+            Tone.Transport.stop();
 
+            Tone.Transport.cancel();
+
+            if (musicNotes.length) {
+
+                createMusicPart();
+
+            }
+
+            resetMusicCursor();
+
+            if (musicProgress) {
+
+                musicProgress.value = 0;
+
+            }
+
+            if (musicCurrentTime) {
+
+                musicCurrentTime.textContent =
+                    "0:00";
+
+            }
+
+            musicStatus.textContent =
+                "Ready";
+
+            musicPlay.disabled =
+                !musicOSMD;
+
+            musicPause.disabled = true;
+
+            musicStop.disabled =
+                !musicOSMD;
+
+        }
+
+
+        /* =========================================================
+           MUSIC BUTTONS
+        ========================================================= */
+
+        musicPlay.addEventListener(
+            "click",
+            playMusic
+        );
+
+        musicPause.addEventListener(
+            "click",
+            pauseMusic
+        );
+
+        musicStop.addEventListener(
+            "click",
+            stopMusicPlayback
+        );
+
+
+        /* =========================================================
+           PROGRESS BAR SEEK
+        ========================================================= */
+
+        musicProgress.addEventListener(
+            "input",
+            () => {
+
+                if (!musicDuration) {
+                    return;
+                }
+
+                let position =
+                    (
+                        Number(
+                            musicProgress.value
+                        ) / 100
+                    ) *
+                    musicDuration;
+
+                position =
+                    Math.max(
+                        0,
+                        Math.min(
+                            musicDuration,
+                            position
+                        )
+                    );
+
+                musicCurrentTime.textContent =
+                    formatMusicTime(position);
+
+                if (musicPlaying) {
+
+                    if (
+                        musicLoopEnabled &&
+                        musicLoopEnd > musicLoopStart
+                    ) {
+
+                        if (position < musicLoopStart) {
+                            position =
+                                musicLoopStart;
                         }
 
-                        Tone.Transport.seconds =
-                            position;
-
-                        resetMusicCursor();
-
-                        updateMusicCursor(
-                            position
-                        );
-
-                        return;
+                        if (position >= musicLoopEnd) {
+                            position =
+                                musicLoopStart;
+                        }
 
                     }
-
-                    musicPausePosition =
-                        position;
-
-                    musicPaused =
-                        position > 0;
 
                     Tone.Transport.seconds =
                         position;
@@ -3364,251 +3364,270 @@
                         position
                     );
 
-                }
-            );
-
-
-            /* =========================================================
-               LOOP A
-            ========================================================= */
-
-            loopStartButton.addEventListener(
-                "click",
-                () => {
-
-                    const position =
-                        Math.max(
-                            0,
-                            Math.min(
-                                musicDuration,
-                                getCurrentMusicPosition()
-                            )
-                        );
-
-                    musicLoopStart =
-                        position;
-
-                    if (
-                        musicLoopEnd <=
-                        musicLoopStart
-                    ) {
-
-                        musicLoopEnd =
-                            musicDuration;
-
-                    }
-
-                    musicStatus.textContent =
-                        "A: " +
-                        formatMusicTime(
-                            musicLoopStart
-                        );
+                    return;
 
                 }
-            );
+
+                musicPausePosition =
+                    position;
+
+                musicPaused =
+                    position > 0;
+
+                Tone.Transport.seconds =
+                    position;
+
+                resetMusicCursor();
+
+                updateMusicCursor(
+                    position
+                );
+
+            }
+        );
 
 
-            /* =========================================================
-               LOOP B
-            ========================================================= */
+        /* =========================================================
+           LOOP A
+        ========================================================= */
 
-            loopEndButton.addEventListener(
-                "click",
-                () => {
+        loopStartButton.addEventListener(
+            "click",
+            () => {
 
-                    const position =
-                        Math.max(
-                            0,
-                            Math.min(
-                                musicDuration,
-                                getCurrentMusicPosition()
-                            )
-                        );
-
-                    musicLoopEnd =
-                        position;
-
-                    if (
-                        musicLoopEnd <=
-                        musicLoopStart
-                    ) {
-
-                        musicStatus.textContent =
-                            "B must be after A";
-
-                        musicLoopEnd = 0;
-
-                        return;
-
-                    }
-
-                    musicStatus.textContent =
-                        "B: " +
-                        formatMusicTime(
-                            musicLoopEnd
-                        );
-
-                }
-            );
-
-
-            /* =========================================================
-               LOOP TOGGLE
-            ========================================================= */
-
-            loopToggleButton.addEventListener(
-                "click",
-                () => {
-
-                    if (
-                        musicLoopEnd <=
-                        musicLoopStart
-                    ) {
-
-                        musicStatus.textContent =
-                            "Set A and B first";
-
-                        return;
-
-                    }
-
-                    musicLoopEnabled =
-                        !musicLoopEnabled;
-
-                    loopToggleButton.classList.toggle(
-                        "active",
-                        musicLoopEnabled
+                const position =
+                    Math.max(
+                        0,
+                        Math.min(
+                            musicDuration,
+                            getCurrentMusicPosition()
+                        )
                     );
 
-                    musicStatus.textContent =
-                        musicLoopEnabled
-                            ? "Looping"
-                            : (
-                                musicPlaying
-                                    ? "Playing"
-                                    : "Ready"
-                            );
+                musicLoopStart =
+                    position;
+
+                if (
+                    musicLoopEnd <=
+                    musicLoopStart
+                ) {
+
+                    musicLoopEnd =
+                        musicDuration;
 
                 }
+
+                musicStatus.textContent =
+                    "A: " +
+                    formatMusicTime(
+                        musicLoopStart
+                    );
+
+            }
+        );
+
+
+        /* =========================================================
+           LOOP B
+        ========================================================= */
+
+        loopEndButton.addEventListener(
+            "click",
+            () => {
+
+                const position =
+                    Math.max(
+                        0,
+                        Math.min(
+                            musicDuration,
+                            getCurrentMusicPosition()
+                        )
+                    );
+
+                musicLoopEnd =
+                    position;
+
+                if (
+                    musicLoopEnd <=
+                    musicLoopStart
+                ) {
+
+                    musicStatus.textContent =
+                        "B must be after A";
+
+                    musicLoopEnd = 0;
+
+                    return;
+
+                }
+
+                musicStatus.textContent =
+                    "B: " +
+                    formatMusicTime(
+                        musicLoopEnd
+                    );
+
+            }
+        );
+
+
+        /* =========================================================
+           LOOP TOGGLE
+        ========================================================= */
+
+        loopToggleButton.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    musicLoopEnd <=
+                    musicLoopStart
+                ) {
+
+                    musicStatus.textContent =
+                        "Set A and B first";
+
+                    return;
+
+                }
+
+                musicLoopEnabled =
+                    !musicLoopEnabled;
+
+                loopToggleButton.classList.toggle(
+                    "active",
+                    musicLoopEnabled
+                );
+
+                musicStatus.textContent =
+                    musicLoopEnabled
+                        ? "Looping"
+                        : (
+                            musicPlaying
+                                ? "Playing"
+                                : "Ready"
+                        );
+
+            }
+        );
+
+
+        /* =========================================================
+           CLOSE MUSIC
+        ========================================================= */
+
+        function closeMusicViewer() {
+
+            stopMusicPlayback();
+
+            destroyMusicPart();
+
+            musicModal.classList.remove(
+                "open"
             );
 
+            musicModal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
 
-            /* =========================================================
-               CLOSE MUSIC
-            ========================================================= */
+            document.body.classList.remove(
+                "modal-open"
+            );
 
-            function closeMusicViewer() {
+            if (musicOSMD) {
 
-                stopMusicPlayback();
+                try {
 
-                destroyMusicPart();
+                    musicOSMD.clear();
 
-                musicModal.classList.remove(
-                    "open"
-                );
+                } catch (error) {
 
-                musicModal.setAttribute(
-                    "aria-hidden",
-                    "true"
-                );
-
-                document.body.classList.remove(
-                    "modal-open"
-                );
-
-                if (musicOSMD) {
-
-                    try {
-
-                        musicOSMD.clear();
-
-                    } catch (error) {
-
-                        console.warn(error);
-
-                    }
+                    console.warn(error);
 
                 }
-
-                musicOSMD = null;
-
-                musicViewer.innerHTML = "";
-
-                currentMusicPiece = null;
-
-                musicXMLText = "";
-
-                musicNotes = [];
-
-                cursorTimeline = [];
-
-                cursorTimelineReady = false;
-
-                musicDuration = 0;
-
-                musicPlay.disabled = true;
-
-                musicPause.disabled = true;
-
-                musicStop.disabled = true;
 
             }
 
+            musicOSMD = null;
 
-            closeMusic.addEventListener(
-                "click",
-                closeMusicViewer
-            );
+            musicViewer.innerHTML = "";
+
+            currentMusicPiece = null;
+
+            musicXMLText = "";
+
+            musicNotes = [];
+
+            cursorTimeline = [];
+
+            cursorTimelineReady = false;
+
+            musicDuration = 0;
+
+            musicPlay.disabled = true;
+
+            musicPause.disabled = true;
+
+            musicStop.disabled = true;
+
+        }
 
 
-            musicModal.addEventListener(
-                "click",
-                event => {
+        closeMusic.addEventListener(
+            "click",
+            closeMusicViewer
+        );
 
-                    if (
-                        event.target ===
-                        musicModal
-                    ) {
 
-                        closeMusicViewer();
+        musicModal.addEventListener(
+            "click",
+            event => {
 
-                    }
+                if (
+                    event.target ===
+                    musicModal
+                ) {
+
+                    closeMusicViewer();
 
                 }
+
+            }
+        );
+
+
+        /* =========================================================
+           PDF VIEWER
+        ========================================================= */
+
+        let currentPDF = null;
+
+        let currentPageNumber = 1;
+
+        let scale = 1;
+
+
+        async function openPDF(piece) {
+
+            modal.classList.add(
+                "open"
             );
 
+            document.body.classList.add(
+                "modal-open"
+            );
 
-            /* =========================================================
-               PDF VIEWER
-            ========================================================= */
+            pdfTitle.textContent =
+                piece.title;
 
-            let currentPDF = null;
+            pdfDifficulty.textContent =
+                piece.difficulty;
 
-            let currentPageNumber = 1;
+            downloadPdf.href =
+                piece.pdf;
 
-            let scale = 1;
-
-
-            async function openPDF(piece) {
-
-                modal.classList.add(
-                    "open"
-                );
-
-                document.body.classList.add(
-                    "modal-open"
-                );
-
-                pdfTitle.textContent =
-                    piece.title;
-
-                pdfDifficulty.textContent =
-                    piece.difficulty;
-
-                downloadPdf.href =
-                    piece.pdf;
-
-                pdfViewer.innerHTML = `
+            pdfViewer.innerHTML = `
 
                 <div class="pdf-loading">
 
@@ -3622,41 +3641,41 @@
 
             `;
 
-                scale = 1;
+            scale = 1;
 
-                currentPageNumber = 1;
+            currentPageNumber = 1;
 
-                currentPDF = null;
+            currentPDF = null;
 
-                updateZoom();
+            updateZoom();
 
-                currentPage.textContent = "1";
+            currentPage.textContent = "1";
 
-                totalPages.textContent = "1";
+            totalPages.textContent = "1";
 
-                try {
+            try {
 
-                    const loadingTask =
-                        pdfjsLib.getDocument(
-                            piece.pdf
-                        );
-
-                    currentPDF =
-                        await loadingTask.promise;
-
-                    totalPages.textContent =
-                        currentPDF.numPages;
-
-                    await renderAllPages();
-
-                } catch (error) {
-
-                    console.error(
-                        "PDF loading error:",
-                        error
+                const loadingTask =
+                    pdfjsLib.getDocument(
+                        piece.pdf
                     );
 
-                    pdfViewer.innerHTML = `
+                currentPDF =
+                    await loadingTask.promise;
+
+                totalPages.textContent =
+                    currentPDF.numPages;
+
+                await renderAllPages();
+
+            } catch (error) {
+
+                console.error(
+                    "PDF loading error:",
+                    error
+                );
+
+                pdfViewer.innerHTML = `
 
                     <div class="pdf-error">
 
@@ -3670,466 +3689,411 @@
 
                         <small>
                             ${escapeHTML(
-                        error.message
-                    )}
+                    error.message
+                )}
                         </small>
 
                     </div>
 
                 `;
 
-                }
+            }
+
+        }
+
+
+        async function renderAllPages() {
+
+            if (!currentPDF) {
+                return;
+            }
+
+            pdfViewer.innerHTML = "";
+
+            for (
+                let pageNumber = 1;
+                pageNumber <= currentPDF.numPages;
+                pageNumber++
+            ) {
+
+                const page =
+                    await currentPDF.getPage(
+                        pageNumber
+                    );
+
+                const viewport =
+                    page.getViewport({
+                        scale
+                    });
+
+                const canvas =
+                    document.createElement(
+                        "canvas"
+                    );
+
+                canvas.className =
+                    "pdf-page";
+
+                canvas.dataset.page =
+                    pageNumber;
+
+                const context =
+                    canvas.getContext(
+                        "2d"
+                    );
+
+                canvas.width =
+                    Math.ceil(
+                        viewport.width
+                    );
+
+                canvas.height =
+                    Math.ceil(
+                        viewport.height
+                    );
+
+                pdfViewer.appendChild(
+                    canvas
+                );
+
+                await page.render({
+
+                    canvasContext:
+                        context,
+
+                    viewport
+
+                }).promise;
 
             }
 
+        }
 
-            async function renderAllPages() {
+
+        function updateZoom() {
+
+            zoomLevel.textContent =
+                Math.round(
+                    scale * 100
+                ) + "%";
+
+        }
+
+
+        zoomIn.addEventListener(
+            "click",
+            async () => {
 
                 if (!currentPDF) {
                     return;
                 }
 
-                pdfViewer.innerHTML = "";
+                if (scale >= 2.5) {
+                    return;
+                }
 
-                for (
-                    let pageNumber = 1;
-                    pageNumber <= currentPDF.numPages;
-                    pageNumber++
+                scale += 0.25;
+
+                updateZoom();
+
+                await renderAllPages();
+
+            }
+        );
+
+
+        zoomOut.addEventListener(
+            "click",
+            async () => {
+
+                if (!currentPDF) {
+                    return;
+                }
+
+                if (scale <= 0.5) {
+                    return;
+                }
+
+                scale -= 0.25;
+
+                updateZoom();
+
+                await renderAllPages();
+
+            }
+        );
+
+
+        previousPage.addEventListener(
+            "click",
+            () => {
+
+                if (!currentPDF) {
+                    return;
+                }
+
+                if (
+                    currentPageNumber <= 1
                 ) {
-
-                    const page =
-                        await currentPDF.getPage(
-                            pageNumber
-                        );
-
-                    const viewport =
-                        page.getViewport({
-                            scale
-                        });
-
-                    const canvas =
-                        document.createElement(
-                            "canvas"
-                        );
-
-                    canvas.className =
-                        "pdf-page";
-
-                    canvas.dataset.page =
-                        pageNumber;
-
-                    const context =
-                        canvas.getContext(
-                            "2d"
-                        );
-
-                    canvas.width =
-                        Math.ceil(
-                            viewport.width
-                        );
-
-                    canvas.height =
-                        Math.ceil(
-                            viewport.height
-                        );
-
-                    pdfViewer.appendChild(
-                        canvas
-                    );
-
-                    await page.render({
-
-                        canvasContext:
-                            context,
-
-                        viewport
-
-                    }).promise;
-
-                }
-
-            }
-
-
-            function updateZoom() {
-
-                zoomLevel.textContent =
-                    Math.round(
-                        scale * 100
-                    ) + "%";
-
-            }
-
-
-            zoomIn.addEventListener(
-                "click",
-                async () => {
-
-                    if (!currentPDF) {
-                        return;
-                    }
-
-                    if (scale >= 2.5) {
-                        return;
-                    }
-
-                    scale += 0.25;
-
-                    updateZoom();
-
-                    await renderAllPages();
-
-                }
-            );
-
-
-            zoomOut.addEventListener(
-                "click",
-                async () => {
-
-                    if (!currentPDF) {
-                        return;
-                    }
-
-                    if (scale <= 0.5) {
-                        return;
-                    }
-
-                    scale -= 0.25;
-
-                    updateZoom();
-
-                    await renderAllPages();
-
-                }
-            );
-
-
-            previousPage.addEventListener(
-                "click",
-                () => {
-
-                    if (!currentPDF) {
-                        return;
-                    }
-
-                    if (
-                        currentPageNumber <= 1
-                    ) {
-
-                        return;
-
-                    }
-
-                    currentPageNumber--;
-
-                    jumpToPage();
-
-                }
-            );
-
-
-            nextPage.addEventListener(
-                "click",
-                () => {
-
-                    if (!currentPDF) {
-                        return;
-                    }
-
-                    if (
-                        currentPageNumber >=
-                        currentPDF.numPages
-                    ) {
-
-                        return;
-
-                    }
-
-                    currentPageNumber++;
-
-                    jumpToPage();
-
-                }
-            );
-
-
-            function jumpToPage() {
-
-                currentPage.textContent =
-                    currentPageNumber;
-
-                const page =
-                    document.querySelector(
-                        `.pdf-page[data-page="${currentPageNumber}"]`
-                    );
-
-                if (page) {
-
-                    page.scrollIntoView({
-
-                        behavior: "smooth",
-
-                        block: "start"
-
-                    });
-
-                }
-
-            }
-
-
-            function closeViewer() {
-
-                modal.classList.remove(
-                    "open"
-                );
-
-                document.body.classList.remove(
-                    "modal-open"
-                );
-
-                pdfViewer.innerHTML = "";
-
-                currentPDF = null;
-
-                currentPageNumber = 1;
-
-            }
-
-
-            closePdf.addEventListener(
-                "click",
-                closeViewer
-            );
-
-
-            modal.addEventListener(
-                "click",
-                event => {
-
-                    if (
-                        event.target ===
-                        modal
-                    ) {
-
-                        closeViewer();
-
-                    }
-
-                }
-            );
-
-
-            /* =========================================================
-               SEARCH
-            ========================================================= */
-
-            searchInput.addEventListener(
-                "input",
-                () => {
-
-                    displaySheetMusic(
-                        findMatchingSheetMusic(
-                            searchInput.value.trim()
-                        )
-                    );
-
-                }
-            );
-
-
-            function loadRequestedSheetMusic() {
-
-                const params =
-                    new URLSearchParams(
-                        window.location.search
-                    );
-
-                const requestedSearch =
-                    params.get("search");
-
-                if (!requestedSearch) {
-
-                    displaySheetMusic(
-                        sheetMusic
-                    );
 
                     return;
 
                 }
 
-                searchInput.value =
-                    requestedSearch;
+                currentPageNumber--;
+
+                jumpToPage();
+
+            }
+        );
+
+
+        nextPage.addEventListener(
+            "click",
+            () => {
+
+                if (!currentPDF) {
+                    return;
+                }
+
+                if (
+                    currentPageNumber >=
+                    currentPDF.numPages
+                ) {
+
+                    return;
+
+                }
+
+                currentPageNumber++;
+
+                jumpToPage();
+
+            }
+        );
+
+
+        function jumpToPage() {
+
+            currentPage.textContent =
+                currentPageNumber;
+
+            const page =
+                document.querySelector(
+                    `.pdf-page[data-page="${currentPageNumber}"]`
+                );
+
+            if (page) {
+
+                page.scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "start"
+
+                });
+
+            }
+
+        }
+
+
+        function closeViewer() {
+
+            modal.classList.remove(
+                "open"
+            );
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+            pdfViewer.innerHTML = "";
+
+            currentPDF = null;
+
+            currentPageNumber = 1;
+
+        }
+
+
+        closePdf.addEventListener(
+            "click",
+            closeViewer
+        );
+
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    modal
+                ) {
+
+                    closeViewer();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           SEARCH
+        ========================================================= */
+
+        searchInput.addEventListener(
+            "input",
+            () => {
 
                 displaySheetMusic(
                     findMatchingSheetMusic(
-                        requestedSearch
+                        searchInput.value.trim()
                     )
                 );
 
             }
+        );
 
 
-            loadRequestedSheetMusic();
+        function loadRequestedSheetMusic() {
 
-
-            /* =========================================================
-               CONCERTOI AI
-            ========================================================= */
-
-            const concertoiAIButton =
-                document.getElementById(
-                    "concertoiAIButton"
+            const params =
+                new URLSearchParams(
+                    window.location.search
                 );
 
-            const concertoiAI =
-                document.getElementById(
-                    "concertoiAI"
+            const requestedSearch =
+                params.get("search");
+
+            if (!requestedSearch) {
+
+                displaySheetMusic(
+                    sheetMusic
                 );
 
-            const concertoiAIClose =
-                document.getElementById(
-                    "concertoiAIClose"
-                );
-
-            const concertoiAIForm =
-                document.getElementById(
-                    "concertoiAIForm"
-                );
-
-            const concertoiAIInput =
-                document.getElementById(
-                    "concertoiAIInput"
-                );
-
-            const concertoiAIMessages =
-                document.getElementById(
-                    "concertoiAIMessages"
-                );
-
-            const concertoiAISend =
-                document.getElementById(
-                    "concertoiAISend"
-                );
-
-
-            function openConcertoiAI() {
-
-                concertoiAI.classList.add(
-                    "open"
-                );
-
-                concertoiAI.setAttribute(
-                    "aria-hidden",
-                    "false"
-                );
-
-                concertoiAIButton.setAttribute(
-                    "aria-expanded",
-                    "true"
-                );
-
-                setTimeout(
-                    () => {
-
-                        concertoiAIInput.focus();
-
-                    },
-                    250
-                );
+                return;
 
             }
 
+            searchInput.value =
+                requestedSearch;
 
-            function closeConcertoiAI() {
+            displaySheetMusic(
+                findMatchingSheetMusic(
+                    requestedSearch
+                )
+            );
 
-                concertoiAI.classList.remove(
-                    "open"
+        }
+
+
+        loadRequestedSheetMusic();
+
+
+        /* =========================================================
+           CONCERTOI AI
+        ========================================================= */
+
+        const concertoiAIButton =
+            document.getElementById(
+                "concertoiAIButton"
+            );
+
+        const concertoiAI =
+            document.getElementById(
+                "concertoiAI"
+            );
+
+        const concertoiAIClose =
+            document.getElementById(
+                "concertoiAIClose"
+            );
+
+        const concertoiAIForm =
+            document.getElementById(
+                "concertoiAIForm"
+            );
+
+        const concertoiAIInput =
+            document.getElementById(
+                "concertoiAIInput"
+            );
+
+        const concertoiAIMessages =
+            document.getElementById(
+                "concertoiAIMessages"
+            );
+
+        const concertoiAISend =
+            document.getElementById(
+                "concertoiAISend"
+            );
+
+
+        function openConcertoiAI() {
+
+            concertoiAI.classList.add(
+                "open"
+            );
+
+            concertoiAI.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            concertoiAIButton.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            setTimeout(
+                () => {
+
+                    concertoiAIInput.focus();
+
+                },
+                250
+            );
+
+        }
+
+
+        function closeConcertoiAI() {
+
+            concertoiAI.classList.remove(
+                "open"
+            );
+
+            concertoiAI.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            concertoiAIButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+
+        function addMessage(
+            message,
+            type
+        ) {
+
+            const wrapper =
+                document.createElement(
+                    "div"
                 );
 
-                concertoiAI.setAttribute(
-                    "aria-hidden",
-                    "true"
-                );
+            wrapper.className =
+                `concertoi-ai-message ${type}`;
 
-                concertoiAIButton.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
-
-            }
-
-
-            function addMessage(
-                message,
-                type
-            ) {
-
-                const wrapper =
-                    document.createElement(
-                        "div"
-                    );
-
-                wrapper.className =
-                    `concertoi-ai-message ${type}`;
-
-                if (type === "ai") {
-
-                    const avatar =
-                        document.createElement(
-                            "div"
-                        );
-
-                    avatar.className =
-                        "concertoi-ai-message-avatar";
-
-                    avatar.textContent =
-                        "✦";
-
-                    wrapper.appendChild(
-                        avatar
-                    );
-
-                }
-
-                const bubble =
-                    document.createElement(
-                        "div"
-                    );
-
-                bubble.className =
-                    "concertoi-ai-bubble";
-
-                bubble.textContent =
-                    message;
-
-                wrapper.appendChild(
-                    bubble
-                );
-
-                concertoiAIMessages.appendChild(
-                    wrapper
-                );
-
-                concertoiAIMessages.scrollTop =
-                    concertoiAIMessages.scrollHeight;
-
-            }
-
-
-            function addTypingMessage() {
-
-                const wrapper =
-                    document.createElement(
-                        "div"
-                    );
-
-                wrapper.className =
-                    "concertoi-ai-message ai";
-
-                wrapper.id =
-                    "concertoiAITyping";
+            if (type === "ai") {
 
                 const avatar =
                     document.createElement(
@@ -4142,200 +4106,237 @@
                 avatar.textContent =
                     "✦";
 
-                const bubble =
-                    document.createElement(
-                        "div"
-                    );
-
-                bubble.className =
-                    "concertoi-ai-bubble typing";
-
-                bubble.innerHTML =
-                    "<span></span><span></span><span></span>";
-
                 wrapper.appendChild(
                     avatar
                 );
 
-                wrapper.appendChild(
-                    bubble
+            }
+
+            const bubble =
+                document.createElement(
+                    "div"
                 );
 
-                concertoiAIMessages.appendChild(
-                    wrapper
+            bubble.className =
+                "concertoi-ai-bubble";
+
+            bubble.textContent =
+                message;
+
+            wrapper.appendChild(
+                bubble
+            );
+
+            concertoiAIMessages.appendChild(
+                wrapper
+            );
+
+            concertoiAIMessages.scrollTop =
+                concertoiAIMessages.scrollHeight;
+
+        }
+
+
+        function addTypingMessage() {
+
+            const wrapper =
+                document.createElement(
+                    "div"
                 );
 
-                concertoiAIMessages.scrollTop =
-                    concertoiAIMessages.scrollHeight;
+            wrapper.className =
+                "concertoi-ai-message ai";
+
+            wrapper.id =
+                "concertoiAITyping";
+
+            const avatar =
+                document.createElement(
+                    "div"
+                );
+
+            avatar.className =
+                "concertoi-ai-message-avatar";
+
+            avatar.textContent =
+                "✦";
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+            bubble.className =
+                "concertoi-ai-bubble typing";
+
+            bubble.innerHTML =
+                "<span></span><span></span><span></span>";
+
+            wrapper.appendChild(
+                avatar
+            );
+
+            wrapper.appendChild(
+                bubble
+            );
+
+            concertoiAIMessages.appendChild(
+                wrapper
+            );
+
+            concertoiAIMessages.scrollTop =
+                concertoiAIMessages.scrollHeight;
+
+        }
+
+
+        function removeTypingMessage() {
+
+            const typing =
+                document.getElementById(
+                    "concertoiAITyping"
+                );
+
+            if (typing) {
+
+                typing.remove();
 
             }
 
+        }
 
-            function removeTypingMessage() {
 
-                const typing =
-                    document.getElementById(
-                        "concertoiAITyping"
-                    );
+        concertoiAIButton.addEventListener(
+            "click",
+            openConcertoiAI
+        );
 
-                if (typing) {
 
-                    typing.remove();
+        concertoiAIClose.addEventListener(
+            "click",
+            closeConcertoiAI
+        );
 
+
+        /* =========================================================
+           AI CHAT
+        ========================================================= */
+
+        concertoiAIForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+                const message =
+                    concertoiAIInput.value.trim();
+
+                if (!message) {
+                    return;
                 }
 
-            }
+                addMessage(
+                    message,
+                    "user"
+                );
 
+                concertoiAIInput.value = "";
 
-            concertoiAIButton.addEventListener(
-                "click",
-                openConcertoiAI
-            );
+                concertoiAISend.disabled =
+                    true;
 
+                concertoiAIInput.disabled =
+                    true;
 
-            concertoiAIClose.addEventListener(
-                "click",
-                closeConcertoiAI
-            );
+                addTypingMessage();
 
+                try {
 
-            /* =========================================================
-               AI CHAT
-            ========================================================= */
+                    const response =
+                        await fetch(
+                            "/api/chat",
+                            {
 
-            concertoiAIForm.addEventListener(
-                "submit",
-                async event => {
+                                method: "POST",
 
-                    event.preventDefault();
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
 
-                    const message =
-                        concertoiAIInput.value.trim();
+                                body:
+                                    JSON.stringify({
+                                        message
+                                    })
 
-                    if (!message) {
-                        return;
+                            }
+                        );
+
+                    const data =
+                        await response.json();
+
+                    removeTypingMessage();
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.error ||
+                            "Something went wrong."
+                        );
+
                     }
 
                     addMessage(
-                        message,
-                        "user"
+                        data.response ||
+                        "I couldn't generate a response.",
+                        "ai"
                     );
 
-                    concertoiAIInput.value = "";
+                    if (data.navigate) {
 
-                    concertoiAISend.disabled =
-                        true;
+                        let destination = null;
 
-                    concertoiAIInput.disabled =
-                        true;
+                        switch (
+                        data.navigate
+                        ) {
 
-                    addTypingMessage();
+                            case "home":
 
-                    try {
+                                destination =
+                                    "index.html";
 
-                        const response =
-                            await fetch(
-                                "/api/chat",
-                                {
+                                break;
 
-                                    method: "POST",
+                            case "about":
 
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json"
-                                    },
+                                destination =
+                                    "about.html";
 
-                                    body:
-                                        JSON.stringify({
-                                            message
-                                        })
+                                break;
 
-                                }
-                            );
+                            case "contact":
 
-                        const data =
-                            await response.json();
+                                destination =
+                                    "contact.html";
 
-                        removeTypingMessage();
+                                break;
 
-                        if (!response.ok) {
+                            case "sheetmusic":
 
-                            throw new Error(
-                                data.error ||
-                                "Something went wrong."
-                            );
+                                destination =
+                                    "sheetmusic.html";
+
+                                break;
 
                         }
 
-                        addMessage(
-                            data.response ||
-                            "I couldn't generate a response.",
-                            "ai"
-                        );
-
-                        if (data.navigate) {
-
-                            let destination = null;
-
-                            switch (
-                            data.navigate
-                            ) {
-
-                                case "home":
-
-                                    destination =
-                                        "index.html";
-
-                                    break;
-
-                                case "about":
-
-                                    destination =
-                                        "about.html";
-
-                                    break;
-
-                                case "contact":
-
-                                    destination =
-                                        "contact.html";
-
-                                    break;
-
-                                case "sheetmusic":
-
-                                    destination =
-                                        "sheetmusic.html";
-
-                                    break;
-
-                            }
-
-                            if (destination) {
-
-                                setTimeout(
-                                    () => {
-
-                                        window.location.href =
-                                            destination;
-
-                                    },
-                                    700
-                                );
-
-                                return;
-
-                            }
-
-                        }
-
-                        if (data.redirect) {
+                        if (destination) {
 
                             setTimeout(
                                 () => {
 
                                     window.location.href =
-                                        data.redirect;
+                                        destination;
 
                                 },
                                 700
@@ -4345,69 +4346,87 @@
 
                         }
 
-                    } catch (error) {
-
-                        console.error(
-                            "Concertoi AI error:",
-                            error
-                        );
-
-                        removeTypingMessage();
-
-                        addMessage(
-                            "Sorry! I couldn't connect to Concertoi AI right now. Please try again in a moment.",
-                            "ai"
-                        );
-
                     }
 
-                    concertoiAISend.disabled =
-                        false;
+                    if (data.redirect) {
 
-                    concertoiAIInput.disabled =
-                        false;
+                        setTimeout(
+                            () => {
 
-                    concertoiAIInput.focus();
+                                window.location.href =
+                                    data.redirect;
 
-                }
-            );
+                            },
+                            700
+                        );
 
-
-            /* =========================================================
-               ESCAPE
-            ========================================================= */
-
-            document.addEventListener(
-                "keydown",
-                event => {
-
-                    if (event.key !== "Escape") {
                         return;
+
                     }
 
-                    if (
-                        concertoiAI &&
-                        concertoiAI.classList.contains("open")
-                    ) {
-                        closeConcertoiAI();
-                    }
+                } catch (error) {
 
-                    if (
-                        musicModal &&
-                        musicModal.classList.contains("open")
-                    ) {
-                        closeMusicViewer();
-                    }
+                    console.error(
+                        "Concertoi AI error:",
+                        error
+                    );
 
-                    if (
-                        modal &&
-                        modal.classList.contains("open")
-                    ) {
-                        closeViewer();
-                    }
+                    removeTypingMessage();
+
+                    addMessage(
+                        "Sorry! I couldn't connect to Concertoi AI right now. Please try again in a moment.",
+                        "ai"
+                    );
 
                 }
-            );
+
+                concertoiAISend.disabled =
+                    false;
+
+                concertoiAIInput.disabled =
+                    false;
+
+                concertoiAIInput.focus();
+
+            }
+        );
+
+
+        /* =========================================================
+           ESCAPE
+        ========================================================= */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (event.key !== "Escape") {
+                    return;
+                }
+
+                if (
+                    concertoiAI &&
+                    concertoiAI.classList.contains("open")
+                ) {
+                    closeConcertoiAI();
+                }
+
+                if (
+                    musicModal &&
+                    musicModal.classList.contains("open")
+                ) {
+                    closeMusicViewer();
+                }
+
+                if (
+                    modal &&
+                    modal.classList.contains("open")
+                ) {
+                    closeViewer();
+                }
+
+            }
+        );
 
     </script>
 
@@ -4425,101 +4444,89 @@
 
     <script>
 
-            const SUPABASE_URL =
-                "https://rdgoryrmqyqmaigvfjay.supabase.co";
 
-            const SUPABASE_PUBLISHABLE_KEY =
-                "sb_publishable_UYh6EWbtsiTtVSD4KvqEqA_-IbVA-c6";
+        async function updateNavbarAuth() {
 
+            const authLink =
+                document.getElementById("authLink");
 
-            const supabaseClient =
-                window.supabase.createClient(
-                    SUPABASE_URL,
-                    SUPABASE_PUBLISHABLE_KEY
-                );
-
-
-            async function updateNavbarAuth() {
-
-                const authLink =
-                    document.getElementById("authLink");
-
-                if (!authLink) {
-                    return;
-                }
-
-
-                try {
-
-                    const {
-                        data,
-                        error
-                    } =
-                        await supabaseClient.auth.getSession();
-
-
-                    if (error) {
-
-                        console.error(
-                            "Could not check login status:",
-                            error
-                        );
-
-                        return;
-
-                    }
-
-
-                    if (data.session) {
-
-                        authLink.textContent =
-                            "Account";
-
-                        authLink.href =
-                            "account.html";
-
-                    } else {
-
-                        authLink.textContent =
-                            "Login";
-
-                        authLink.href =
-                            "login.html";
-
-                    }
-
-                } catch (error) {
-
-                    console.error(
-                        "Authentication error:",
-                        error
-                    );
-
-                }
-
+            if (!authLink) {
+                return;
             }
 
 
-            /* =========================================================
-               INITIAL AUTH CHECK
-            ========================================================= */
+            try {
 
-            updateNavbarAuth();
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth.getSession();
 
 
-            /* =========================================================
-               WATCH FOR LOGIN / LOGOUT
-            ========================================================= */
+                if (error) {
 
-            supabaseClient.auth.onAuthStateChange(
-                () => {
+                    console.error(
+                        "Could not check login status:",
+                        error
+                    );
 
-                    updateNavbarAuth();
+                    return;
 
                 }
-            );
+
+
+                if (data.session) {
+
+                    authLink.textContent =
+                        "Account";
+
+                    authLink.href =
+                        "account.html";
+
+                } else {
+
+                    authLink.textContent =
+                        "Login";
+
+                    authLink.href =
+                        "login.html";
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Authentication error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           INITIAL AUTH CHECK
+        ========================================================= */
+
+        updateNavbarAuth();
+
+
+        /* =========================================================
+           WATCH FOR LOGIN / LOGOUT
+        ========================================================= */
+
+        supabaseClient.auth.onAuthStateChange(
+            () => {
+
+                updateNavbarAuth();
+
+            }
+        );
 
     </script>
 
 </body>
+
 </html>
