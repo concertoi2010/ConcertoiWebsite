@@ -2710,38 +2710,38 @@ MOBILE AI
 ========================================= */
 
 .concertoi-account-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.concertoi-account-wrapper > #authLink {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    border-radius: 50%;
-    overflow: hidden;
+.concertoi-account-wrapper>#authLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .concertoi-profile-image {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 
 .concertoi-profile-fallback {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
 }
 
 
@@ -2750,37 +2750,37 @@ MOBILE AI
 ========================================= */
 
 .concertoi-account-dropdown {
-    position: absolute;
-    top: calc(100% + 12px);
-    right: 0;
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
 
-    width: 250px;
+  width: 250px;
 
-    padding: 10px;
+  padding: 10px;
 
-    background: #111;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
 
-    box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.45);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.45);
 
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-8px) scale(0.98);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.98);
 
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease,
-        visibility 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
 
-    z-index: 9999;
+  z-index: 9999;
 }
 
 .concertoi-account-dropdown.open {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0) scale(1);
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
 }
 
 
@@ -2789,29 +2789,29 @@ MOBILE AI
 ========================================= */
 
 .concertoi-account-info {
-    padding: 12px 12px 14px;
+  padding: 12px 12px 14px;
 
-    border-bottom:
-        1px solid rgba(255, 255, 255, 0.08);
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.08);
 
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .concertoi-account-info strong {
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .concertoi-account-info span {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 
@@ -2820,42 +2820,42 @@ MOBILE AI
 ========================================= */
 
 .concertoi-account-dropdown-item {
-    width: 100%;
+  width: 100%;
 
-    margin-top: 5px;
+  margin-top: 5px;
 
-    padding: 11px 12px;
+  padding: 11px 12px;
 
-    border: none;
-    border-radius: 10px;
+  border: none;
+  border-radius: 10px;
 
-    background: transparent;
+  background: transparent;
 
-    color: white;
+  color: white;
 
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
-    font-family: inherit;
-    font-size: 14px;
+  font-family: inherit;
+  font-size: 14px;
 
-    text-decoration: none;
+  text-decoration: none;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .concertoi-account-dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .concertoi-account-dropdown-item span:first-child {
-    width: 22px;
-    text-align: center;
+  width: 22px;
+  text-align: center;
 }
 
 
@@ -2864,11 +2864,11 @@ MOBILE AI
 ========================================= */
 
 .concertoi-account-dropdown-item.logout {
-    color: #ff6b6b;
+  color: #ff6b6b;
 }
 
 .concertoi-account-dropdown-item.logout:hover {
-    background: rgba(255, 80, 80, 0.1);
+  background: rgba(255, 80, 80, 0.1);
 }
 
 
@@ -2878,9 +2878,221 @@ MOBILE AI
 
 @media (max-width: 700px) {
 
-    .concertoi-account-dropdown {
-        right: -5px;
-        width: 230px;
-    }
+  .concertoi-account-dropdown {
+    right: -5px;
+    width: 230px;
+  }
+
+}
+
+/* =========================================
+   CONCERTOI ACCOUNT NAVBAR
+========================================= */
+
+.nav-links {
+  position: relative;
+}
+
+/* Logged-in account button */
+
+.nav-links>a.logged-in {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+
+  width: auto !important;
+  height: auto !important;
+
+  padding: 10px 15px !important;
+
+  white-space: nowrap !important;
+}
+
+
+/* Profile picture */
+
+.auth-navbar-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+
+  border-radius: 50% !important;
+
+  overflow: hidden !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  background: #6f42c1 !important;
+
+  color: white !important;
+  font-size: 17px !important;
+
+  flex-shrink: 0 !important;
+}
+
+
+.auth-navbar-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 0 !important;
+  min-height: 0 !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  object-fit: cover !important;
+
+  display: block !important;
+}
+
+
+/* Account name */
+
+.auth-navbar-name {
+  max-width: 120px !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  display: inline-block !important;
+}
+
+
+/* Arrow */
+
+.auth-navbar-arrow {
+  font-size: 15px !important;
+  opacity: 0.7 !important;
+
+  display: inline-block !important;
+
+  transition: transform 0.2s ease;
+}
+
+
+/* =========================================
+   DROPDOWN
+========================================= */
+
+.auth-dropdown {
+  position: absolute !important;
+
+  top: calc(100% + 10px) !important;
+  right: 0 !important;
+
+  width: 190px !important;
+
+  padding: 7px !important;
+
+  background: #171717 !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+
+  border-radius: 14px !important;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.5) !important;
+
+  z-index: 99999 !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+
+  transform: translateY(-8px) !important;
+
+  pointer-events: none !important;
+
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s ease !important;
+}
+
+
+/* OPEN */
+
+.auth-dropdown.open {
+  opacity: 1 !important;
+
+  visibility: visible !important;
+
+  transform: translateY(0) !important;
+
+  pointer-events: auto !important;
+}
+
+
+/* Dropdown buttons */
+
+.auth-dropdown-item {
+  width: 100% !important;
+
+  min-height: 44px !important;
+
+  box-sizing: border-box !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+
+  gap: 12px !important;
+
+  padding: 11px 13px !important;
+
+  margin: 0 !important;
+
+  border: none !important;
+
+  border-radius: 10px !important;
+
+  background: transparent !important;
+
+  color: white !important;
+
+  text-decoration: none !important;
+
+  font-family: inherit !important;
+
+  font-size: 14px !important;
+
+  font-weight: 600 !important;
+
+  text-align: left !important;
+
+  cursor: pointer !important;
+
+  box-shadow: none !important;
+}
+
+
+.auth-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+
+.auth-dropdown-item.logout {
+  color: #ff7777 !important;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .auth-navbar-name {
+    max-width: 80px !important;
+  }
+
+  .auth-dropdown {
+    right: 0 !important;
+  }
 
 }
