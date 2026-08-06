@@ -2517,3 +2517,190 @@ MOBILE AI
   border-radius: 0 2px 2px 0;
   box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
 }
+
+/* =========================================
+   MUSICXML PLAYER
+========================================= */
+
+.music-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+}
+
+.music-modal.open {
+  display: flex;
+}
+
+.music-window {
+  width: min(1200px, 100%);
+  height: min(90vh, 950px);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: #101010;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(251, 255, 0, 0.08);
+}
+
+.music-header {
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 15px 22px;
+
+  background: #0b0b0b;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.08);
+}
+
+.music-header h2 {
+  font-size: 1.25rem;
+}
+
+.music-header span {
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+
+.music-toolbar {
+  min-height: 58px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 18px;
+
+  background: #151515;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.08);
+}
+
+.music-control {
+  min-height: 36px;
+
+  padding: 0 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.06);
+
+  color: white;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.85rem;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.music-control:hover {
+  background: var(--accent);
+  color: #000;
+  transform: translateY(-1px);
+}
+
+.music-viewer {
+  position: relative;
+
+  flex: 1;
+
+  overflow: auto;
+
+  padding: 30px;
+
+  background: #252525;
+}
+
+.music-viewer svg {
+  display: block;
+
+  margin: 0 auto 30px;
+
+  background: white;
+
+  box-shadow:
+    0 5px 25px rgba(0, 0, 0, 0.45);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 850px) {
+
+  .music-modal {
+    padding: 10px;
+  }
+
+  .music-window {
+    height: 95vh;
+    border-radius: 14px;
+  }
+
+  .music-toolbar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .music-viewer {
+    padding: 15px;
+  }
+
+}
+
+/* =========================================
+   SHEET MUSIC ACTION BUTTONS
+========================================= */
+
+.sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sheet-actions .sheet-button {
+  margin: 0;
+}
+
+.music-button {
+  background: var(--accent);
+}
+
+.pdf-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pdf-button:hover {
+  background: white;
+  color: #000;
+}
