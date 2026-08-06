@@ -338,8 +338,25 @@ loginForm.addEventListener(
 
             setTimeout(() => {
 
-                window.location.href =
-                    "index.html";
+                const params =
+                    new URLSearchParams(
+                        window.location.search
+                    );
+
+                const returnTo =
+                    params.get("returnTo");
+
+                if (returnTo) {
+
+                    window.location.href =
+                        returnTo;
+
+                } else {
+
+                    window.location.href =
+                        "index.html";
+
+                }
 
             }, 700);
 

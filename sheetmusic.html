@@ -434,7 +434,7 @@
             <a href="sheetmusic.html" class="active">Sheet Music</a>
             <a href="contact.html">Contact</a>
             <a href="login.html" id="authLink">Login</a>
-            
+
 
         </nav>
 
@@ -1414,8 +1414,75 @@
             /* Keep existing PDF download functionality,
                but display the link in the top toolbar. */
 
-            downloadPdf.href =
-                piece.pdf;
+            downloadPdf.href = "#";
+
+            downloadPdf.onclick = async event => {
+
+                event.preventDefault();
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } = await supabaseClient.auth.getSession();
+
+                    if (error) {
+                        console.error(
+                            "Could not check login status:",
+                            error
+                        );
+
+                        alert(
+                            "We couldn't check your login status. Please try again."
+                        );
+
+                        return;
+                    }
+
+                    if (!data.session) {
+
+                        const returnUrl =
+                            window.location.pathname +
+                            window.location.search;
+
+                        window.location.href =
+                            "login.html?returnTo=" +
+                            encodeURIComponent(returnUrl);
+
+                        return;
+
+                    }
+
+                    // User is logged in — download normally
+                    const link =
+                        document.createElement("a");
+
+                    link.href =
+                        piece.pdf;
+
+                    link.download = "";
+
+                    document.body.appendChild(link);
+
+                    link.click();
+
+                    link.remove();
+
+                } catch (error) {
+
+                    console.error(
+                        "PDF download authentication error:",
+                        error
+                    );
+
+                    alert(
+                        "Something went wrong. Please try again."
+                    );
+
+                }
+
+            };
 
             downloadPdf.setAttribute(
                 "download",
@@ -4357,7 +4424,6 @@
 
     </script>
 
-    html
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth-navbar.js"></script>
 
