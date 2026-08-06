@@ -1,9 +1,8 @@
+html
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -14,15 +13,410 @@
     <!-- PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-    <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
-    <link rel="shortcut icon" href="Images/favicon.ico?v=2">
+    <!-- OpenSheetMusicDisplay -->
+    <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.9.7/build/opensheetmusicdisplay.min.js"></script>
 
+    <!-- Tone.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="Images/favicon.ico?v=2">
+
+    <style>
+        /* =========================================================
+           MUSIC PLAYER
+        ========================================================= */
+
+        .music-modal {
+            z-index: 10000;
+        }
+
+        .music-window {
+            position: relative;
+            z-index: 10001;
+        }
+
+        /* =========================================================
+           COMPACT MODERN TOP TOOLBAR
+        ========================================================= */
+
+        .music-controls {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            min-height: 54px;
+            padding: 8px 12px;
+
+            box-sizing: border-box;
+
+            background: rgba(10, 10, 10, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .music-control-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            height: 34px;
+            min-width: 34px;
+
+            padding: 0 11px;
+
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+
+            border-radius: 7px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                transform 0.15s ease,
+                color 0.15s ease;
+        }
+
+        .music-control-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .music-control-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .music-control-button.play {
+            background: #fbff00;
+            color: #111;
+            border-color: rgba(251, 255, 0, 0.35);
+        }
+
+        .music-control-button.play:hover:not(:disabled) {
+            background: #fff475;
+        }
+
+        .music-control-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* =========================================================
+           STATUS
+        ========================================================= */
+
+        .music-status {
+            display: flex;
+            align-items: center;
+
+            margin-left: auto;
+            min-width: 0;
+        }
+
+        .music-status-text {
+            white-space: nowrap;
+
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* =========================================================
+           PDF DOWNLOAD BUTTON
+        ========================================================= */
+
+        .music-download-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            height: 34px;
+
+            padding: 0 12px;
+            margin-left: 4px;
+
+            border-radius: 7px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            text-decoration: none;
+            white-space: nowrap;
+
+            transition:
+                background 0.15s ease,
+                transform 0.15s ease;
+        }
+
+        .music-download-button:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .music-download-button:active {
+            transform: translateY(0);
+        }
+
+        /* =========================================================
+           PROGRESS
+        ========================================================= */
+
+        .music-progress-container {
+            width: 100%;
+
+            padding: 7px 12px 9px;
+
+            box-sizing: border-box;
+
+            background: rgba(10, 10, 10, 0.98);
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .music-progress {
+            width: 100%;
+
+            display: block;
+
+            cursor: pointer;
+
+            accent-color: #fbff00;
+
+            appearance: none;
+
+            height: 4px;
+
+            border-radius: 999px;
+
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .music-progress::-webkit-slider-thumb {
+            appearance: none;
+
+            width: 12px;
+            height: 12px;
+
+            border-radius: 50%;
+
+            background: #fbff00;
+
+            border: 2px solid #111;
+
+            cursor: pointer;
+        }
+
+        .music-progress::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+
+            border-radius: 50%;
+
+            background: #fbff00;
+
+            border: 2px solid #111;
+
+            cursor: pointer;
+        }
+
+        .music-time-row {
+            display: flex;
+            justify-content: space-between;
+
+            margin-top: 5px;
+
+            font-size: 11px;
+
+            opacity: 0.6;
+        }
+
+        /* =========================================================
+           LOOP CONTROLS
+        ========================================================= */
+
+        .music-loop-controls {
+            display: flex;
+            align-items: center;
+
+            gap: 5px;
+
+            padding: 7px 12px;
+
+            background: rgba(10, 10, 10, 0.96);
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .music-loop-controls .music-control-button {
+            height: 30px;
+
+            min-width: 30px;
+
+            padding: 0 9px;
+
+            font-size: 11px;
+        }
+
+        .music-loop-controls .music-control-button.active {
+            font-weight: 700;
+
+            background: #fbff00;
+            color: #111;
+
+            border-color: rgba(251, 255, 0, 0.35);
+        }
+
+        /* =========================================================
+           MUSIC VIEWER
+        ========================================================= */
+
+        .music-viewer {
+            position: relative;
+
+            width: 100%;
+
+            min-height: 500px;
+
+            overflow: auto;
+
+            background: #fff;
+
+            border-radius: 14px;
+        }
+
+        .music-viewer svg {
+            display: block;
+
+            max-width: none;
+
+            margin: 0 auto;
+
+            background: #fff;
+
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .music-error {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .music-error h3 {
+            margin-bottom: 12px;
+        }
+
+        .music-error code {
+            display: block;
+
+            margin-top: 12px;
+
+            padding: 12px;
+
+            overflow-wrap: anywhere;
+        }
+
+        .pdf-loading,
+        .pdf-error {
+            padding: 50px;
+            text-align: center;
+        }
+
+        #musicViewer img {
+            pointer-events: none;
+        }
+
+        /*
+         * OSMD cursor must sit above the score.
+         */
+
+        #musicViewer .osmd-cursor {
+            pointer-events: none !important;
+            z-index: 100 !important;
+        }
+
+        #musicViewer [id*="cursor"] {
+            pointer-events: none !important;
+            z-index: 100 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        #musicViewer img[id*="cursor"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 100 !important;
+        }
+
+        /* =========================================================
+           MOBILE PLAYER
+        ========================================================= */
+
+        @media (max-width: 650px) {
+
+            .music-controls {
+                gap: 5px;
+                padding: 7px 9px;
+            }
+
+            .music-control-button {
+                height: 32px;
+                min-width: 32px;
+
+                padding: 0 9px;
+
+                font-size: 11px;
+            }
+
+            .music-status {
+                order: 10;
+
+                width: 100%;
+
+                margin-left: 0;
+                margin-top: 2px;
+            }
+
+            .music-download-button {
+                height: 32px;
+
+                padding: 0 9px;
+
+                font-size: 11px;
+            }
+
+            .music-progress-container {
+                padding-left: 9px;
+                padding-right: 9px;
+            }
+
+            .music-loop-controls {
+                padding-left: 9px;
+                padding-right: 9px;
+            }
+
+        }
+    </style>
 </head>
 
 <body>
 
-
-    <!-- NAVBAR -->
+    <!-- =========================================================
+         NAVBAR
+    ========================================================= -->
 
     <header class="navbar">
 
@@ -36,28 +430,19 @@
 
         <nav class="nav-links">
 
-            <a href="index.html">
-                Home
-            </a>
-
-            <a href="about.html">
-                About
-            </a>
-
-            <a href="sheetmusic.html" class="active">
-                Sheet Music
-            </a>
-
-            <a href="contact.html">
-                Contact
-            </a>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="sheetmusic.html" class="active">Sheet Music</a>
+            <a href="contact.html">Contact</a>
 
         </nav>
 
     </header>
 
 
-    <!-- MAIN -->
+    <!-- =========================================================
+         MAIN
+    ========================================================= -->
 
     <main class="sheetmusic-page">
 
@@ -82,12 +467,7 @@
 
         <div class="sheet-search">
 
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search sheet music..."
-                autocomplete="off"
-            >
+            <input type="text" id="searchInput" placeholder="Search sheet music..." autocomplete="off">
 
         </div>
 
@@ -103,14 +483,181 @@
     </main>
 
 
-    <!-- PDF VIEWER -->
+    <style>
+        .close-music,
+        .close-pdf {
+            appearance: none;
+            -webkit-appearance: none;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 38px;
+            height: 38px;
+
+            padding: 0;
+            margin: 0;
+
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.07);
+            color: rgba(255, 255, 255, 0.85);
+
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 25px;
+            font-weight: 300;
+            line-height: 1;
+
+            cursor: pointer;
+
+            transition:
+                background 0.18s ease,
+                color 0.18s ease,
+                transform 0.18s ease,
+                border-color 0.18s ease;
+        }
+
+        .close-music:hover,
+        .close-pdf:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.20);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .close-music:active,
+        .close-pdf:active {
+            transform: rotate(90deg) scale(0.92);
+        }
+    </style>
+
+    <!-- =========================================================
+         MUSICXML PLAYER
+    ========================================================= -->
+
+    <div id="musicModal" class="music-modal" aria-hidden="true">
+
+        <div class="music-window">
+
+            <div class="music-header">
+
+                <div>
+
+                    <h2 id="musicTitle">
+                        Sheet Music
+                    </h2>
+
+                    <span id="musicArtist">
+                        Piano Sheet Music
+                    </span>
+
+                </div>
+
+                <button id="closeMusic" class="close-music" type="button" aria-label="Close">
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 COMPACT TOP PLAYER TOOLBAR
+                 ================================================= -->
+
+            <div class="music-controls">
+
+                <button id="musicPlay" class="music-control-button play" type="button" disabled aria-label="Play"
+                    title="Play">
+                    ▶
+                </button>
+
+                <button id="musicPause" class="music-control-button" type="button" disabled aria-label="Pause"
+                    title="Pause">
+                    ⏸
+                </button>
+
+                <button id="musicStop" class="music-control-button" type="button" disabled aria-label="Stop"
+                    title="Stop">
+                    ■
+                </button>
+
+                <button id="loopStart" class="music-control-button" type="button" aria-label="Set loop start"
+                    title="Set loop start">
+                    A
+                </button>
+
+                <button id="loopEnd" class="music-control-button" type="button" aria-label="Set loop end"
+                    title="Set loop end">
+                    B
+                </button>
+
+                <button id="loopToggle" class="music-control-button" type="button" aria-label="Toggle loop"
+                    title="Toggle loop">
+                    🔁
+                </button>
+
+                <div class="music-status">
+
+                    <span id="musicStatus" class="music-status-text">
+                        Ready
+                    </span>
+
+                </div>
+
+                <!-- Existing PDF download element.
+                     ID is unchanged so existing JS keeps working. -->
+
+                <a id="downloadPdf" class="music-download-button" href="#" download title="Download PDF">
+                    ↓ PDF
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 PROGRESS
+                 ================================================= -->
+
+            <div class="music-progress-container">
+
+                <input type="range" id="musicProgress" class="music-progress" min="0" max="100" step="0.01" value="0"
+                    aria-label="Music progress">
+
+                <div class="music-time-row">
+
+                    <span id="musicCurrentTime">
+                        0:00
+                    </span>
+
+                    <span id="musicDurationText">
+                        0:00
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SCORE
+                 ================================================= -->
+
+            <div id="musicViewer" class="music-viewer"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         PDF VIEWER
+    ========================================================= -->
 
     <div id="pdfModal" class="pdf-modal">
 
         <div class="pdf-window">
-
-
-            <!-- PDF HEADER -->
 
             <div class="pdf-header">
 
@@ -124,32 +671,18 @@
 
                 </div>
 
-                <button
-                    id="closePdf"
-                    class="close-pdf"
-                    type="button"
-                    aria-label="Close"
-                >
+                <button id="closePdf" class="close-pdf" type="button" aria-label="Close">
                     ×
                 </button>
 
             </div>
 
 
-            <!-- PDF TOOLBAR -->
-
             <div class="pdf-toolbar">
-
-
-                <!-- ZOOM -->
 
                 <div class="pdf-controls">
 
-                    <button
-                        id="zoomOut"
-                        class="pdf-tool"
-                        type="button"
-                    >
+                    <button id="zoomOut" class="pdf-tool" type="button">
                         −
                     </button>
 
@@ -157,95 +690,48 @@
                         100%
                     </span>
 
-                    <button
-                        id="zoomIn"
-                        class="pdf-tool"
-                        type="button"
-                    >
+                    <button id="zoomIn" class="pdf-tool" type="button">
                         +
                     </button>
 
                 </div>
 
 
-                <!-- PAGE CONTROLS -->
-
                 <div class="page-controls">
 
-                    <button
-                        id="previousPage"
-                        class="pdf-tool"
-                        type="button"
-                    >
+                    <button id="previousPage" class="pdf-tool" type="button">
                         ←
                     </button>
 
                     <span>
-
                         Page
-
-                        <span id="currentPage">
-                            1
-                        </span>
-
+                        <span id="currentPage">1</span>
                         /
-
-                        <span id="totalPages">
-                            1
-                        </span>
-
+                        <span id="totalPages">1</span>
                     </span>
 
-                    <button
-                        id="nextPage"
-                        class="pdf-tool"
-                        type="button"
-                    >
+                    <button id="nextPage" class="pdf-tool" type="button">
                         →
                     </button>
-
-                </div>
-
-
-                <!-- DOWNLOAD -->
-
-                <div>
-
-                    <a
-                        id="downloadPdf"
-                        class="download-button"
-                        href="#"
-                        download
-                    >
-                        ↓ Download PDF
-                    </a>
 
                 </div>
 
             </div>
 
 
-            <!-- PDF VIEWER -->
-
-            <div
-                id="pdfViewer"
-                class="pdf-viewer"
-            ></div>
+            <div id="pdfViewer" class="pdf-viewer"></div>
 
         </div>
 
     </div>
 
 
-    <!-- CONCERTOI AI BUTTON -->
+    <!-- =========================================================
+         CONCERTOI AI BUTTON
+    ========================================================= -->
 
-    <button
-        type="button"
-        class="concertoi-ai-button"
-        id="concertoiAIButton"
-        aria-label="Open Concertoi AI"
-        aria-expanded="false"
-    >
+    <button type="button" class="concertoi-ai-button" id="concertoiAIButton" aria-label="Open Concertoi AI"
+        aria-expanded="false">
 
         <span class="concertoi-ai-icon">
             ✦
@@ -258,13 +744,11 @@
     </button>
 
 
-    <!-- CONCERTOI AI -->
+    <!-- =========================================================
+         CONCERTOI AI
+    ========================================================= -->
 
-    <div
-        class="concertoi-ai"
-        id="concertoiAI"
-        aria-hidden="true"
-    >
+    <div class="concertoi-ai" id="concertoiAI" aria-hidden="true">
 
         <div class="concertoi-ai-header">
 
@@ -288,22 +772,14 @@
 
             </div>
 
-            <button
-                type="button"
-                class="concertoi-ai-close"
-                id="concertoiAIClose"
-                aria-label="Close Concertoi AI"
-            >
+            <button type="button" class="concertoi-ai-close" id="concertoiAIClose" aria-label="Close Concertoi AI">
                 ×
             </button>
 
         </div>
 
 
-        <div
-            class="concertoi-ai-messages"
-            id="concertoiAIMessages"
-        >
+        <div class="concertoi-ai-messages" id="concertoiAIMessages">
 
             <div class="concertoi-ai-message ai">
 
@@ -324,25 +800,12 @@
         </div>
 
 
-        <form
-            class="concertoi-ai-form"
-            id="concertoiAIForm"
-        >
+        <form class="concertoi-ai-form" id="concertoiAIForm">
 
-            <input
-                type="text"
-                id="concertoiAIInput"
-                placeholder="Ask Concertoi AI..."
-                autocomplete="off"
-                maxlength="500"
-                required
-            >
+            <input type="text" id="concertoiAIInput" placeholder="Ask Concertoi AI..." autocomplete="off"
+                maxlength="500" required>
 
-            <button
-                type="submit"
-                id="concertoiAISend"
-                aria-label="Send message"
-            >
+            <button type="submit" id="concertoiAISend" aria-label="Send message">
                 →
             </button>
 
@@ -351,7 +814,9 @@
     </div>
 
 
-    <!-- FOOTER -->
+    <!-- =========================================================
+         FOOTER
+    ========================================================= -->
 
     <footer class="site-footer">
 
@@ -362,11 +827,9 @@
             </p>
 
             <p>
-
                 <a href="mailto:concertoi2010@gmail.com">
                     concertoi2010@gmail.com
                 </a>
-
             </p>
 
         </div>
@@ -376,18 +839,20 @@
 
     <script>
 
+        "use strict";
 
-        /* =========================================
-           PDF.JS SETUP
-        ========================================== */
+
+        /* =========================================================
+           PDF.JS
+        ========================================================= */
 
         pdfjsLib.GlobalWorkerOptions.workerSrc =
             "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 
-        /* =========================================
+        /* =========================================================
            SHEET MUSIC DATABASE
-        ========================================== */
+        ========================================================= */
 
         const sheetMusic = [
 
@@ -397,6 +862,7 @@
                 difficulty: "Intermediate",
                 image: "Images/raye image.png",
                 pdf: "PDFs/Where Is My Husband.pdf",
+                musicxml: "MusicXML/whereismyhusbandmidi.musicxml",
                 references: [
                     "raye",
                     "where is my husband"
@@ -409,6 +875,7 @@
                 difficulty: "Intermediate",
                 image: "Images/soda pop image.png",
                 pdf: "PDFs/Soda Pop.pdf",
+                musicxml: "MusicXML/sodapopmidi.musicxml",
                 references: [
                     "soda pop",
                     "saja boys",
@@ -424,6 +891,7 @@
                 difficulty: "Advanced",
                 image: "Images/My heart will go on image.png",
                 pdf: "PDFs/My Heart Will Go On.pdf",
+                musicxml: "MusicXML/myheartwillgoon.musicxml",
                 references: [
                     "my heart will go on",
                     "celine dion",
@@ -439,6 +907,7 @@
                 difficulty: "Advanced",
                 image: "Images/axel f image.png",
                 pdf: "PDFs/Axel F.pdf",
+                musicxml: "MusicXML/axelfmidi.musicxml",
                 references: [
                     "axel f",
                     "harold faltermeyer",
@@ -453,6 +922,7 @@
                 difficulty: "Advanced",
                 image: "Images/immortals image.png",
                 pdf: "PDFs/Immortals.pdf",
+                musicxml: "MusicXML/immortalsmidi.musicxml",
                 references: [
                     "immortals",
                     "fall out boy",
@@ -469,6 +939,7 @@
                 difficulty: "Intermediate",
                 image: "Images/zoo image.png",
                 pdf: "PDFs/Zoo.pdf",
+                musicxml: "MusicXML/zoomidi.musicxml",
                 references: [
                     "zoo"
                 ]
@@ -480,6 +951,7 @@
                 difficulty: "Intermediate",
                 image: "Images/azizam image.png",
                 pdf: "PDFs/Azizam.pdf",
+                musicxml: "MusicXML/azizammidi.musicxml",
                 references: [
                     "azizam",
                     "ed sheeran"
@@ -492,6 +964,7 @@
                 difficulty: "Intermediate",
                 image: "Images/zombie image.png",
                 pdf: "PDFs/Zombie.pdf",
+                musicxml: "MusicXML/zombiemidi.musicxml",
                 references: [
                     "zombie",
                     "the cranberries",
@@ -505,6 +978,7 @@
                 difficulty: "Intermediate",
                 image: "Images/despacito image.png",
                 pdf: "PDFs/Despacito.pdf",
+                musicxml: "MusicXML/despacitomidi.musicxml",
                 references: [
                     "despacito",
                     "luis fonsi",
@@ -518,6 +992,7 @@
                 difficulty: "Advanced",
                 image: "Images/let it go image.png",
                 pdf: "PDFs/Let It Go.pdf",
+                musicxml: "MusicXML/letitgomidi.musicxml",
                 references: [
                     "let it go",
                     "idina menzel",
@@ -534,6 +1009,7 @@
                 difficulty: "Intermediate",
                 image: "Images/snowman image.png",
                 pdf: "PDFs/Snowman.pdf",
+                musicxml: "MusicXML/snowmanmidi.musicxml",
                 references: [
                     "snowman",
                     "sia"
@@ -546,6 +1022,7 @@
                 difficulty: "Intermediate",
                 image: "Images/flashlight image.png",
                 pdf: "PDFs/Flashlight.pdf",
+                musicxml: "MusicXML/flashlightmidi.musicxml",
                 references: [
                     "flashlight",
                     "jessie j",
@@ -557,9 +1034,9 @@
         ];
 
 
-        /* =========================================
+        /* =========================================================
            ELEMENTS
-        ========================================== */
+        ========================================================= */
 
         const grid =
             document.getElementById("sheetMusicGrid");
@@ -569,6 +1046,11 @@
 
         const noResults =
             document.getElementById("noResults");
+
+
+        /* =========================================================
+           PDF ELEMENTS
+        ========================================================= */
 
         const modal =
             document.getElementById("pdfModal");
@@ -610,20 +1092,106 @@
             document.getElementById("totalPages");
 
 
-        /* =========================================
-           VARIABLES
-        ========================================== */
+        /* =========================================================
+           MUSIC ELEMENTS
+        ========================================================= */
 
-        let currentPDF = null;
+        const musicModal =
+            document.getElementById("musicModal");
 
-        let currentPageNumber = 1;
+        const musicViewer =
+            document.getElementById("musicViewer");
 
-        let scale = 1;
+        const musicTitle =
+            document.getElementById("musicTitle");
+
+        const musicArtist =
+            document.getElementById("musicArtist");
+
+        const closeMusic =
+            document.getElementById("closeMusic");
+
+        const musicPlay =
+            document.getElementById("musicPlay");
+
+        const musicPause =
+            document.getElementById("musicPause");
+
+        const musicStop =
+            document.getElementById("musicStop");
+
+        const musicStatus =
+            document.getElementById("musicStatus");
+
+        const musicProgress =
+            document.getElementById("musicProgress");
+
+        const musicCurrentTime =
+            document.getElementById("musicCurrentTime");
+
+        const musicDurationText =
+            document.getElementById("musicDurationText");
+
+        const loopStartButton =
+            document.getElementById("loopStart");
+
+        const loopEndButton =
+            document.getElementById("loopEnd");
+
+        const loopToggleButton =
+            document.getElementById("loopToggle");
 
 
-        /* =========================================
+        /* =========================================================
+           MUSIC STATE
+        ========================================================= */
+
+        let musicOSMD = null;
+
+        let currentMusicPiece = null;
+
+        let musicXMLText = "";
+
+        let musicNotes = [];
+
+        let musicTempo = 100;
+
+        let musicDuration = 0;
+
+        let musicPlaying = false;
+
+        let musicPaused = false;
+
+        let musicPausePosition = 0;
+
+        let musicAnimationFrame = null;
+
+        let startingPlayback = false;
+
+        let piano = null;
+
+        let pianoReady = false;
+
+        let pianoLoading = null;
+
+        let musicPart = null;
+
+        let cursorTimeline = [];
+
+        let cursorTimelineReady = false;
+
+        let cursorRealValue = 0;
+
+        let musicLoopEnabled = false;
+
+        let musicLoopStart = 0;
+
+        let musicLoopEnd = 0;
+
+
+        /* =========================================================
            SEARCH
-        ========================================== */
+        ========================================================= */
 
         function normaliseSearch(value) {
 
@@ -636,10 +1204,6 @@
         }
 
 
-        /* =========================================
-           FIND MATCHES
-        ========================================== */
-
         function findMatchingSheetMusic(query) {
 
             const search =
@@ -649,7 +1213,6 @@
                 return sheetMusic;
             }
 
-
             return sheetMusic.filter(piece => {
 
                 const title =
@@ -658,14 +1221,9 @@
                 const artist =
                     normaliseSearch(piece.artist);
 
-                const references =
-                    piece.references || [];
-
-
                 if (title.includes(search)) {
                     return true;
                 }
-
 
                 if (
                     artist &&
@@ -674,15 +1232,16 @@
                     return true;
                 }
 
+                return (
+                    piece.references || []
+                ).some(reference => {
 
-                return references.some(reference => {
-
-                    const normalReference =
+                    const ref =
                         normaliseSearch(reference);
 
                     return (
-                        normalReference.includes(search) ||
-                        search.includes(normalReference)
+                        ref.includes(search) ||
+                        search.includes(ref)
                     );
 
                 });
@@ -692,9 +1251,9 @@
         }
 
 
-        /* =========================================
-           CREATE SHEET MUSIC CARDS
-        ========================================== */
+        /* =========================================================
+           CARDS
+        ========================================================= */
 
         function displaySheetMusic(list) {
 
@@ -712,7 +1271,6 @@
             noResults.style.display =
                 "none";
 
-
             list.forEach(piece => {
 
                 const card =
@@ -724,14 +1282,13 @@
                 card.dataset.title =
                     piece.title;
 
-
                 card.innerHTML = `
 
                     <div class="sheet-image">
 
                         <img
                             src="${piece.image}"
-                            alt="${piece.title} sheet music"
+                            alt="${escapeHTML(piece.title)} sheet music"
                             loading="lazy"
                         >
 
@@ -740,34 +1297,47 @@
                     <div class="sheet-info">
 
                         <span class="difficulty">
-                            ${piece.difficulty}
+                            ${escapeHTML(piece.difficulty)}
                         </span>
 
                         <h3>
-                            ${piece.title}
+                            ${escapeHTML(piece.title)}
                         </h3>
 
                         <p>
-                            ${piece.artist || "Piano Sheet Music"}
+                            ${escapeHTML(
+                    piece.artist ||
+                    "Piano Sheet Music"
+                )}
                         </p>
 
-                        <button
-                            class="sheet-button"
-                            type="button"
-                        >
-                            View Sheet Music →
-                        </button>
+                        <div class="sheet-actions">
+
+                            <button
+                                class="sheet-button music-button"
+                                type="button"
+                            >
+                                View Sheet Music
+                            </button>
+
+                        </div>
 
                     </div>
 
                 `;
 
+                card
+                    .querySelector(".music-button")
+                    .addEventListener(
+                        "click",
+                        event => {
 
-                card.addEventListener(
-                    "click",
-                    () => openPDF(piece)
-                );
+                            event.stopPropagation();
 
+                            openMusicXML(piece);
+
+                        }
+                    );
 
                 grid.appendChild(card);
 
@@ -776,16 +1346,2189 @@
         }
 
 
-        /* =========================================
-           OPEN PDF
-        ========================================== */
+        /* =========================================================
+           SAFE HTML
+        ========================================================= */
+
+        function escapeHTML(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================================================
+           OPEN MUSICXML
+        ========================================================= */
+
+        async function openMusicXML(piece) {
+
+            stopMusicPlayback();
+
+            destroyMusicPart();
+
+            if (musicOSMD) {
+
+                try {
+                    musicOSMD.clear();
+                } catch (error) {
+                    console.warn(error);
+                }
+
+                musicOSMD = null;
+
+            }
+
+            cursorTimeline = [];
+
+            cursorTimelineReady = false;
+
+            cursorRealValue = 0;
+
+            currentMusicPiece = piece;
+
+            musicModal.classList.add("open");
+
+            musicModal.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            document.body.classList.add(
+                "modal-open"
+            );
+
+            musicTitle.textContent =
+                piece.title;
+
+            musicArtist.textContent =
+                piece.artist ||
+                "Piano Sheet Music";
+
+            /* Keep existing PDF download functionality,
+               but display the link in the top toolbar. */
+
+            downloadPdf.href =
+                piece.pdf;
+
+            downloadPdf.setAttribute(
+                "download",
+                ""
+            );
+
+            musicStatus.textContent =
+                "Loading...";
+
+            musicPlay.disabled = true;
+
+            musicPause.disabled = true;
+
+            musicStop.disabled = true;
+
+            musicProgress.value = 0;
+
+            musicCurrentTime.textContent =
+                "0:00";
+
+            musicDurationText.textContent =
+                "0:00";
+
+            musicLoopEnabled = false;
+
+            musicLoopStart = 0;
+
+            musicLoopEnd = 0;
+
+            loopToggleButton.classList.remove(
+                "active"
+            );
+
+            musicViewer.innerHTML = `
+
+                <div class="pdf-loading">
+
+                    <div class="pdf-spinner"></div>
+
+                    <p>
+                        Loading sheet music...
+                    </p>
+
+                </div>
+
+            `;
+
+            try {
+
+                const response =
+                    await fetch(
+                        piece.musicxml,
+                        {
+                            cache: "no-cache"
+                        }
+                    );
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "MusicXML returned HTTP " +
+                        response.status
+                    );
+
+                }
+
+                musicXMLText =
+                    await response.text();
+
+                if (!musicXMLText.trim()) {
+
+                    throw new Error(
+                        "The MusicXML file is empty."
+                    );
+
+                }
+
+                parseMusicXML(
+                    musicXMLText
+                );
+
+                if (!musicNotes.length) {
+
+                    throw new Error(
+                        "No playable piano notes were found."
+                    );
+
+                }
+
+                musicOSMD =
+                    new opensheetmusicdisplay.OpenSheetMusicDisplay(
+                        musicViewer,
+                        {
+
+                            autoResize: true,
+
+                            backend: "svg",
+
+                            drawTitle: false,
+
+                            drawComposer: false,
+
+                            drawPartNames: false,
+
+                            followCursor: false,
+
+                            disableCursor: false,
+
+                            cursorsOptions: [
+
+                                {
+
+                                    type: 0,
+
+                                    color: "#fbff00",
+
+                                    alpha: 0.75,
+
+                                    follow: false
+
+                                }
+
+                            ]
+
+                        }
+                    );
+
+                await musicOSMD.load(
+                    musicXMLText
+                );
+
+                musicOSMD.render();
+
+                await new Promise(resolve => {
+
+                    requestAnimationFrame(() => {
+
+                        requestAnimationFrame(resolve);
+
+                    });
+
+                });
+
+                if (musicOSMD.cursor) {
+
+                    try {
+
+                        musicOSMD.cursor.reset();
+
+                        musicOSMD.cursor.show();
+
+                        buildMusicCursorTimeline();
+
+                    } catch (error) {
+
+                        console.warn(
+                            "Cursor initialisation failed:",
+                            error
+                        );
+
+                        cursorTimelineReady = false;
+
+                    }
+
+                }
+
+                createMusicPart();
+
+                musicDurationText.textContent =
+                    formatMusicTime(
+                        musicDuration
+                    );
+
+                musicStatus.textContent =
+                    "Ready";
+
+                musicPlay.disabled = false;
+
+                musicPause.disabled = true;
+
+                musicStop.disabled = false;
+
+                console.log(
+                    "MusicXML loaded:",
+                    piece.title
+                );
+
+                console.log(
+                    "Playable notes:",
+                    musicNotes.length
+                );
+
+                console.log(
+                    "Tempo:",
+                    musicTempo
+                );
+
+                console.log(
+                    "Duration:",
+                    musicDuration
+                );
+
+                console.log(
+                    "OSMD cursor positions:",
+                    cursorTimeline.length
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "MusicXML loading error:",
+                    error
+                );
+
+                musicStatus.textContent =
+                    "Error";
+
+                musicViewer.innerHTML = `
+
+                    <div class="music-error">
+
+                        <h3>
+                            Couldn't load the MusicXML
+                        </h3>
+
+                        <p>
+                            Make sure this file exists:
+                        </p>
+
+                        <code>
+                            ${escapeHTML(
+                    piece.musicxml
+                )}
+                        </code>
+
+                        <p>
+                            ${escapeHTML(
+                    error.message
+                )}
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           MUSICXML PARSER
+        ========================================================= */
+
+        function parseMusicXML(xmlText) {
+
+            musicNotes = [];
+
+            musicDuration = 0;
+
+            musicTempo = 100;
+
+            const parser =
+                new DOMParser();
+
+            const xml =
+                parser.parseFromString(
+                    xmlText,
+                    "application/xml"
+                );
+
+            if (
+                xml.querySelector("parsererror")
+            ) {
+
+                throw new Error(
+                    "The MusicXML file could not be parsed."
+                );
+
+            }
+
+            const soundTempo =
+                xml.querySelector(
+                    "sound[tempo]"
+                );
+
+            if (soundTempo) {
+
+                const value =
+                    parseFloat(
+                        soundTempo.getAttribute(
+                            "tempo"
+                        )
+                    );
+
+                if (
+                    Number.isFinite(value) &&
+                    value > 0
+                ) {
+
+                    musicTempo = value;
+
+                }
+
+            }
+
+            if (musicTempo === 100) {
+
+                const perMinute =
+                    xml.querySelector(
+                        "per-minute"
+                    );
+
+                if (perMinute) {
+
+                    const value =
+                        parseFloat(
+                            perMinute.textContent
+                        );
+
+                    if (
+                        Number.isFinite(value) &&
+                        value > 0
+                    ) {
+
+                        musicTempo = value;
+
+                    }
+
+                }
+
+            }
+
+            const parts =
+                Array.from(
+                    xml.querySelectorAll("part")
+                );
+
+            let globalMaximum = 0;
+
+            parts.forEach(part => {
+
+                let partTime = 0;
+
+                let divisions = 1;
+
+                const measures =
+                    Array.from(
+                        part.children
+                    ).filter(
+                        child =>
+                            child.localName ===
+                            "measure"
+                    );
+
+                measures.forEach(measure => {
+
+                    let localTime = 0;
+
+                    let measureMaximum = 0;
+
+                    let previousNoteStart = 0;
+
+                    const attributes =
+                        Array.from(
+                            measure.children
+                        ).find(
+                            child =>
+                                child.localName ===
+                                "attributes"
+                        );
+
+                    if (attributes) {
+
+                        const divisionNode =
+                            Array.from(
+                                attributes.children
+                            ).find(
+                                child =>
+                                    child.localName ===
+                                    "divisions"
+                            );
+
+                        if (divisionNode) {
+
+                            const value =
+                                parseFloat(
+                                    divisionNode.textContent
+                                );
+
+                            if (
+                                Number.isFinite(value) &&
+                                value > 0
+                            ) {
+
+                                divisions =
+                                    value;
+
+                            }
+
+                        }
+
+                    }
+
+                    const children =
+                        Array.from(
+                            measure.children
+                        );
+
+                    children.forEach(child => {
+
+                        const tag =
+                            child.localName;
+
+                        if (tag === "backup") {
+
+                            const durationNode =
+                                Array.from(
+                                    child.children
+                                ).find(
+                                    node =>
+                                        node.localName ===
+                                        "duration"
+                                );
+
+                            const duration =
+                                durationNode
+                                    ? parseFloat(
+                                        durationNode.textContent
+                                    ) / divisions
+                                    : 0;
+
+                            localTime -= duration;
+
+                            if (
+                                localTime < 0
+                            ) {
+
+                                localTime = 0;
+
+                            }
+
+                            return;
+
+                        }
+
+                        if (tag === "forward") {
+
+                            const durationNode =
+                                Array.from(
+                                    child.children
+                                ).find(
+                                    node =>
+                                        node.localName ===
+                                        "duration"
+                                );
+
+                            const duration =
+                                durationNode
+                                    ? parseFloat(
+                                        durationNode.textContent
+                                    ) / divisions
+                                    : 0;
+
+                            localTime += duration;
+
+                            measureMaximum =
+                                Math.max(
+                                    measureMaximum,
+                                    localTime
+                                );
+
+                            return;
+
+                        }
+
+                        if (tag !== "note") {
+                            return;
+                        }
+
+                        const durationNode =
+                            Array.from(
+                                child.children
+                            ).find(
+                                node =>
+                                    node.localName ===
+                                    "duration"
+                            );
+
+                        const rawDuration =
+                            durationNode
+                                ? parseFloat(
+                                    durationNode.textContent
+                                )
+                                : 0;
+
+                        const duration =
+                            Number.isFinite(
+                                rawDuration
+                            )
+                                ? rawDuration /
+                                divisions
+                                : 0;
+
+                        const isRest =
+                            Array.from(
+                                child.children
+                            ).some(
+                                node =>
+                                    node.localName ===
+                                    "rest"
+                            );
+
+                        const isChord =
+                            Array.from(
+                                child.children
+                            ).some(
+                                node =>
+                                    node.localName ===
+                                    "chord"
+                            );
+
+                        const noteStart =
+                            isChord
+                                ? previousNoteStart
+                                : localTime;
+
+                        if (!isRest) {
+
+                            const pitch =
+                                Array.from(
+                                    child.children
+                                ).find(
+                                    node =>
+                                        node.localName ===
+                                        "pitch"
+                                );
+
+                            if (pitch) {
+
+                                const stepNode =
+                                    Array.from(
+                                        pitch.children
+                                    ).find(
+                                        node =>
+                                            node.localName ===
+                                            "step"
+                                    );
+
+                                const octaveNode =
+                                    Array.from(
+                                        pitch.children
+                                    ).find(
+                                        node =>
+                                            node.localName ===
+                                            "octave"
+                                    );
+
+                                const alterNode =
+                                    Array.from(
+                                        pitch.children
+                                    ).find(
+                                        node =>
+                                            node.localName ===
+                                            "alter"
+                                    );
+
+                                if (
+                                    stepNode &&
+                                    octaveNode
+                                ) {
+
+                                    const step =
+                                        stepNode.textContent
+                                            .trim()
+                                            .toUpperCase();
+
+                                    const octave =
+                                        parseInt(
+                                            octaveNode.textContent,
+                                            10
+                                        );
+
+                                    const alter =
+                                        alterNode
+                                            ? parseFloat(
+                                                alterNode.textContent
+                                            )
+                                            : 0;
+
+                                    const midi =
+                                        musicPitchToMidi(
+                                            step,
+                                            octave,
+                                            Number.isFinite(alter)
+                                                ? alter
+                                                : 0
+                                        );
+
+                                    if (
+                                        Number.isFinite(midi) &&
+                                        midi >= 21 &&
+                                        midi <= 108
+                                    ) {
+
+                                        musicNotes.push({
+
+                                            midi:
+                                                Math.round(midi),
+
+                                            start:
+                                                partTime +
+                                                Math.max(
+                                                    0,
+                                                    noteStart
+                                                ),
+
+                                            duration:
+                                                Math.max(
+                                                    0.05,
+                                                    duration
+                                                )
+
+                                        });
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                        if (!isChord) {
+
+                            previousNoteStart =
+                                localTime;
+
+                            localTime += duration;
+
+                        }
+
+                        measureMaximum =
+                            Math.max(
+                                measureMaximum,
+                                localTime
+                            );
+
+                    });
+
+                    partTime +=
+                        Math.max(
+                            0,
+                            measureMaximum
+                        );
+
+                });
+
+                globalMaximum =
+                    Math.max(
+                        globalMaximum,
+                        partTime
+                    );
+
+            });
+
+            const secondsPerQuarter =
+                60 / musicTempo;
+
+            musicNotes.forEach(note => {
+
+                note.startSeconds =
+                    note.start *
+                    secondsPerQuarter;
+
+                note.durationSeconds =
+                    note.duration *
+                    secondsPerQuarter;
+
+            });
+
+            musicNotes.sort(
+                (a, b) =>
+                    a.startSeconds -
+                    b.startSeconds
+            );
+
+            musicDuration =
+                globalMaximum *
+                secondsPerQuarter;
+
+            musicNotes.forEach(note => {
+
+                musicDuration =
+                    Math.max(
+                        musicDuration,
+                        note.startSeconds +
+                        note.durationSeconds
+                    );
+
+            });
+
+            musicDuration += 0.1;
+
+        }
+
+
+        /* =========================================================
+           PITCH
+        ========================================================= */
+
+        function musicPitchToMidi(
+            step,
+            octave,
+            alter
+        ) {
+
+            const semitones = {
+
+                C: 0,
+                D: 2,
+                E: 4,
+                F: 5,
+                G: 7,
+                A: 9,
+                B: 11
+
+            };
+
+            if (
+                !Object.prototype.hasOwnProperty.call(
+                    semitones,
+                    step
+                )
+            ) {
+
+                return NaN;
+
+            }
+
+            return (
+                (octave + 1) * 12 +
+                semitones[step] +
+                alter
+            );
+
+        }
+
+
+        /* =========================================================
+           PIANO SETUP
+        ========================================================= */
+
+        async function setupPiano() {
+
+            if (pianoReady && piano) {
+                return;
+            }
+
+            if (pianoLoading) {
+                await pianoLoading;
+                return;
+            }
+
+            pianoLoading =
+                (async () => {
+
+                    musicStatus.textContent =
+                        "Loading piano...";
+
+                    await Tone.start();
+
+                    piano =
+                        new Tone.Sampler({
+
+                            urls: {
+
+                                C1: "C1.mp3",
+                                C2: "C2.mp3",
+                                C3: "C3.mp3",
+                                C4: "C4.mp3",
+                                C5: "C5.mp3",
+                                C6: "C6.mp3",
+                                C7: "C7.mp3"
+
+                            },
+
+                            release: 1.2,
+
+                            baseUrl:
+                                "https://tonejs.github.io/audio/salamander/"
+
+                        });
+
+                    const reverb =
+                        new Tone.Reverb({
+
+                            decay: 1.4,
+
+                            wet: 0.04
+
+                        });
+
+                    piano.volume.value = -7;
+
+                    piano.chain(
+                        reverb,
+                        Tone.Destination
+                    );
+
+                    await Tone.loaded();
+
+                    pianoReady = true;
+
+                    console.log(
+                        "Piano samples loaded."
+                    );
+
+                })();
+
+            try {
+
+                await pianoLoading;
+
+            } finally {
+
+                pianoLoading = null;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           TONE.PART
+        ========================================================= */
+
+        function destroyMusicPart() {
+
+            if (!musicPart) {
+                return;
+            }
+
+            try {
+                musicPart.stop();
+            } catch (error) {
+                console.warn(
+                    "Could not stop music part:",
+                    error
+                );
+            }
+
+            try {
+                musicPart.dispose();
+            } catch (error) {
+                console.warn(
+                    "Could not dispose music part:",
+                    error
+                );
+            }
+
+            musicPart = null;
+
+        }
+
+
+        function createMusicPart() {
+
+            destroyMusicPart();
+
+            Tone.Transport.cancel();
+
+            const events = [];
+
+            musicNotes.forEach(note => {
+
+                const midi =
+                    Number(note.midi);
+
+                const start =
+                    Number(note.startSeconds);
+
+                const duration =
+                    Number(note.durationSeconds);
+
+                if (!Number.isFinite(midi)) {
+                    return;
+                }
+
+                if (midi < 21 || midi > 108) {
+                    return;
+                }
+
+                if (
+                    !Number.isFinite(start) ||
+                    start < 0
+                ) {
+                    return;
+                }
+
+                if (
+                    !Number.isFinite(duration) ||
+                    duration <= 0
+                ) {
+                    return;
+                }
+
+                const noteName =
+                    Tone.Frequency(
+                        midi,
+                        "midi"
+                    ).toNote();
+
+                if (
+                    typeof noteName !== "string" ||
+                    noteName.includes("NaN")
+                ) {
+                    return;
+                }
+
+                events.push({
+
+                    time: start,
+
+                    note: noteName,
+
+                    duration: duration
+
+                });
+
+            });
+
+            musicPart =
+                new Tone.Part(
+                    (time, event) => {
+
+                        if (!piano || !pianoReady) {
+                            return;
+                        }
+
+                        try {
+
+                            piano.triggerAttackRelease(
+                                event.note,
+                                event.duration,
+                                time
+                            );
+
+                        } catch (error) {
+
+                            console.warn(
+                                "Piano note skipped:",
+                                event.note,
+                                error
+                            );
+
+                        }
+
+                    },
+                    events
+                );
+
+            musicPart.loop = false;
+
+            musicPart.start(0);
+
+            console.log(
+                "Tone music part created:",
+                events.length,
+                "valid notes"
+            );
+
+        }
+
+
+        /* =========================================================
+           BUILD CURSOR TIMELINE
+        ========================================================= */
+
+        function buildMusicCursorTimeline() {
+
+            cursorTimeline = [];
+
+            cursorTimelineReady = false;
+
+            if (
+                !musicOSMD ||
+                !musicOSMD.cursor ||
+                !musicOSMD.cursor.iterator
+            ) {
+
+                console.warn(
+                    "OSMD cursor is not available."
+                );
+
+                return;
+
+            }
+
+            try {
+
+                const cursor =
+                    musicOSMD.cursor;
+
+                cursor.reset();
+
+                let safety = 0;
+
+                while (
+                    !cursor.iterator.EndReached &&
+                    safety < 100000
+                ) {
+
+                    const timestamp =
+                        cursor.iterator.currentTimeStamp;
+
+                    if (timestamp) {
+
+                        const realValue =
+                            Number(
+                                timestamp.RealValue
+                            );
+
+                        if (
+                            Number.isFinite(
+                                realValue
+                            )
+                        ) {
+
+                            const previous =
+                                cursorTimeline[
+                                cursorTimeline.length - 1
+                                ];
+
+                            if (
+                                cursorTimeline.length === 0 ||
+                                Math.abs(
+                                    previous -
+                                    realValue
+                                ) > 0.000001
+                            ) {
+
+                                cursorTimeline.push(
+                                    realValue
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                    cursor.next();
+
+                    safety++;
+
+                }
+
+                cursor.reset();
+
+                cursor.show();
+
+                cursorRealValue = 0;
+
+                cursorTimelineReady =
+                    cursorTimeline.length > 0;
+
+                console.log(
+                    "Built OSMD cursor timeline:",
+                    cursorTimeline.length,
+                    "positions"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Cursor timeline error:",
+                    error
+                );
+
+                cursorTimelineReady = false;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           FIND CURSOR POSITION
+        ========================================================= */
+
+        function findCursorIndexForSeconds(seconds) {
+
+            if (!cursorTimeline.length) {
+                return 0;
+            }
+
+            if (seconds <= 0) {
+                return 0;
+            }
+
+            const secondsPerQuarter =
+                60 / musicTempo;
+
+            const quarterPosition =
+                seconds / secondsPerQuarter;
+
+            const wholeNotePosition =
+                quarterPosition / 4;
+
+            const lastIndex =
+                cursorTimeline.length - 1;
+
+            if (
+                wholeNotePosition <=
+                cursorTimeline[0]
+            ) {
+                return 0;
+            }
+
+            if (
+                wholeNotePosition >=
+                cursorTimeline[lastIndex]
+            ) {
+                return lastIndex;
+            }
+
+            let low = 0;
+
+            let high = lastIndex;
+
+            while (low < high) {
+
+                const middle =
+                    Math.ceil(
+                        (low + high) / 2
+                    );
+
+                if (
+                    cursorTimeline[middle] <=
+                    wholeNotePosition
+                ) {
+
+                    low = middle;
+
+                } else {
+
+                    high = middle - 1;
+
+                }
+
+            }
+
+            return low;
+
+        }
+
+
+        /* =========================================================
+           RESET CURSOR
+        ========================================================= */
+
+        function resetMusicCursor() {
+
+            if (!musicOSMD || !musicOSMD.cursor) {
+                return;
+            }
+
+            try {
+
+                musicOSMD.cursor.reset();
+
+                musicOSMD.cursor.show();
+
+                cursorRealValue = 0;
+
+                scrollCursorIntoView(true);
+
+            } catch (error) {
+
+                console.warn(
+                    "Cursor reset failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           AUTO-SCROLL
+        ========================================================= */
+
+        function scrollCursorIntoView(instant) {
+
+            if (!musicOSMD || !musicOSMD.cursor) {
+                return;
+            }
+
+            const cursorElement =
+                musicOSMD.cursor.cursorElement ||
+                musicViewer.querySelector(
+                    '[id*="cursor"]'
+                );
+
+            if (!cursorElement) {
+                return;
+            }
+
+            const margin = 32;
+
+            const cursorTop =
+                cursorElement.offsetTop;
+
+            const cursorBottom =
+                cursorTop +
+                cursorElement.offsetHeight;
+
+            const viewTop =
+                musicViewer.scrollTop;
+
+            const viewBottom =
+                viewTop +
+                musicViewer.clientHeight;
+
+            const outOfView =
+                cursorBottom > viewBottom - margin ||
+                cursorTop < viewTop + margin;
+
+            if (!outOfView) {
+                return;
+            }
+
+            const targetTop =
+                Math.max(
+                    0,
+                    cursorTop - margin
+                );
+
+            try {
+
+                musicViewer.scrollTo({
+
+                    top: targetTop,
+
+                    behavior:
+                        instant ? "auto" : "smooth"
+
+                });
+
+            } catch (error) {
+
+                musicViewer.scrollTop =
+                    targetTop;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           UPDATE CURSOR
+        ========================================================= */
+
+        function updateMusicCursor(seconds) {
+
+            if (
+                !musicOSMD ||
+                !musicOSMD.cursor ||
+                !musicOSMD.cursor.iterator ||
+                !cursorTimelineReady
+            ) {
+                return;
+            }
+
+            if (!Number.isFinite(seconds)) {
+                return;
+            }
+
+            const targetIndex =
+                findCursorIndexForSeconds(seconds);
+
+            if (
+                targetIndex < 0 ||
+                targetIndex >= cursorTimeline.length
+            ) {
+                return;
+            }
+
+            const targetRealValue =
+                cursorTimeline[targetIndex];
+
+            try {
+
+                if (targetRealValue < cursorRealValue) {
+
+                    musicOSMD.cursor.reset();
+
+                    musicOSMD.cursor.show();
+
+                    cursorRealValue = 0;
+
+                }
+
+                let safety = 0;
+
+                while (
+                    !musicOSMD.cursor.iterator.EndReached &&
+                    safety < 20000
+                ) {
+
+                    const timestamp =
+                        musicOSMD.cursor.iterator.currentTimeStamp;
+
+                    if (!timestamp) {
+                        break;
+                    }
+
+                    const currentRealValue =
+                        Number(timestamp.RealValue);
+
+                    if (!Number.isFinite(currentRealValue)) {
+                        break;
+                    }
+
+                    if (currentRealValue >= targetRealValue) {
+                        break;
+                    }
+
+                    musicOSMD.cursor.next();
+
+                    safety++;
+
+                }
+
+                cursorRealValue =
+                    targetRealValue;
+
+                musicOSMD.cursor.show();
+
+                scrollCursorIntoView(false);
+
+            } catch (error) {
+
+                console.warn(
+                    "Cursor update failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           TIME FORMAT
+        ========================================================= */
+
+        function formatMusicTime(seconds) {
+
+            seconds =
+                Math.max(
+                    0,
+                    Number(seconds) || 0
+                );
+
+            const minutes =
+                Math.floor(
+                    seconds / 60
+                );
+
+            const remaining =
+                Math.floor(
+                    seconds % 60
+                );
+
+            return (
+                minutes +
+                ":" +
+                String(
+                    remaining
+                ).padStart(
+                    2,
+                    "0"
+                )
+            );
+
+        }
+
+
+        /* =========================================================
+           CURRENT PLAYBACK POSITION
+        ========================================================= */
+
+        function getCurrentMusicPosition() {
+
+            if (!musicPlaying) {
+                return musicPausePosition;
+            }
+
+            return Math.max(
+                0,
+                Math.min(
+                    musicDuration,
+                    Tone.Transport.seconds
+                )
+            );
+
+        }
+
+
+        /* =========================================================
+           PLAY
+        ========================================================= */
+
+        async function playMusic() {
+
+            if (startingPlayback) {
+                return;
+            }
+
+            if (!musicOSMD || !musicNotes.length) {
+
+                musicStatus.textContent =
+                    "Sheet music is not ready";
+
+                return;
+
+            }
+
+            startingPlayback = true;
+
+            try {
+
+                await Tone.start();
+
+                await setupPiano();
+
+                if (!musicPart) {
+                    createMusicPart();
+                }
+
+                let startPosition =
+                    musicPaused
+                        ? musicPausePosition
+                        : 0;
+
+                if (startPosition >= musicDuration) {
+                    startPosition = 0;
+                }
+
+                if (
+                    musicLoopEnabled &&
+                    musicLoopEnd > musicLoopStart
+                ) {
+
+                    if (
+                        startPosition < musicLoopStart ||
+                        startPosition >= musicLoopEnd
+                    ) {
+
+                        startPosition =
+                            musicLoopStart;
+
+                    }
+
+                }
+
+                if (startPosition <= 0.001 && !musicPaused) {
+
+                    Tone.Transport.stop();
+
+                    Tone.Transport.cancel();
+
+                    createMusicPart();
+
+                }
+
+                resetMusicCursor();
+
+                updateMusicCursor(
+                    startPosition
+                );
+
+                Tone.Transport.seconds =
+                    startPosition;
+
+                Tone.Transport.start();
+
+                musicPlaying = true;
+
+                musicPaused = false;
+
+                musicStatus.textContent =
+                    "Playing";
+
+                musicPlay.disabled = true;
+
+                musicPause.disabled = false;
+
+                musicStop.disabled = false;
+
+                updateMusicPlayback();
+
+            } catch (error) {
+
+                console.error(
+                    "Playback error:",
+                    error
+                );
+
+                musicStatus.textContent =
+                    "Click Play again to enable audio";
+
+            } finally {
+
+                startingPlayback = false;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           PLAYBACK LOOP
+        ========================================================= */
+
+        function updateMusicPlayback() {
+
+            if (!musicPlaying) {
+                return;
+            }
+
+            const elapsed =
+                Tone.Transport.seconds;
+
+            if (
+                musicLoopEnabled &&
+                musicLoopEnd > musicLoopStart &&
+                elapsed >= musicLoopEnd
+            ) {
+
+                Tone.Transport.seconds =
+                    musicLoopStart;
+
+                resetMusicCursor();
+
+                updateMusicCursor(
+                    musicLoopStart
+                );
+
+                musicProgress.value =
+                    (musicLoopStart / musicDuration) * 100;
+
+                musicCurrentTime.textContent =
+                    formatMusicTime(
+                        musicLoopStart
+                    );
+
+                musicAnimationFrame =
+                    requestAnimationFrame(
+                        updateMusicPlayback
+                    );
+
+                return;
+
+            }
+
+            if (elapsed >= musicDuration) {
+
+                finishMusicPlayback();
+
+                return;
+
+            }
+
+            if (musicProgress) {
+
+                musicProgress.value =
+                    (elapsed / musicDuration) * 100;
+
+            }
+
+            if (musicCurrentTime) {
+
+                musicCurrentTime.textContent =
+                    formatMusicTime(elapsed);
+
+            }
+
+            if (musicDurationText) {
+
+                musicDurationText.textContent =
+                    formatMusicTime(
+                        musicDuration
+                    );
+
+            }
+
+            updateMusicCursor(elapsed);
+
+            musicAnimationFrame =
+                requestAnimationFrame(
+                    updateMusicPlayback
+                );
+
+        }
+
+
+        /* =========================================================
+           FINISH
+        ========================================================= */
+
+        function finishMusicPlayback() {
+
+            musicPlaying = false;
+
+            musicPaused = false;
+
+            musicPausePosition = 0;
+
+            if (musicAnimationFrame) {
+
+                cancelAnimationFrame(
+                    musicAnimationFrame
+                );
+
+                musicAnimationFrame = null;
+
+            }
+
+            Tone.Transport.stop();
+
+            updateMusicCursor(
+                musicDuration
+            );
+
+            musicProgress.value = 100;
+
+            musicCurrentTime.textContent =
+                formatMusicTime(
+                    musicDuration
+                );
+
+            musicStatus.textContent =
+                "Finished";
+
+            musicPlay.disabled = false;
+
+            musicPause.disabled = true;
+
+        }
+
+
+        /* =========================================================
+           PAUSE
+        ========================================================= */
+
+        function pauseMusic() {
+
+            if (!musicPlaying) {
+                return;
+            }
+
+            const position =
+                getCurrentMusicPosition();
+
+            musicPausePosition =
+                position;
+
+            if (
+                musicLoopEnabled &&
+                musicLoopEnd > musicLoopStart &&
+                musicPausePosition >= musicLoopEnd
+            ) {
+
+                musicPausePosition =
+                    musicLoopStart;
+
+            }
+
+            musicPlaying = false;
+
+            musicPaused = true;
+
+            if (musicAnimationFrame) {
+
+                cancelAnimationFrame(
+                    musicAnimationFrame
+                );
+
+                musicAnimationFrame = null;
+
+            }
+
+            Tone.Transport.pause();
+
+            updateMusicCursor(
+                musicPausePosition
+            );
+
+            musicProgress.value =
+                (musicPausePosition / musicDuration) * 100;
+
+            musicCurrentTime.textContent =
+                formatMusicTime(
+                    musicPausePosition
+                );
+
+            musicStatus.textContent =
+                "Paused";
+
+            musicPlay.disabled = false;
+
+            musicPause.disabled = true;
+
+        }
+
+
+        /* =========================================================
+           STOP
+        ========================================================= */
+
+        function stopMusicPlayback() {
+
+            musicPlaying = false;
+
+            musicPaused = false;
+
+            musicPausePosition = 0;
+
+            if (musicAnimationFrame) {
+
+                cancelAnimationFrame(
+                    musicAnimationFrame
+                );
+
+                musicAnimationFrame = null;
+
+            }
+
+            Tone.Transport.stop();
+
+            Tone.Transport.cancel();
+
+            if (musicNotes.length) {
+
+                createMusicPart();
+
+            }
+
+            resetMusicCursor();
+
+            if (musicProgress) {
+
+                musicProgress.value = 0;
+
+            }
+
+            if (musicCurrentTime) {
+
+                musicCurrentTime.textContent =
+                    "0:00";
+
+            }
+
+            musicStatus.textContent =
+                "Ready";
+
+            musicPlay.disabled =
+                !musicOSMD;
+
+            musicPause.disabled = true;
+
+            musicStop.disabled =
+                !musicOSMD;
+
+        }
+
+
+        /* =========================================================
+           MUSIC BUTTONS
+        ========================================================= */
+
+        musicPlay.addEventListener(
+            "click",
+            playMusic
+        );
+
+        musicPause.addEventListener(
+            "click",
+            pauseMusic
+        );
+
+        musicStop.addEventListener(
+            "click",
+            stopMusicPlayback
+        );
+
+
+        /* =========================================================
+           PROGRESS BAR SEEK
+        ========================================================= */
+
+        musicProgress.addEventListener(
+            "input",
+            () => {
+
+                if (!musicDuration) {
+                    return;
+                }
+
+                let position =
+                    (
+                        Number(
+                            musicProgress.value
+                        ) / 100
+                    ) *
+                    musicDuration;
+
+                position =
+                    Math.max(
+                        0,
+                        Math.min(
+                            musicDuration,
+                            position
+                        )
+                    );
+
+                musicCurrentTime.textContent =
+                    formatMusicTime(position);
+
+                if (musicPlaying) {
+
+                    if (
+                        musicLoopEnabled &&
+                        musicLoopEnd > musicLoopStart
+                    ) {
+
+                        if (position < musicLoopStart) {
+                            position =
+                                musicLoopStart;
+                        }
+
+                        if (position >= musicLoopEnd) {
+                            position =
+                                musicLoopStart;
+                        }
+
+                    }
+
+                    Tone.Transport.seconds =
+                        position;
+
+                    resetMusicCursor();
+
+                    updateMusicCursor(
+                        position
+                    );
+
+                    return;
+
+                }
+
+                musicPausePosition =
+                    position;
+
+                musicPaused =
+                    position > 0;
+
+                Tone.Transport.seconds =
+                    position;
+
+                resetMusicCursor();
+
+                updateMusicCursor(
+                    position
+                );
+
+            }
+        );
+
+
+        /* =========================================================
+           LOOP A
+        ========================================================= */
+
+        loopStartButton.addEventListener(
+            "click",
+            () => {
+
+                const position =
+                    Math.max(
+                        0,
+                        Math.min(
+                            musicDuration,
+                            getCurrentMusicPosition()
+                        )
+                    );
+
+                musicLoopStart =
+                    position;
+
+                if (
+                    musicLoopEnd <=
+                    musicLoopStart
+                ) {
+
+                    musicLoopEnd =
+                        musicDuration;
+
+                }
+
+                musicStatus.textContent =
+                    "A: " +
+                    formatMusicTime(
+                        musicLoopStart
+                    );
+
+            }
+        );
+
+
+        /* =========================================================
+           LOOP B
+        ========================================================= */
+
+        loopEndButton.addEventListener(
+            "click",
+            () => {
+
+                const position =
+                    Math.max(
+                        0,
+                        Math.min(
+                            musicDuration,
+                            getCurrentMusicPosition()
+                        )
+                    );
+
+                musicLoopEnd =
+                    position;
+
+                if (
+                    musicLoopEnd <=
+                    musicLoopStart
+                ) {
+
+                    musicStatus.textContent =
+                        "B must be after A";
+
+                    musicLoopEnd = 0;
+
+                    return;
+
+                }
+
+                musicStatus.textContent =
+                    "B: " +
+                    formatMusicTime(
+                        musicLoopEnd
+                    );
+
+            }
+        );
+
+
+        /* =========================================================
+           LOOP TOGGLE
+        ========================================================= */
+
+        loopToggleButton.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    musicLoopEnd <=
+                    musicLoopStart
+                ) {
+
+                    musicStatus.textContent =
+                        "Set A and B first";
+
+                    return;
+
+                }
+
+                musicLoopEnabled =
+                    !musicLoopEnabled;
+
+                loopToggleButton.classList.toggle(
+                    "active",
+                    musicLoopEnabled
+                );
+
+                musicStatus.textContent =
+                    musicLoopEnabled
+                        ? "Looping"
+                        : (
+                            musicPlaying
+                                ? "Playing"
+                                : "Ready"
+                        );
+
+            }
+        );
+
+
+        /* =========================================================
+           CLOSE MUSIC
+        ========================================================= */
+
+        function closeMusicViewer() {
+
+            stopMusicPlayback();
+
+            destroyMusicPart();
+
+            musicModal.classList.remove(
+                "open"
+            );
+
+            musicModal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+            if (musicOSMD) {
+
+                try {
+
+                    musicOSMD.clear();
+
+                } catch (error) {
+
+                    console.warn(error);
+
+                }
+
+            }
+
+            musicOSMD = null;
+
+            musicViewer.innerHTML = "";
+
+            currentMusicPiece = null;
+
+            musicXMLText = "";
+
+            musicNotes = [];
+
+            cursorTimeline = [];
+
+            cursorTimelineReady = false;
+
+            musicDuration = 0;
+
+            musicPlay.disabled = true;
+
+            musicPause.disabled = true;
+
+            musicStop.disabled = true;
+
+        }
+
+
+        closeMusic.addEventListener(
+            "click",
+            closeMusicViewer
+        );
+
+
+        musicModal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    musicModal
+                ) {
+
+                    closeMusicViewer();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           PDF VIEWER
+        ========================================================= */
+
+        let currentPDF = null;
+
+        let currentPageNumber = 1;
+
+        let scale = 1;
+
 
         async function openPDF(piece) {
 
-            modal.classList.add("open");
+            modal.classList.add(
+                "open"
+            );
 
-            document.body.classList.add("modal-open");
-
+            document.body.classList.add(
+                "modal-open"
+            );
 
             pdfTitle.textContent =
                 piece.title;
@@ -795,11 +3538,6 @@
 
             downloadPdf.href =
                 piece.pdf;
-
-
-            /* =====================================
-               RESET PDF
-            ===================================== */
 
             pdfViewer.innerHTML = `
 
@@ -815,23 +3553,17 @@
 
             `;
 
-
             scale = 1;
 
             currentPageNumber = 1;
 
             currentPDF = null;
 
-
             updateZoom();
 
+            currentPage.textContent = "1";
 
-            currentPage.textContent =
-                "1";
-
-            totalPages.textContent =
-                "1";
-
+            totalPages.textContent = "1";
 
             try {
 
@@ -840,17 +3572,13 @@
                         piece.pdf
                     );
 
-
                 currentPDF =
                     await loadingTask.promise;
-
 
                 totalPages.textContent =
                     currentPDF.numPages;
 
-
                 await renderAllPages();
-
 
             } catch (error) {
 
@@ -858,7 +3586,6 @@
                     "PDF loading error:",
                     error
                 );
-
 
                 pdfViewer.innerHTML = `
 
@@ -873,7 +3600,9 @@
                         </p>
 
                         <small>
-                            ${error.message}
+                            ${escapeHTML(
+                    error.message
+                )}
                         </small>
 
                     </div>
@@ -885,19 +3614,13 @@
         }
 
 
-        /* =========================================
-           RENDER PDF
-        ========================================== */
-
         async function renderAllPages() {
 
             if (!currentPDF) {
                 return;
             }
 
-
             pdfViewer.innerHTML = "";
-
 
             for (
                 let pageNumber = 1;
@@ -910,48 +3633,47 @@
                         pageNumber
                     );
 
-
                 const viewport =
                     page.getViewport({
-                        scale: scale
+                        scale
                     });
 
-
                 const canvas =
-                    document.createElement("canvas");
-
+                    document.createElement(
+                        "canvas"
+                    );
 
                 canvas.className =
                     "pdf-page";
 
-
                 canvas.dataset.page =
                     pageNumber;
 
-
                 const context =
-                    canvas.getContext("2d");
-
+                    canvas.getContext(
+                        "2d"
+                    );
 
                 canvas.width =
-                    Math.ceil(viewport.width);
+                    Math.ceil(
+                        viewport.width
+                    );
 
                 canvas.height =
-                    Math.ceil(viewport.height);
-
+                    Math.ceil(
+                        viewport.height
+                    );
 
                 pdfViewer.appendChild(
                     canvas
                 );
-
 
                 await page.render({
 
                     canvasContext:
                         context,
 
-                    viewport:
-                        viewport
+                    viewport
 
                 }).promise;
 
@@ -960,14 +3682,12 @@
         }
 
 
-        /* =========================================
-           ZOOM
-        ========================================== */
-
         function updateZoom() {
 
             zoomLevel.textContent =
-                Math.round(scale * 100) + "%";
+                Math.round(
+                    scale * 100
+                ) + "%";
 
         }
 
@@ -980,11 +3700,9 @@
                     return;
                 }
 
-
                 if (scale >= 2.5) {
                     return;
                 }
-
 
                 scale += 0.25;
 
@@ -1004,11 +3722,9 @@
                     return;
                 }
 
-
                 if (scale <= 0.5) {
                     return;
                 }
-
 
                 scale -= 0.25;
 
@@ -1020,10 +3736,6 @@
         );
 
 
-        /* =========================================
-           PAGE NAVIGATION
-        ========================================== */
-
         previousPage.addEventListener(
             "click",
             () => {
@@ -1032,11 +3744,13 @@
                     return;
                 }
 
+                if (
+                    currentPageNumber <= 1
+                ) {
 
-                if (currentPageNumber <= 1) {
                     return;
-                }
 
+                }
 
                 currentPageNumber--;
 
@@ -1054,14 +3768,14 @@
                     return;
                 }
 
-
                 if (
                     currentPageNumber >=
                     currentPDF.numPages
                 ) {
-                    return;
-                }
 
+                    return;
+
+                }
 
                 currentPageNumber++;
 
@@ -1076,12 +3790,10 @@
             currentPage.textContent =
                 currentPageNumber;
 
-
             const page =
                 document.querySelector(
                     `.pdf-page[data-page="${currentPageNumber}"]`
                 );
-
 
             if (page) {
 
@@ -1098,32 +3810,21 @@
         }
 
 
-        /* =========================================
-           CLOSE PDF VIEWER
-        ========================================== */
-
         function closeViewer() {
 
             modal.classList.remove(
                 "open"
             );
 
-
             document.body.classList.remove(
                 "modal-open"
             );
 
+            pdfViewer.innerHTML = "";
 
-            pdfViewer.innerHTML =
-                "";
+            currentPDF = null;
 
-
-            currentPDF =
-                null;
-
-
-            currentPageNumber =
-                1;
+            currentPageNumber = 1;
 
         }
 
@@ -1139,7 +3840,8 @@
             event => {
 
                 if (
-                    event.target === modal
+                    event.target ===
+                    modal
                 ) {
 
                     closeViewer();
@@ -1150,35 +3852,23 @@
         );
 
 
-        /* =========================================
+        /* =========================================================
            SEARCH
-        ========================================== */
+        ========================================================= */
 
         searchInput.addEventListener(
             "input",
             () => {
 
-                const search =
-                    searchInput.value.trim();
-
-
-                const filtered =
-                    findMatchingSheetMusic(
-                        search
-                    );
-
-
                 displaySheetMusic(
-                    filtered
+                    findMatchingSheetMusic(
+                        searchInput.value.trim()
+                    )
                 );
 
             }
         );
 
-
-        /* =========================================
-           AI SEARCH / URL SEARCH
-        ========================================== */
 
         function loadRequestedSheetMusic() {
 
@@ -1187,10 +3877,8 @@
                     window.location.search
                 );
 
-
             const requestedSearch =
                 params.get("search");
-
 
             if (!requestedSearch) {
 
@@ -1202,23 +3890,14 @@
 
             }
 
-
             searchInput.value =
                 requestedSearch;
 
-
-            const matches =
+            displaySheetMusic(
                 findMatchingSheetMusic(
                     requestedSearch
-                );
-
-
-            displaySheetMusic(
-                matches
+                )
             );
-
-
-            searchInput.focus();
 
         }
 
@@ -1226,9 +3905,9 @@
         loadRequestedSheetMusic();
 
 
-        /* =========================================
-           CONCERTOI AI ELEMENTS
-        ========================================== */
+        /* =========================================================
+           CONCERTOI AI
+        ========================================================= */
 
         const concertoiAIButton =
             document.getElementById(
@@ -1266,28 +3945,21 @@
             );
 
 
-        /* =========================================
-           OPEN AI
-        ========================================== */
-
         function openConcertoiAI() {
 
             concertoiAI.classList.add(
                 "open"
             );
 
-
             concertoiAI.setAttribute(
                 "aria-hidden",
                 "false"
             );
 
-
             concertoiAIButton.setAttribute(
                 "aria-expanded",
                 "true"
             );
-
 
             setTimeout(
                 () => {
@@ -1301,22 +3973,16 @@
         }
 
 
-        /* =========================================
-           CLOSE AI
-        ========================================== */
-
         function closeConcertoiAI() {
 
             concertoiAI.classList.remove(
                 "open"
             );
 
-
             concertoiAI.setAttribute(
                 "aria-hidden",
                 "true"
             );
-
 
             concertoiAIButton.setAttribute(
                 "aria-expanded",
@@ -1326,24 +3992,18 @@
         }
 
 
-        /* =========================================
-           ADD AI MESSAGE
-        ========================================== */
-
         function addMessage(
             message,
             type
         ) {
 
-            const messageWrapper =
+            const wrapper =
                 document.createElement(
                     "div"
                 );
 
-
-            messageWrapper.className =
+            wrapper.className =
                 `concertoi-ai-message ${type}`;
-
 
             if (type === "ai") {
 
@@ -1352,55 +4012,42 @@
                         "div"
                     );
 
-
                 avatar.className =
                     "concertoi-ai-message-avatar";
-
 
                 avatar.textContent =
                     "✦";
 
-
-                messageWrapper.appendChild(
+                wrapper.appendChild(
                     avatar
                 );
 
             }
-
 
             const bubble =
                 document.createElement(
                     "div"
                 );
 
-
             bubble.className =
                 "concertoi-ai-bubble";
-
 
             bubble.textContent =
                 message;
 
-
-            messageWrapper.appendChild(
+            wrapper.appendChild(
                 bubble
             );
 
-
             concertoiAIMessages.appendChild(
-                messageWrapper
+                wrapper
             );
-
 
             concertoiAIMessages.scrollTop =
                 concertoiAIMessages.scrollHeight;
 
         }
 
-
-        /* =========================================
-           TYPING INDICATOR
-        ========================================== */
 
         function addTypingMessage() {
 
@@ -1409,57 +4056,45 @@
                     "div"
                 );
 
-
             wrapper.className =
                 "concertoi-ai-message ai";
 
-
             wrapper.id =
                 "concertoiAITyping";
-
 
             const avatar =
                 document.createElement(
                     "div"
                 );
 
-
             avatar.className =
                 "concertoi-ai-message-avatar";
 
-
             avatar.textContent =
                 "✦";
-
 
             const bubble =
                 document.createElement(
                     "div"
                 );
 
-
             bubble.className =
                 "concertoi-ai-bubble typing";
 
-
             bubble.innerHTML =
                 "<span></span><span></span><span></span>";
-
 
             wrapper.appendChild(
                 avatar
             );
 
-
             wrapper.appendChild(
                 bubble
             );
 
-
             concertoiAIMessages.appendChild(
                 wrapper
             );
-
 
             concertoiAIMessages.scrollTop =
                 concertoiAIMessages.scrollHeight;
@@ -1474,17 +4109,14 @@
                     "concertoiAITyping"
                 );
 
-
             if (typing) {
+
                 typing.remove();
+
             }
 
         }
 
-
-        /* =========================================
-           AI BUTTON EVENTS
-        ========================================== */
 
         concertoiAIButton.addEventListener(
             "click",
@@ -1498,9 +4130,9 @@
         );
 
 
-        /* =========================================
+        /* =========================================================
            AI CHAT
-        ========================================== */
+        ========================================================= */
 
         concertoiAIForm.addEventListener(
             "submit",
@@ -1508,36 +4140,27 @@
 
                 event.preventDefault();
 
-
                 const message =
                     concertoiAIInput.value.trim();
-
 
                 if (!message) {
                     return;
                 }
-
 
                 addMessage(
                     message,
                     "user"
                 );
 
-
-                concertoiAIInput.value =
-                    "";
-
+                concertoiAIInput.value = "";
 
                 concertoiAISend.disabled =
                     true;
 
-
                 concertoiAIInput.disabled =
                     true;
 
-
                 addTypingMessage();
-
 
                 try {
 
@@ -1546,34 +4169,25 @@
                             "/api/chat",
                             {
 
-                                method:
-                                    "POST",
+                                method: "POST",
 
                                 headers: {
-
                                     "Content-Type":
                                         "application/json"
-
                                 },
 
                                 body:
                                     JSON.stringify({
-
-                                        message:
-                                            message
-
+                                        message
                                     })
 
                             }
                         );
 
-
                     const data =
                         await response.json();
 
-
                     removeTypingMessage();
-
 
                     if (!response.ok) {
 
@@ -1584,28 +4198,18 @@
 
                     }
 
-
                     addMessage(
                         data.response ||
                         "I couldn't generate a response.",
                         "ai"
                     );
 
+                    if (data.navigate) {
 
-                    /* =================================
-                       AI NAVIGATION
-                    ================================= */
-
-                    if (
-                        data.navigate
-                    ) {
-
-                        let destination =
-                            null;
-
+                        let destination = null;
 
                         switch (
-                            data.navigate
+                        data.navigate
                         ) {
 
                             case "home":
@@ -1615,7 +4219,6 @@
 
                                 break;
 
-
                             case "about":
 
                                 destination =
@@ -1623,14 +4226,12 @@
 
                                 break;
 
-
                             case "contact":
 
                                 destination =
                                     "contact.html";
 
                                 break;
-
 
                             case "sheetmusic":
 
@@ -1640,7 +4241,6 @@
                                 break;
 
                         }
-
 
                         if (destination) {
 
@@ -1660,14 +4260,7 @@
 
                     }
 
-
-                    /* =================================
-                       BACKWARDS COMPATIBILITY
-                    ================================= */
-
-                    if (
-                        data.redirect
-                    ) {
+                    if (data.redirect) {
 
                         setTimeout(
                             () => {
@@ -1683,7 +4276,6 @@
 
                     }
 
-
                 } catch (error) {
 
                     console.error(
@@ -1691,9 +4283,7 @@
                         error
                     );
 
-
                     removeTypingMessage();
-
 
                     addMessage(
                         "Sorry! I couldn't connect to Concertoi AI right now. Please try again in a moment.",
@@ -1702,14 +4292,11 @@
 
                 }
 
-
                 concertoiAISend.disabled =
                     false;
 
-
                 concertoiAIInput.disabled =
                     false;
-
 
                 concertoiAIInput.focus();
 
@@ -1717,38 +4304,50 @@
         );
 
 
-        /* =========================================
-           ESCAPE KEY
-        ========================================== */
+        /* =========================================================
+           ESCAPE
+        ========================================================= */
 
         document.addEventListener(
             "keydown",
             event => {
 
                 if (
-                    event.key === "Escape"
+                    event.key !==
+                    "Escape"
                 ) {
 
-                    if (
-                        concertoiAI.classList.contains(
-                            "open"
-                        )
-                    ) {
+                    return;
 
-                        closeConcertoiAI();
+                }
 
-                    }
+                if (
+                    concertoiAI.classList.contains(
+                        "open"
+                    )
+                ) {
 
+                    closeConcertoiAI();
 
-                    if (
-                        modal.classList.contains(
-                            "open"
-                        )
-                    ) {
+                }
 
-                        closeViewer();
+                if (
+                    musicModal.classList.contains(
+                        "open"
+                    )
+                ) {
 
-                    }
+                    closeMusicViewer();
+
+                }
+
+                if (
+                    modal.classList.contains(
+                        "open"
+                    )
+                ) {
+
+                    closeViewer();
 
                 }
 
