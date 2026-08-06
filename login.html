@@ -1,0 +1,214 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login — Concertoi</title>
+
+    <link rel="stylesheet" href="login.css">
+    <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
+</head>
+
+<body>
+
+    <a href="index.html" class="back-home">← Back to Concertoi</a>
+
+    <main class="auth-container" id="container">
+
+        <!-- ================================
+             SIGN UP
+        ================================= -->
+
+        <div class="form-container sign-up">
+
+            <form id="signupForm">
+
+                <div class="auth-logo">
+                    <img src="Images/favicon.ico" alt="Concertoi">
+                </div>
+
+                <h1>Create Account</h1>
+
+                <p class="auth-subtitle">
+                    Join Concertoi and make music yours.
+                </p>
+
+                <div class="social-icons">
+
+                    <button type="button" class="social-button google-button" id="googleSignup">
+
+                        <span>G</span>
+                        Continue with Google
+
+                    </button>
+
+                </div>
+
+                <div class="divider">
+                    <span>or sign up with email</span>
+                </div>
+
+                <input type="text" id="signupName" placeholder="Full name" autocomplete="name" required>
+
+                <input type="email" id="signupEmail" placeholder="Email address" autocomplete="email" required>
+
+                <input type="password" id="signupPassword" placeholder="Password" autocomplete="new-password"
+                    minlength="6" required>
+
+                <input type="password" id="signupConfirmPassword" placeholder="Confirm password"
+                    autocomplete="new-password" minlength="6" required>
+
+                <p id="signupMessage" class="auth-message" aria-live="polite">
+                </p>
+
+                <button type="submit" class="main-button" id="signupButton">
+
+                    Create Account
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ================================
+             SIGN IN
+        ================================= -->
+
+        <div class="form-container sign-in">
+
+            <form id="loginForm">
+
+                <div class="auth-logo">
+                    <img src="Images/favicon.ico" alt="Concertoi">
+                </div>
+
+                <h1>Welcome Back</h1>
+
+                <p class="auth-subtitle">
+                    Sign in to continue to Concertoi.
+                </p>
+
+                <div class="social-icons">
+
+                    <button type="button" class="social-button google-button" id="googleLogin">
+
+                        <span>G</span>
+                        Continue with Google
+
+                    </button>
+
+                </div>
+
+                <div class="divider">
+                    <span>or sign in with email</span>
+                </div>
+
+                <input type="email" id="loginEmail" placeholder="Email address" autocomplete="email" required>
+
+                <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password"
+                    required>
+
+                <a href="#" class="forgot-password" id="forgotPassword">
+
+                    Forgot your password?
+
+                </a>
+
+                <p id="loginMessage" class="auth-message" aria-live="polite">
+                </p>
+
+                <button type="submit" class="main-button" id="loginButton">
+
+                    Sign In
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ================================
+             SLIDING PANEL
+        ================================= -->
+
+        <div class="toggle-container">
+
+            <div class="toggle">
+
+                <!-- LEFT PANEL -->
+
+                <div class="toggle-panel toggle-left">
+
+                    <div class="toggle-symbol">
+                        ♪
+                    </div>
+
+                    <h2>
+                        Welcome Back!
+                    </h2>
+
+                    <p>
+                        Already have an account?
+                        Sign in and continue enjoying Concertoi.
+                    </p>
+
+                    <button type="button" class="toggle-button" id="login">
+
+                        Sign In
+
+                    </button>
+
+                </div>
+
+
+                <!-- RIGHT PANEL -->
+
+                <div class="toggle-panel toggle-right">
+
+                    <div class="toggle-symbol">
+                        ♫
+                    </div>
+
+                    <h2>
+                        New to Concertoi?
+                    </h2>
+
+                    <p>
+                        Create an account and keep your music
+                        experience all in one place.
+                    </p>
+
+                    <button type="button" class="toggle-button" id="register">
+
+                        Create Account
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- SUPABASE LIBRARY
+         MUST LOAD BEFORE login.js
+    -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- YOUR EXISTING LOGIN SCRIPT -->
+
+    <script src="login.js"></script>
+
+</body>
+
+</html>
