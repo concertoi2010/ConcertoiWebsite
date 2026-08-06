@@ -433,7 +433,7 @@
             <a href="about.html">About</a>
             <a href="sheetmusic.html" class="active">Sheet Music</a>
             <a href="contact.html">Contact</a>
-            <a href="login.html">Login</a>
+            <a href="login.html" id="authLink">Login</a>
 
         </nav>
 
@@ -4353,6 +4353,61 @@
 
             }
         );
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://rdgoryrmqyqmaigvfjay.supabase.co";
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_UYh6EWbtsiTtVSD4KvqEqA_-IbVA-c6";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+
+        const authLink =
+            document.getElementById("authLink");
+
+
+        async function updateNavbarAuth() {
+
+            const {
+                data
+            } = await supabaseClient.auth.getSession();
+
+
+            if (data.session) {
+
+                authLink.textContent =
+                    "Account";
+
+                authLink.href =
+                    "account.html";
+
+            } else {
+
+                authLink.textContent =
+                    "Login";
+
+                authLink.href =
+                    "login.html";
+
+            }
+
+        }
+
+
+        updateNavbarAuth();
+
 
     </script>
 

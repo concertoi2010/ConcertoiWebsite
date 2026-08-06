@@ -18,8 +18,8 @@
 
 <body>
 
-    <header class="navbar">
 
+    <header class="navbar">
 
         <a class="brand" href="index.html">
             <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
@@ -27,22 +27,28 @@
         </a>
 
         <nav class="nav-links">
+
             <a href="index.html">Home</a>
+
             <a href="about.html" class="active">About</a>
+
             <a href="sheetmusic.html">Sheet Music</a>
+
             <a href="contact.html">Contact</a>
-            <a href="login.html">Login</a>
+
+            <!-- Changes between Login / Account automatically -->
+            <a href="login.html" id="accountNavLink">Login</a>
+
         </nav>
 
-
     </header>
+
 
     <main>
 
         <section class="about-hero">
 
             <div class="about-hero-content">
-
 
                 <p class="eyebrow">Behind Concertoi</p>
 
@@ -60,15 +66,14 @@
                     Discover the story ↓
                 </a>
 
-
             </div>
 
         </section>
 
+
         <section id="story" class="about-section">
 
             <div class="section-heading">
-
 
                 <p class="eyebrow">The Story</p>
 
@@ -79,16 +84,16 @@
                     started and where it's going.
                 </p>
 
-
             </div>
 
             <div class="timeline">
 
-
                 <div class="timeline-item reveal">
+
                     <div class="timeline-dot"></div>
 
                     <div class="timeline-card">
+
                         <span>2024</span>
 
                         <h3>The Beginning</h3>
@@ -97,14 +102,18 @@
                             Concertoi begins as a place to bring
                             music and creativity together.
                         </p>
+
                     </div>
+
                 </div>
 
 
                 <div class="timeline-item reveal">
+
                     <div class="timeline-dot"></div>
 
                     <div class="timeline-card">
+
                         <span>01</span>
 
                         <h3>Original Music</h3>
@@ -113,14 +122,18 @@
                             Original compositions begin forming the
                             foundation of the Concertoi library.
                         </p>
+
                     </div>
+
                 </div>
 
 
                 <div class="timeline-item reveal">
+
                     <div class="timeline-dot"></div>
 
                     <div class="timeline-card">
+
                         <span>02</span>
 
                         <h3>The Website</h3>
@@ -129,14 +142,18 @@
                             Concertoi becomes an online home for
                             music, sheet music and future projects.
                         </p>
+
                     </div>
+
                 </div>
 
 
                 <div class="timeline-item reveal">
+
                     <div class="timeline-dot"></div>
 
                     <div class="timeline-card">
+
                         <span>03</span>
 
                         <h3>What's Next?</h3>
@@ -145,28 +162,27 @@
                             More music, more ideas and more things
                             to come.
                         </p>
-                    </div>
-                </div>
 
+                    </div>
+
+                </div>
 
             </div>
 
         </section>
 
+
         <section class="about-section why-section">
 
             <div class="section-heading">
-
 
                 <p class="eyebrow">The Idea</p>
 
                 <h2>Why Concertoi?</h2>
 
-
             </div>
 
             <div class="about-cards">
-
 
                 <article class="about-card reveal">
 
@@ -209,15 +225,14 @@
 
                 </article>
 
-
             </div>
 
         </section>
 
+
         <section class="composer-section">
 
             <div class="composer-card reveal">
-
 
                 <div>
 
@@ -236,18 +251,16 @@
 
                 </div>
 
-
                 <div class="composer-symbol">
                     ♪
                 </div>
-
 
             </div>
 
         </section>
 
-        <section class="about-final">
 
+        <section class="about-final">
 
             <p class="eyebrow">Concertoi</p>
 
@@ -260,17 +273,16 @@
                 Thanks for visiting Concertoi.
             </p>
 
-
         </section>
 
     </main>
+
 
     <!-- COMPOSER MODAL -->
 
     <div id="composerModal" class="composer-modal">
 
         <div class="composer-popup">
-
 
             <button id="closeComposer" class="composer-close">
                 ×
@@ -291,28 +303,26 @@
                 compositions and ideas being added over time.
             </p>
 
-
         </div>
 
     </div>
+
 
     <!-- CONCERTOI AI BUTTON -->
 
     <button type="button" class="concertoi-ai-button" id="concertoiAIButton" aria-label="Open Concertoi AI"
         aria-expanded="false">
 
-
         <span class="concertoi-ai-icon">✦</span>
 
         <span>Ask Concertoi AI</span>
 
-
     </button>
+
 
     <!-- CONCERTOI AI -->
 
     <div class="concertoi-ai" id="concertoiAI" aria-hidden="true">
-
 
         <div class="concertoi-ai-header">
 
@@ -323,8 +333,11 @@
                 </div>
 
                 <div>
+
                     <strong>Concertoi AI</strong>
+
                     <span>Your music assistant</span>
+
                 </div>
 
             </div>
@@ -345,8 +358,10 @@
                 </div>
 
                 <div class="concertoi-ai-bubble">
+
                     Hey! 👋 I'm Concertoi AI. Ask me anything about Concertoi,
                     sheet music, or finding your next piece!
+
                 </div>
 
             </div>
@@ -365,8 +380,8 @@
 
         </form>
 
-
     </div>
+
 
     <!-- FOOTER -->
 
@@ -374,23 +389,134 @@
 
         <div class="footer-inner">
 
-
             <p>
                 © 2026 Concertoi. All rights reserved.
             </p>
 
             <p>
+
                 <a href="mailto:concertoi2010@gmail.com">
                     concertoi2010@gmail.com
                 </a>
-            </p>
 
+            </p>
 
         </div>
 
     </footer>
 
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
     <script>
+
+        /* =========================================
+           SUPABASE ACCOUNT NAVIGATION
+        ========================================= */
+
+        const SUPABASE_URL =
+            "https://rdgoryrmqyqmaigvfjay.supabase.co";
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_UYh6EWbtsiTtVSD4KvqEqA_-IbVA-c6";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+
+        const accountNavLink =
+            document.getElementById("accountNavLink");
+
+
+        async function updateAccountNavigation() {
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient.auth.getSession();
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                if (data.session) {
+
+                    /*
+                     * User IS logged in.
+                     */
+
+                    accountNavLink.textContent =
+                        "Account";
+
+                    accountNavLink.href =
+                        "account.html";
+
+                } else {
+
+                    /*
+                     * User is NOT logged in.
+                     */
+
+                    accountNavLink.textContent =
+                        "Login";
+
+                    accountNavLink.href =
+                        "login.html";
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Could not check login status:",
+                    error
+                );
+
+                /*
+                 * If something goes wrong,
+                 * default to Login.
+                 */
+
+                accountNavLink.textContent =
+                    "Login";
+
+                accountNavLink.href =
+                    "login.html";
+
+            }
+
+        }
+
+
+        updateAccountNavigation();
+
+
+        /*
+         * Keep the navigation updated if
+         * the Supabase session changes.
+         */
+
+        supabaseClient.auth.onAuthStateChange(
+            function () {
+
+                updateAccountNavigation();
+
+            }
+        );
+
 
         /* =========================================
            COMPOSER POPUP
@@ -409,7 +535,9 @@
         openComposer.addEventListener(
             "click",
             () => {
+
                 composerModal.classList.add("open");
+
             }
         );
 
@@ -417,7 +545,9 @@
         closeComposer.addEventListener(
             "click",
             () => {
+
                 composerModal.classList.remove("open");
+
             }
         );
 
@@ -759,10 +889,6 @@
             }
 
 
-            /* =====================================
-               SHEET MUSIC SEARCH
-            ===================================== */
-
             if (
                 page === "sheetmusic" &&
                 searchQuery
@@ -796,12 +922,6 @@
                 data.navigate ||
                 data.redirect;
 
-
-            /*
-               If AI wants to search for a
-               specific piece, send the search
-               term to Sheet Music.
-            */
 
             const searchQuery =
                 data.search ||
@@ -1080,6 +1200,7 @@
         );
 
     </script>
+
 
 </body>
 
