@@ -1195,6 +1195,205 @@
 
         let musicLoopEnd = 0;
 
+        // ADDED: shared tempo-map converter used by BOTH the Tone.js
+        // scheduler and the OSMD cursor, so they can never disagree.
+        let musicTempoConverter = null;
+
+
+        /* =========================================================
+           TEMPO MAP / TIME CONVERSION   (ADDED)
+
+           Builds a piecewise tempo map from every <sound tempo="...">
+           found in the score, keyed by its quarter-note position.
+           Exposes two conversions that are exact inverses of each
+           other, so the Tone.js scheduler and the OSMD cursor always
+           agree — including across tempo changes.
+        ========================================================= */
+
+        function buildTempoConverter(tempoEvents, fallbackTempo) {
+
+            let events =
+                tempoEvents
+                    .filter(event =>
+                        Number.isFinite(event.quarterPosition) &&
+                        Number.isFinite(event.bpm) &&
+                        event.bpm > 0
+                    )
+                    .sort(
+                        (a, b) =>
+                            a.quarterPosition - b.quarterPosition
+                    );
+
+            // Collapse events landing on (almost) the same position —
+            // last one wins.
+            const merged = [];
+
+            events.forEach(event => {
+
+                const last =
+                    merged[merged.length - 1];
+
+                if (
+                    last &&
+                    Math.abs(
+                        last.quarterPosition -
+                        event.quarterPosition
+                    ) < 1e-6
+                ) {
+
+                    last.bpm = event.bpm;
+
+                } else {
+
+                    merged.push({
+                        quarterPosition: event.quarterPosition,
+                        bpm: event.bpm
+                    });
+
+                }
+
+            });
+
+            // Always need a tempo defined at position 0.
+            if (
+                !merged.length ||
+                merged[0].quarterPosition > 1e-9
+            ) {
+
+                merged.unshift({
+                    quarterPosition: 0,
+                    bpm: merged.length
+                        ? merged[0].bpm
+                        : (fallbackTempo || 120)
+                });
+
+            }
+
+            // Precompute cumulative seconds at the START of each
+            // segment by integrating (quarterSpan * secondsPerQuarter)
+            // segment by segment.
+            let cumulativeSeconds = 0;
+
+            const segments =
+                merged.map((event, index) => {
+
+                    const segment = {
+                        quarterPosition: event.quarterPosition,
+                        bpm: event.bpm,
+                        seconds: cumulativeSeconds
+                    };
+
+                    const next =
+                        merged[index + 1];
+
+                    if (next) {
+
+                        const quarterSpan =
+                            next.quarterPosition -
+                            event.quarterPosition;
+
+                        cumulativeSeconds +=
+                            quarterSpan *
+                            (60 / event.bpm);
+
+                    }
+
+                    return segment;
+
+                });
+
+            function segmentForQuarter(quarterPosition) {
+
+                let segment = segments[0];
+
+                for (let i = 0; i < segments.length; i++) {
+
+                    if (segments[i].quarterPosition <= quarterPosition) {
+                        segment = segments[i];
+                    } else {
+                        break;
+                    }
+
+                }
+
+                return segment;
+
+            }
+
+            function segmentForSeconds(seconds) {
+
+                let segment = segments[0];
+
+                for (let i = 0; i < segments.length; i++) {
+
+                    if (segments[i].seconds <= seconds) {
+                        segment = segments[i];
+                    } else {
+                        break;
+                    }
+
+                }
+
+                return segment;
+
+            }
+
+            function quarterToSeconds(quarterPosition) {
+
+                if (!Number.isFinite(quarterPosition)) {
+                    return 0;
+                }
+
+                const segment =
+                    segmentForQuarter(quarterPosition);
+
+                const deltaQuarters =
+                    Math.max(
+                        0,
+                        quarterPosition -
+                        segment.quarterPosition
+                    );
+
+                return (
+                    segment.seconds +
+                    deltaQuarters * (60 / segment.bpm)
+                );
+
+            }
+
+            function secondsToQuarterPosition(seconds) {
+
+                if (
+                    !Number.isFinite(seconds) ||
+                    seconds <= 0
+                ) {
+                    return 0;
+                }
+
+                const segment =
+                    segmentForSeconds(seconds);
+
+                const deltaSeconds =
+                    Math.max(
+                        0,
+                        seconds - segment.seconds
+                    );
+
+                return (
+                    segment.quarterPosition +
+                    deltaSeconds * (segment.bpm / 60)
+                );
+
+            }
+
+            return {
+                quarterToSeconds,
+                secondsToQuarterPosition,
+                segments
+            };
+
+        }
+
 
         /* =========================================================
            SEARCH
@@ -1479,6 +1678,8 @@
 
             cursorRealValue = 0;
 
+            musicTempoConverter = null; // ADDED — reset shared tempo map per piece
+
             currentMusicPiece = piece;
 
             musicModal.classList.add("open");
@@ -1707,8 +1908,10 @@
                 );
 
                 console.log(
-                    "Tempo:",
-                    musicTempo
+                    "Tempo segments:",
+                    musicTempoConverter
+                        ? musicTempoConverter.segments.length
+                        : 0
                 );
 
                 console.log(
@@ -1766,6 +1969,14 @@
 
         /* =========================================================
            MUSICXML PARSER
+
+           UPDATED: tempo changes are now collected at their real
+           position in the score (not just "the first <sound tempo>
+           found anywhere"), and <attributes> (divisions) are read
+           in document order so a mid-measure divisions change is
+           honored. A single shared tempo map (musicTempoConverter)
+           is built here and reused by the cursor code below, so
+           playback timing and cursor timing can never disagree.
         ========================================================= */
 
         function parseMusicXML(xmlText) {
@@ -1795,58 +2006,6 @@
 
             }
 
-            const soundTempo =
-                xml.querySelector(
-                    "sound[tempo]"
-                );
-
-            if (soundTempo) {
-
-                const value =
-                    parseFloat(
-                        soundTempo.getAttribute(
-                            "tempo"
-                        )
-                    );
-
-                if (
-                    Number.isFinite(value) &&
-                    value > 0
-                ) {
-
-                    musicTempo = value;
-
-                }
-
-            }
-
-            if (musicTempo === 100) {
-
-                const perMinute =
-                    xml.querySelector(
-                        "per-minute"
-                    );
-
-                if (perMinute) {
-
-                    const value =
-                        parseFloat(
-                            perMinute.textContent
-                        );
-
-                    if (
-                        Number.isFinite(value) &&
-                        value > 0
-                    ) {
-
-                        musicTempo = value;
-
-                    }
-
-                }
-
-            }
-
             const parts =
                 Array.from(
                     xml.querySelectorAll("part")
@@ -1854,7 +2013,11 @@
 
             let globalMaximum = 0;
 
-            parts.forEach(part => {
+            // ADDED: every <sound tempo="..."> found, tagged with its
+            // quarter-note position in the score.
+            const tempoEvents = [];
+
+            parts.forEach((part, partIndex) => {
 
                 let partTime = 0;
 
@@ -1877,47 +2040,6 @@
 
                     let previousNoteStart = 0;
 
-                    const attributes =
-                        Array.from(
-                            measure.children
-                        ).find(
-                            child =>
-                                child.localName ===
-                                "attributes"
-                        );
-
-                    if (attributes) {
-
-                        const divisionNode =
-                            Array.from(
-                                attributes.children
-                            ).find(
-                                child =>
-                                    child.localName ===
-                                    "divisions"
-                            );
-
-                        if (divisionNode) {
-
-                            const value =
-                                parseFloat(
-                                    divisionNode.textContent
-                                );
-
-                            if (
-                                Number.isFinite(value) &&
-                                value > 0
-                            ) {
-
-                                divisions =
-                                    value;
-
-                            }
-
-                        }
-
-                    }
-
                     const children =
                         Array.from(
                             measure.children
@@ -1927,6 +2049,90 @@
 
                         const tag =
                             child.localName;
+
+                        // UPDATED: divisions are now updated in
+                        // document order as <attributes> elements are
+                        // encountered, instead of only reading the
+                        // first <attributes> block in the measure.
+                        if (tag === "attributes") {
+
+                            const divisionNode =
+                                Array.from(
+                                    child.children
+                                ).find(
+                                    node =>
+                                        node.localName ===
+                                        "divisions"
+                                );
+
+                            if (divisionNode) {
+
+                                const value =
+                                    parseFloat(
+                                        divisionNode.textContent
+                                    );
+
+                                if (
+                                    Number.isFinite(value) &&
+                                    value > 0
+                                ) {
+
+                                    divisions =
+                                        value;
+
+                                }
+
+                            }
+
+                            return;
+
+                        }
+
+                        // ADDED: capture every tempo mark at its real
+                        // position. Only read from the first part to
+                        // avoid recording the same tempo change once
+                        // per staff.
+                        if (
+                            tag === "direction" &&
+                            partIndex === 0
+                        ) {
+
+                            const soundEl =
+                                child.querySelector(
+                                    "sound[tempo]"
+                                );
+
+                            if (soundEl) {
+
+                                const bpm =
+                                    parseFloat(
+                                        soundEl.getAttribute(
+                                            "tempo"
+                                        )
+                                    );
+
+                                if (
+                                    Number.isFinite(bpm) &&
+                                    bpm > 0
+                                ) {
+
+                                    tempoEvents.push({
+
+                                        quarterPosition:
+                                            partTime +
+                                            localTime,
+
+                                        bpm
+
+                                    });
+
+                                }
+
+                            }
+
+                            return;
+
+                        }
 
                         if (tag === "backup") {
 
@@ -2119,6 +2325,10 @@
                                         midi <= 108
                                     ) {
 
+                                        // NOTE: start/duration here are
+                                        // QUARTER-NOTE positions. Seconds
+                                        // are derived below via the
+                                        // shared tempo map.
                                         musicNotes.push({
 
                                             midi:
@@ -2180,18 +2390,60 @@
 
             });
 
-            const secondsPerQuarter =
-                60 / musicTempo;
+            // Fallback tempo — only used if the file has NO
+            // <sound tempo> anywhere (falls back to <per-minute> or
+            // 100bpm, same defaults as before).
+            let fallbackTempo = 100;
+
+            if (!tempoEvents.length) {
+
+                const perMinute =
+                    xml.querySelector(
+                        "per-minute"
+                    );
+
+                if (perMinute) {
+
+                    const value =
+                        parseFloat(
+                            perMinute.textContent
+                        );
+
+                    if (
+                        Number.isFinite(value) &&
+                        value > 0
+                    ) {
+
+                        fallbackTempo = value;
+
+                    }
+
+                }
+
+            }
+
+            // ---- Single shared timing model used by BOTH the
+            // Tone.js scheduler and the OSMD cursor. ----
+            musicTempoConverter =
+                buildTempoConverter(
+                    tempoEvents,
+                    fallbackTempo
+                );
+
+            musicTempo =
+                musicTempoConverter.segments[0].bpm; // kept for logging/back-compat
 
             musicNotes.forEach(note => {
 
                 note.startSeconds =
-                    note.start *
-                    secondsPerQuarter;
+                    musicTempoConverter.quarterToSeconds(
+                        note.start
+                    );
 
                 note.durationSeconds =
-                    note.duration *
-                    secondsPerQuarter;
+                    musicTempoConverter.quarterToSeconds(
+                        note.start + note.duration
+                    ) - note.startSeconds;
 
             });
 
@@ -2202,8 +2454,9 @@
             );
 
             musicDuration =
-                globalMaximum *
-                secondsPerQuarter;
+                musicTempoConverter.quarterToSeconds(
+                    globalMaximum
+                );
 
             musicNotes.forEach(note => {
 
@@ -2603,6 +2856,10 @@
 
         /* =========================================================
            FIND CURSOR POSITION
+
+           UPDATED: seconds are now converted to a musical (quarter
+           note) position via the shared tempo map instead of a flat
+           tempo assumption, so tempo changes stay in sync.
         ========================================================= */
 
         function findCursorIndexForSeconds(seconds) {
@@ -2615,12 +2872,16 @@
                 return 0;
             }
 
-            const secondsPerQuarter =
-                60 / musicTempo;
+            if (!musicTempoConverter) {
+                return 0;
+            }
 
             const quarterPosition =
-                seconds / secondsPerQuarter;
+                musicTempoConverter.secondsToQuarterPosition(
+                    seconds
+                );
 
+            // OSMD RealValue is expressed in whole notes.
             const wholeNotePosition =
                 quarterPosition / 4;
 
@@ -3575,6 +3836,8 @@
             cursorTimelineReady = false;
 
             musicDuration = 0;
+
+            musicTempoConverter = null; // ADDED
 
             musicPlay.disabled = true;
 
