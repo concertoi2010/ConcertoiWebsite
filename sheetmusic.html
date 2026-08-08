@@ -451,6 +451,167 @@
             }
 
         }
+
+        /* =========================================================
+           SEARCH / FILTER / SORT CONTROLS
+        ========================================================= */
+
+        .sheet-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+
+            max-width: 1100px;
+            margin: 0 auto 8px;
+        }
+
+        .sheet-controls select {
+            height: 40px;
+
+            padding: 0 34px 0 12px;
+
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+
+            background-color: #16161a;
+            color: #fff;
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+
+            cursor: pointer;
+
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            background-image:
+                url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fbff00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 14px;
+        }
+
+        .sheet-controls select option {
+            background-color: #16161a;
+            color: #fff;
+        }
+
+        .sheet-controls select:focus {
+            outline: none;
+            border-color: #fbff00;
+        }
+
+        .clear-filters-button {
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            height: 40px;
+
+            padding: 0 14px;
+
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+
+            background: transparent;
+            color: rgba(255, 255, 255, 0.75);
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                color 0.15s ease;
+        }
+
+        .clear-filters-button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .result-count {
+            max-width: 1100px;
+            margin: 0 auto 18px;
+
+            font-size: 13px;
+            opacity: 0.65;
+        }
+
+        @media (max-width: 650px) {
+
+            .sheet-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sheet-controls select,
+            .clear-filters-button {
+                width: 100%;
+            }
+
+        }
+
+        /* =========================================================
+           CARD FAVOURITE STAR
+        ========================================================= */
+
+        .sheet-image {
+            position: relative;
+        }
+
+        .card-favourite-star {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 2;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 30px;
+            height: 30px;
+
+            padding: 0;
+            margin: 0;
+
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+
+            background: rgba(10, 10, 10, 0.55);
+            color: #fff;
+
+            font-size: 15px;
+            line-height: 1;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                transform 0.15s ease,
+                color 0.15s ease,
+                border-color 0.15s ease;
+        }
+
+        .card-favourite-star:hover:not(:disabled) {
+            transform: scale(1.08);
+            background: rgba(10, 10, 10, 0.75);
+        }
+
+        .card-favourite-star.active {
+            color: #fbff00;
+            border-color: rgba(251, 255, 0, 0.4);
+        }
+
+        .card-favourite-star:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -518,6 +679,33 @@
             <input type="text" id="searchInput" placeholder="Search sheet music..." autocomplete="off">
 
         </div>
+
+
+        <!-- FILTERS / SORT -->
+
+        <div class="sheet-controls">
+
+            <select id="difficultyFilter" aria-label="Filter by difficulty">
+                <option value="all">All Difficulties</option>
+            </select>
+
+            <select id="genreFilter" aria-label="Filter by genre">
+                <option value="all">All Genres</option>
+            </select>
+
+            <select id="sortSelect" aria-label="Sort sheet music">
+                <option value="default">Default</option>
+                <option value="az">A–Z</option>
+                <option value="za">Z–A</option>
+            </select>
+
+            <button type="button" id="clearFiltersButton" class="clear-filters-button">
+                Clear Filters
+            </button>
+
+        </div>
+
+        <p id="resultCount" class="result-count"></p>
 
 
         <!-- SHEET MUSIC -->
@@ -913,6 +1101,7 @@
                 title: "Where Is My Husband",
                 artist: "RAYE",
                 difficulty: "Intermediate",
+                genre: "Pop",
                 image: "Images/raye image.png",
                 pdf: "PDFs/Where Is My Husband.pdf",
                 musicxml: "MusicXML/whereismyhusbandmidi.musicxml",
@@ -926,6 +1115,7 @@
                 title: "Soda Pop",
                 artist: "Saja Boys",
                 difficulty: "Intermediate",
+                genre: "Soundtrack",
                 image: "Images/soda pop image.png",
                 pdf: "PDFs/Soda Pop.pdf",
                 musicxml: "MusicXML/sodapopmidi.musicxml",
@@ -942,6 +1132,7 @@
                 title: "My Heart Will Go On",
                 artist: "Celine Dion",
                 difficulty: "Advanced",
+                genre: "Soundtrack",
                 image: "Images/My heart will go on image.png",
                 pdf: "PDFs/My Heart Will Go On.pdf",
                 musicxml: "MusicXML/myheartwillgoon.musicxml",
@@ -958,6 +1149,7 @@
                 title: "Axel F",
                 artist: "Harold Faltermeyer",
                 difficulty: "Advanced",
+                genre: "Soundtrack",
                 image: "Images/axel f image.png",
                 pdf: "PDFs/Axel F.pdf",
                 musicxml: "MusicXML/axelfmidi.musicxml",
@@ -973,6 +1165,7 @@
                 title: "Immortals",
                 artist: "Fall Out Boy",
                 difficulty: "Advanced",
+                genre: "Soundtrack",
                 image: "Images/immortals image.png",
                 pdf: "PDFs/Immortals.pdf",
                 musicxml: "MusicXML/immortalsmidi.musicxml",
@@ -990,6 +1183,7 @@
                 title: "Zoo",
                 artist: "",
                 difficulty: "Intermediate",
+                genre: "Other",
                 image: "Images/zoo image.png",
                 pdf: "PDFs/Zoo.pdf",
                 musicxml: "MusicXML/zoomidi.musicxml",
@@ -1002,6 +1196,7 @@
                 title: "Azizam",
                 artist: "Ed Sheeran",
                 difficulty: "Intermediate",
+                genre: "Pop",
                 image: "Images/azizam image.png",
                 pdf: "PDFs/Azizam.pdf",
                 musicxml: "MusicXML/azizammidi.musicxml",
@@ -1015,6 +1210,7 @@
                 title: "Zombie",
                 artist: "The Cranberries",
                 difficulty: "Intermediate",
+                genre: "Rock",
                 image: "Images/zombie image.png",
                 pdf: "PDFs/Zombie.pdf",
                 musicxml: "MusicXML/zombiemidi.musicxml",
@@ -1029,6 +1225,7 @@
                 title: "Despacito",
                 artist: "Luis Fonsi",
                 difficulty: "Intermediate",
+                genre: "Pop",
                 image: "Images/despacito image.png",
                 pdf: "PDFs/Despacito.pdf",
                 musicxml: "MusicXML/despacitomidi.musicxml",
@@ -1043,6 +1240,7 @@
                 title: "Let It Go",
                 artist: "Idina Menzel",
                 difficulty: "Advanced",
+                genre: "Soundtrack",
                 image: "Images/let it go image.png",
                 pdf: "PDFs/Let It Go.pdf",
                 musicxml: "MusicXML/letitgomidi.musicxml",
@@ -1060,6 +1258,7 @@
                 title: "Snowman",
                 artist: "Sia",
                 difficulty: "Intermediate",
+                genre: "Pop",
                 image: "Images/snowman image.png",
                 pdf: "PDFs/Snowman.pdf",
                 musicxml: "MusicXML/snowmanmidi.musicxml",
@@ -1073,6 +1272,7 @@
                 title: "Flashlight",
                 artist: "Jessie J",
                 difficulty: "Intermediate",
+                genre: "Soundtrack",
                 image: "Images/flashlight image.png",
                 pdf: "PDFs/Flashlight.pdf",
                 musicxml: "MusicXML/flashlightmidi.musicxml",
@@ -1099,6 +1299,21 @@
 
         const noResults =
             document.getElementById("noResults");
+
+        const difficultyFilter =
+            document.getElementById("difficultyFilter");
+
+        const genreFilter =
+            document.getElementById("genreFilter");
+
+        const sortSelect =
+            document.getElementById("sortSelect");
+
+        const clearFiltersButton =
+            document.getElementById("clearFiltersButton");
+
+        const resultCountEl =
+            document.getElementById("resultCount");
 
 
         /* =========================================================
@@ -1252,6 +1467,36 @@
         let currentPieceFavourited = false;
 
         let favouriteBusy = false;
+
+
+        /* =========================================================
+           SEARCH / FILTER / SORT STATE
+
+           Single source of truth for the grid's active controls.
+           Filtering/sorting always runs locally against the
+           existing `sheetMusic` array — no new data source.
+        ========================================================= */
+
+        let currentDifficultyFilter = "all";
+
+        let currentGenreFilter = "all";
+
+        let currentSort = "default";
+
+
+        /* =========================================================
+           FAVOURITES STATE (SHARED BETWEEN CARDS + PLAYER)
+
+           Loaded ONCE per page load (or auth change) with a single
+           Supabase query, then reused everywhere — the card stars,
+           and the existing player Favourite button both read from
+           and write to this same Set, so there is only ever one
+           favourites system.
+        ========================================================= */
+
+        let favouritedTitles = new Set();
+
+        let favouriteBusyTitles = new Set();
 
 
         /* =========================================================
@@ -1512,6 +1757,203 @@
 
 
         /* =========================================================
+           FILTER OPTIONS (BUILT FROM THE EXISTING ARRAY)
+        ========================================================= */
+
+        function populateDifficultyFilter() {
+
+            if (!difficultyFilter) {
+                return;
+            }
+
+            const difficulties =
+                Array.from(
+                    new Set(
+                        sheetMusic
+                            .map(piece =>
+                                String(piece.difficulty || "").trim()
+                            )
+                            .filter(Boolean)
+                    )
+                ).sort(
+                    (a, b) => a.localeCompare(b)
+                );
+
+            difficultyFilter.innerHTML =
+                '<option value="all">All Difficulties</option>' +
+                difficulties
+                    .map(value =>
+                        `<option value="${escapeHTML(value)}">${escapeHTML(value)}</option>`
+                    )
+                    .join("");
+
+        }
+
+
+        function populateGenreFilter() {
+
+            if (!genreFilter) {
+                return;
+            }
+
+            const genres =
+                Array.from(
+                    new Set(
+                        sheetMusic
+                            .map(piece =>
+                                String(piece.genre || "").trim()
+                            )
+                            .filter(Boolean)
+                    )
+                ).sort(
+                    (a, b) => a.localeCompare(b)
+                );
+
+            genreFilter.innerHTML =
+                '<option value="all">All Genres</option>' +
+                genres
+                    .map(value =>
+                        `<option value="${escapeHTML(value)}">${escapeHTML(value)}</option>`
+                    )
+                    .join("");
+
+        }
+
+
+        /* =========================================================
+           FILTERED + SORTED VIEW OF THE EXISTING ARRAY
+
+           This never mutates or replaces `sheetMusic` — it only
+           builds a fresh view (search -> difficulty -> artist ->
+           sort) each time a control changes, entirely locally.
+        ========================================================= */
+
+        function getFilteredSortedList() {
+
+            let list =
+                findMatchingSheetMusic(
+                    searchInput.value.trim()
+                );
+
+            if (currentDifficultyFilter !== "all") {
+
+                list = list.filter(piece =>
+                    normaliseSearch(piece.difficulty) ===
+                    normaliseSearch(currentDifficultyFilter)
+                );
+
+            }
+
+            if (currentGenreFilter !== "all") {
+
+                list = list.filter(piece =>
+                    normaliseSearch(piece.genre) ===
+                    normaliseSearch(currentGenreFilter)
+                );
+
+            }
+
+            // Copy before sorting — findMatchingSheetMusic can
+            // return the original `sheetMusic` reference directly
+            // when there's no search query, and Default order must
+            // leave that array untouched.
+            list = list.slice();
+
+            if (currentSort === "az") {
+
+                list.sort(
+                    (a, b) =>
+                        a.title.localeCompare(b.title)
+                );
+
+            } else if (currentSort === "za") {
+
+                list.sort(
+                    (a, b) =>
+                        b.title.localeCompare(a.title)
+                );
+
+            }
+
+            return list;
+
+        }
+
+
+        function updateResultCount(count) {
+
+            if (!resultCountEl) {
+                return;
+            }
+
+            resultCountEl.textContent =
+                count === 1
+                    ? "1 piece"
+                    : `${count} pieces`;
+
+        }
+
+
+        function updateClearFiltersVisibility() {
+
+            if (!clearFiltersButton) {
+                return;
+            }
+
+            const filtersActive =
+                searchInput.value.trim() !== "" ||
+                currentDifficultyFilter !== "all" ||
+                currentGenreFilter !== "all" ||
+                currentSort !== "default";
+
+            clearFiltersButton.style.display =
+                filtersActive ? "inline-flex" : "none";
+
+        }
+
+
+        function applyFiltersAndRender() {
+
+            const filtered =
+                getFilteredSortedList();
+
+            displaySheetMusic(filtered);
+
+            updateResultCount(filtered.length);
+
+            updateClearFiltersVisibility();
+
+        }
+
+
+        function clearAllFilters() {
+
+            searchInput.value = "";
+
+            currentDifficultyFilter = "all";
+
+            currentGenreFilter = "all";
+
+            currentSort = "default";
+
+            if (difficultyFilter) {
+                difficultyFilter.value = "all";
+            }
+
+            if (genreFilter) {
+                genreFilter.value = "all";
+            }
+
+            if (sortSelect) {
+                sortSelect.value = "default";
+            }
+
+            applyFiltersAndRender();
+
+        }
+
+
+        /* =========================================================
            CARDS
         ========================================================= */
 
@@ -1542,6 +1984,9 @@
                 card.dataset.title =
                     piece.title;
 
+                const isFavourited =
+                    favouritedTitles.has(piece.title);
+
                 card.innerHTML = `
 
                     <div class="sheet-image">
@@ -1551,6 +1996,13 @@
                             alt="${escapeHTML(piece.title)} sheet music"
                             loading="lazy"
                         >
+
+                        <button
+                            type="button"
+                            class="card-favourite-star${isFavourited ? " active" : ""}"
+                            aria-label="${isFavourited ? "Remove from Favourites" : "Add to Favourites"}"
+                            title="${isFavourited ? "Remove from Favourites" : "Add to Favourites"}"
+                        >${isFavourited ? "★" : "☆"}</button>
 
                     </div>
 
@@ -1595,6 +2047,24 @@
                             event.stopPropagation();
 
                             openMusicXML(piece);
+
+                        }
+                    );
+
+                card
+                    .querySelector(".card-favourite-star")
+                    .addEventListener(
+                        "click",
+                        event => {
+
+                            event.stopPropagation();
+
+                            event.preventDefault();
+
+                            handleCardFavouriteClick(
+                                piece,
+                                event.currentTarget
+                            );
 
                         }
                     );
@@ -1705,7 +2175,7 @@
 
 
         /* =========================================================
-           FAVOURITE BUTTON UI
+           FAVOURITE BUTTON UI (PLAYER)
         ========================================================= */
 
         function updateFavouriteButtonUI() {
@@ -1754,28 +2224,62 @@
 
 
         /* =========================================================
-           CHECK FAVOURITE STATUS
-
-           Mirrors saveRecentlyViewed()'s pattern: called after a
-           piece's MusicXML has successfully loaded. Silently does
-           nothing if the user isn't logged in — the button simply
-           stays in its default (unfavourited) state and the login
-           check happens again when they actually click it.
+           FAVOURITE INDICATOR UI (CARD)
         ========================================================= */
 
-        async function checkFavouriteStatus(piece) {
+        function updateCardFavouriteButtonUI(title, starButton) {
 
-            currentPieceFavourited = false;
+            const isFavourited =
+                favouritedTitles.has(title);
 
-            updateFavouriteButtonUI();
+            const button =
+                starButton ||
+                grid.querySelector(
+                    `.sheet-card[data-title="${CSS.escape(title)}"] .card-favourite-star`
+                );
 
-            if (musicFavourite) {
-
-                musicFavourite.disabled = false;
-
+            if (!button) {
+                return;
             }
 
-            if (!piece || !window.concertoiSupabase) {
+            button.textContent =
+                isFavourited ? "★" : "☆";
+
+            button.classList.toggle(
+                "active",
+                isFavourited
+            );
+
+            button.setAttribute(
+                "aria-label",
+                isFavourited
+                    ? "Remove from Favourites"
+                    : "Add to Favourites"
+            );
+
+            button.title =
+                isFavourited
+                    ? "Remove from Favourites"
+                    : "Add to Favourites";
+
+        }
+
+
+        /* =========================================================
+           LOAD FAVOURITES (SINGLE QUERY)
+
+           Runs once per page load (and again on auth state change).
+           If the user isn't logged in, favouritedTitles is simply
+           left empty — every star renders as unfavourited, exactly
+           like the existing player button already behaved.
+        ========================================================= */
+
+        async function loadFavouritedTitles() {
+
+            favouritedTitles =
+                new Set();
+
+            if (!window.concertoiSupabase) {
                 return;
             }
 
@@ -1794,7 +2298,6 @@
                     !session
                 ) {
 
-                    // Not logged in — button stays unfavourited.
                     return;
 
                 }
@@ -1808,15 +2311,13 @@
                 } =
                     await window.concertoiSupabase
                         .from("favourites")
-                        .select("id")
-                        .eq("user_id", userId)
-                        .eq("title", piece.title)
-                        .maybeSingle();
+                        .select("title")
+                        .eq("user_id", userId);
 
                 if (error) {
 
                     console.error(
-                        "Could not check favourite status:",
+                        "Could not load favourites:",
                         error
                     );
 
@@ -1824,22 +2325,22 @@
 
                 }
 
-                // Only apply the result if the user hasn't already
-                // switched to a different piece while this was
-                // in flight.
-                if (currentMusicPiece === piece) {
+                (data || []).forEach(row => {
 
-                    currentPieceFavourited =
-                        !!data;
+                    if (row && row.title) {
 
-                    updateFavouriteButtonUI();
+                        favouritedTitles.add(
+                            row.title
+                        );
 
-                }
+                    }
+
+                });
 
             } catch (error) {
 
                 console.error(
-                    "Favourite status check error:",
+                    "Favourites load error:",
                     error
                 );
 
@@ -1849,7 +2350,36 @@
 
 
         /* =========================================================
-           TOGGLE FAVOURITE
+           CHECK FAVOURITE STATUS (PLAYER)
+
+           Reads from the same favouritedTitles Set that the cards
+           use, rather than issuing a second Supabase query — this
+           keeps the card indicators and the player button as a
+           single, consistent favourites system.
+        ========================================================= */
+
+        async function checkFavouriteStatus(piece) {
+
+            if (!piece) {
+                return;
+            }
+
+            currentPieceFavourited =
+                favouritedTitles.has(piece.title);
+
+            updateFavouriteButtonUI();
+
+            if (musicFavourite) {
+
+                musicFavourite.disabled = false;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           TOGGLE FAVOURITE (PLAYER BUTTON)
         ========================================================= */
 
         async function toggleFavourite() {
@@ -1954,6 +2484,26 @@
 
                 }
 
+                // Keep the shared favourites Set — and therefore any
+                // visible card indicator for this piece — in sync.
+                if (currentPieceFavourited) {
+
+                    favouritedTitles.add(
+                        piece.title
+                    );
+
+                } else {
+
+                    favouritedTitles.delete(
+                        piece.title
+                    );
+
+                }
+
+                updateCardFavouriteButtonUI(
+                    piece.title
+                );
+
                 if (currentMusicPiece === piece) {
 
                     updateFavouriteButtonUI();
@@ -2005,6 +2555,163 @@
             "click",
             toggleFavourite
         );
+
+
+        /* =========================================================
+           TOGGLE FAVOURITE (CARD STAR)
+
+           Same underlying `favourites` table and the same
+           favouritedTitles Set as the player button — this is not
+           a second favourites system, just a second entry point
+           into it.
+        ========================================================= */
+
+        async function handleCardFavouriteClick(piece, starButton) {
+
+            if (favouriteBusyTitles.has(piece.title)) {
+                return;
+            }
+
+            favouriteBusyTitles.add(
+                piece.title
+            );
+
+            starButton.disabled = true;
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await window.concertoiSupabase.auth.getSession();
+
+                if (error) {
+
+                    console.error(
+                        "Could not check login status:",
+                        error
+                    );
+
+                    alert(
+                        "We couldn't check your login status. Please try again."
+                    );
+
+                    return;
+
+                }
+
+                if (!data.session) {
+
+                    const returnUrl =
+                        window.location.pathname +
+                        window.location.search;
+
+                    window.location.href =
+                        "login.html?returnTo=" +
+                        encodeURIComponent(returnUrl);
+
+                    return;
+
+                }
+
+                const userId =
+                    data.session.user.id;
+
+                const isFavourited =
+                    favouritedTitles.has(piece.title);
+
+                if (isFavourited) {
+
+                    const {
+                        error: deleteError
+                    } =
+                        await window.concertoiSupabase
+                            .from("favourites")
+                            .delete()
+                            .eq("user_id", userId)
+                            .eq("title", piece.title);
+
+                    if (deleteError) {
+                        throw deleteError;
+                    }
+
+                    favouritedTitles.delete(
+                        piece.title
+                    );
+
+                } else {
+
+                    const {
+                        error: upsertError
+                    } =
+                        await window.concertoiSupabase
+                            .from("favourites")
+                            .upsert(
+                                {
+                                    user_id: userId,
+                                    title: piece.title,
+                                    artist: piece.artist || "",
+                                    image: piece.image || "",
+                                    pdf: piece.pdf || "",
+                                    musicxml: piece.musicxml || "",
+                                    difficulty: piece.difficulty || ""
+                                },
+                                {
+                                    onConflict: "user_id,title"
+                                }
+                            );
+
+                    if (upsertError) {
+                        throw upsertError;
+                    }
+
+                    favouritedTitles.add(
+                        piece.title
+                    );
+
+                }
+
+                updateCardFavouriteButtonUI(
+                    piece.title,
+                    starButton
+                );
+
+                // Keep the player button in sync if this same piece
+                // happens to be open right now.
+                if (
+                    currentMusicPiece &&
+                    currentMusicPiece.title === piece.title
+                ) {
+
+                    currentPieceFavourited =
+                        favouritedTitles.has(piece.title);
+
+                    updateFavouriteButtonUI();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Favourite toggle error:",
+                    error
+                );
+
+                alert(
+                    "Could not update favourites. Please try again."
+                );
+
+            } finally {
+
+                favouriteBusyTitles.delete(
+                    piece.title
+                );
+
+                starButton.disabled = false;
+
+            }
+
+        }
 
 
         /* =========================================================
@@ -4743,21 +5450,70 @@
 
 
         /* =========================================================
-           SEARCH
+           SEARCH / FILTER / SORT WIRING
         ========================================================= */
 
         searchInput.addEventListener(
             "input",
-            () => {
-
-                displaySheetMusic(
-                    findMatchingSheetMusic(
-                        searchInput.value.trim()
-                    )
-                );
-
-            }
+            applyFiltersAndRender
         );
+
+        if (difficultyFilter) {
+
+            difficultyFilter.addEventListener(
+                "change",
+                () => {
+
+                    currentDifficultyFilter =
+                        difficultyFilter.value;
+
+                    applyFiltersAndRender();
+
+                }
+            );
+
+        }
+
+        if (genreFilter) {
+
+            genreFilter.addEventListener(
+                "change",
+                () => {
+
+                    currentGenreFilter =
+                        genreFilter.value;
+
+                    applyFiltersAndRender();
+
+                }
+            );
+
+        }
+
+        if (sortSelect) {
+
+            sortSelect.addEventListener(
+                "change",
+                () => {
+
+                    currentSort =
+                        sortSelect.value;
+
+                    applyFiltersAndRender();
+
+                }
+            );
+
+        }
+
+        if (clearFiltersButton) {
+
+            clearFiltersButton.addEventListener(
+                "click",
+                clearAllFilters
+            );
+
+        }
 
 
         function loadRequestedSheetMusic() {
@@ -4770,24 +5526,14 @@
             const requestedSearch =
                 params.get("search");
 
-            if (!requestedSearch) {
+            if (requestedSearch) {
 
-                displaySheetMusic(
-                    sheetMusic
-                );
-
-                return;
+                searchInput.value =
+                    requestedSearch;
 
             }
 
-            searchInput.value =
-                requestedSearch;
-
-            displaySheetMusic(
-                findMatchingSheetMusic(
-                    requestedSearch
-                )
-            );
+            applyFiltersAndRender();
 
         }
 
@@ -4873,9 +5619,54 @@
         }
 
 
-        loadRequestedSheetMusic();
+        /* =========================================================
+           INITIAL LOAD
 
-        openPieceFromURL();
+           Populate the filter dropdowns from the existing array,
+           load the user's favourites with a single Supabase query,
+           then render the grid and honour any ?search= / ?piece=
+           URL parameters — in that order, so the favourite stars
+           are correct on the very first render.
+        ========================================================= */
+
+        async function initialiseSheetMusicPage() {
+
+            populateDifficultyFilter();
+
+            populateGenreFilter();
+
+            await loadFavouritedTitles();
+
+            loadRequestedSheetMusic();
+
+            openPieceFromURL();
+
+        }
+
+
+        initialiseSheetMusicPage();
+
+
+        // Keep favourites in sync with login/logout — e.g. if the
+        // user logs in via the redirect from a favourite click,
+        // then returns to this page.
+        if (window.concertoiSupabase) {
+
+            window.concertoiSupabase.auth.onAuthStateChange(
+                () => {
+
+                    loadFavouritedTitles().then(
+                        () => {
+
+                            applyFiltersAndRender();
+
+                        }
+                    );
+
+                }
+            );
+
+        }
 
 
         /* =========================================================
