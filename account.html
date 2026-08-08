@@ -249,6 +249,133 @@
             color: #8cff8c;
         }
 
+        /* =========================================
+   RECENTLY VIEWED
+========================================= */
+
+        .recently-viewed {
+            margin-top: 25px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .recently-viewed-dropdown {
+            width: 100%;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+        }
+
+        .recently-viewed-summary {
+            padding: 18px 20px;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            font-weight: 700;
+            user-select: none;
+        }
+
+        .recently-viewed-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .recently-viewed-summary::after {
+            content: "⌄";
+            font-size: 18px;
+            opacity: 0.6;
+            transition: transform 0.2s ease;
+        }
+
+        .recently-viewed-dropdown[open] .recently-viewed-summary::after {
+            transform: rotate(180deg);
+        }
+
+        .recently-viewed-summary:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .recently-viewed-content {
+            padding: 0 15px 15px;
+        }
+
+        .recently-viewed-loading,
+        .recently-viewed-empty,
+        .recently-viewed-error {
+            padding: 20px 10px;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.6;
+        }
+
+        .recently-viewed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recently-viewed-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .recently-viewed-image {
+            width: 55px;
+            height: 55px;
+            border-radius: 9px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .recently-viewed-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .recently-viewed-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .recently-viewed-artist {
+            font-size: 12px;
+            opacity: 0.6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .recently-viewed-date {
+            font-size: 11px;
+            opacity: 0.4;
+            margin-top: 3px;
+        }
+
+        @media (max-width: 600px) {
+
+            .recently-viewed-item {
+                padding: 9px;
+            }
+
+            .recently-viewed-image {
+                width: 48px;
+                height: 48px;
+            }
+
+        }
 
         /* =========================================
        MOBILE
@@ -439,6 +566,41 @@
 
                 </div>
 
+
+            </div>
+
+            <!-- =========================================
+     RECENTLY VIEWED
+========================================= -->
+
+            <div class="recently-viewed">
+
+                <details class="recently-viewed-dropdown">
+
+                    <summary class="recently-viewed-summary">
+                        <span>Recently Viewed</span>
+                    </summary>
+
+                    <div class="recently-viewed-content">
+
+                        <div id="recentlyViewedLoading" class="recently-viewed-loading">
+                            Loading...
+                        </div>
+
+                        <div id="recentlyViewedEmpty" class="recently-viewed-empty" style="display: none;">
+                            You haven't viewed any sheet music yet.
+                        </div>
+
+                        <div id="recentlyViewedError" class="recently-viewed-error" style="display: none;">
+                            Could not load your recently viewed sheet music.
+                        </div>
+
+                        <div id="recentlyViewedList" class="recently-viewed-list" style="display: none;">
+                        </div>
+
+                    </div>
+
+                </details>
 
             </div>
 
@@ -866,6 +1028,280 @@
 
                 }
 
+                /* =========================================
+   LOAD RECENTLY VIEWED
+========================================= */
+
+                async function loadRecentlyViewed() {
+
+                    const loading =
+                        document.getElementById(
+                            "recentlyViewedLoading"
+                        );
+
+                    const empty =
+                        document.getElementById(
+                            "recentlyViewedEmpty"
+                        );
+
+                    const errorMessage =
+                        document.getElementById(
+                            "recentlyViewedError"
+                        );
+
+                    const list =
+                        document.getElementById(
+                            "recentlyViewedList"
+                        );
+
+
+                    try {
+
+                        loading.style.display = "block";
+                        empty.style.display = "none";
+                        errorMessage.style.display = "none";
+                        list.style.display = "none";
+
+
+                        /* =====================================
+                           GET CURRENT USER
+                        ===================================== */
+
+                        const {
+                            data,
+                            error
+                        } =
+                            await supabaseClient.auth.getUser();
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        const user =
+                            data.user;
+
+
+                        if (!user) {
+
+                            window.location.href =
+                                "login.html";
+
+                            return;
+
+                        }
+
+
+                        /* =====================================
+                           GET RECENTLY VIEWED
+                        ===================================== */
+
+                        const {
+                            data: recentlyViewed,
+                            error: recentlyViewedError
+                        } =
+                            await supabaseClient
+                                .from("recently_viewed")
+                                .select(
+                                    "id, title, artist, image, viewed_at"
+                                )
+                                .eq(
+                                    "user_id",
+                                    user.id
+                                )
+                                .order(
+                                    "viewed_at",
+                                    {
+                                        ascending: false
+                                    }
+                                )
+                                .limit(10);
+
+
+                        if (recentlyViewedError) {
+
+                            throw recentlyViewedError;
+
+                        }
+
+
+                        loading.style.display = "none";
+
+
+                        /* =====================================
+                           NOTHING VIEWED
+                        ===================================== */
+
+                        if (
+                            !recentlyViewed ||
+                            recentlyViewed.length === 0
+                        ) {
+
+                            empty.style.display = "block";
+
+                            return;
+
+                        }
+
+
+                        /* =====================================
+                           CREATE LIST
+                        ===================================== */
+
+                        list.innerHTML = "";
+
+
+                        recentlyViewed.forEach(
+                            function (item) {
+
+                                const itemElement =
+                                    document.createElement("div");
+
+                                itemElement.className =
+                                    "recently-viewed-item";
+
+
+                                /* IMAGE */
+
+                                if (item.image) {
+
+                                    const image =
+                                        document.createElement("img");
+
+                                    image.className =
+                                        "recently-viewed-image";
+
+                                    image.src =
+                                        item.image;
+
+                                    image.alt =
+                                        item.title || "Sheet music";
+
+                                    image.loading =
+                                        "lazy";
+
+                                    image.onerror =
+                                        function () {
+
+                                            image.style.display =
+                                                "none";
+
+                                        };
+
+                                    itemElement.appendChild(
+                                        image
+                                    );
+
+                                }
+
+
+                                /* INFO */
+
+                                const info =
+                                    document.createElement("div");
+
+                                info.className =
+                                    "recently-viewed-info";
+
+
+                                const title =
+                                    document.createElement("div");
+
+                                title.className =
+                                    "recently-viewed-title";
+
+                                title.textContent =
+                                    item.title ||
+                                    "Untitled";
+
+
+                                const artist =
+                                    document.createElement("div");
+
+                                artist.className =
+                                    "recently-viewed-artist";
+
+                                artist.textContent =
+                                    item.artist ||
+                                    "Unknown artist";
+
+
+                                const date =
+                                    document.createElement("div");
+
+                                date.className =
+                                    "recently-viewed-date";
+
+
+                                if (item.viewed_at) {
+
+                                    const viewedDate =
+                                        new Date(
+                                            item.viewed_at
+                                        );
+
+                                    date.textContent =
+                                        "Viewed " +
+                                        viewedDate.toLocaleDateString(
+                                            undefined,
+                                            {
+                                                day: "numeric",
+                                                month: "short",
+                                                year: "numeric"
+                                            }
+                                        );
+
+                                }
+
+
+                                info.appendChild(title);
+                                info.appendChild(artist);
+                                info.appendChild(date);
+
+
+                                itemElement.appendChild(
+                                    info
+                                );
+
+
+                                list.appendChild(
+                                    itemElement
+                                );
+
+                            }
+                        );
+
+
+                        list.style.display =
+                            "flex";
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Recently viewed loading error:",
+                            error
+                        );
+
+
+                        loading.style.display =
+                            "none";
+
+                        list.style.display =
+                            "none";
+
+                        empty.style.display =
+                            "none";
+
+                        errorMessage.style.display =
+                            "block";
+
+                    }
+
+                }
 
                 /* =====================================
                    AVATAR
@@ -1359,6 +1795,7 @@
         ========================================= */
 
         loadAccount();
+        loadRecentlyViewed();
 
     </script>
 
