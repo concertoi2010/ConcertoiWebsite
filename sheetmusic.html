@@ -1195,13 +1195,13 @@
 
         let musicLoopEnd = 0;
 
-        // ADDED: shared tempo-map converter used by BOTH the Tone.js
+        // Shared tempo-map converter used by BOTH the Tone.js
         // scheduler and the OSMD cursor, so they can never disagree.
         let musicTempoConverter = null;
 
 
         /* =========================================================
-           TEMPO MAP / TIME CONVERSION   (ADDED)
+           TEMPO MAP / TIME CONVERSION
 
            Builds a piecewise tempo map from every <sound tempo="...">
            found in the score, keyed by its quarter-note position.
@@ -1678,7 +1678,7 @@
 
             cursorRealValue = 0;
 
-            musicTempoConverter = null; // ADDED — reset shared tempo map per piece
+            musicTempoConverter = null; // reset shared tempo map per piece
 
             currentMusicPiece = piece;
 
@@ -1924,6 +1924,10 @@
                     cursorTimeline.length
                 );
 
+                // The score has now loaded successfully — and only now —
+                // so this is the correct place to record it as viewed.
+                saveRecentlyViewed(piece);
+
             } catch (error) {
 
                 console.error(
@@ -1969,14 +1973,6 @@
 
         /* =========================================================
            MUSICXML PARSER
-
-           UPDATED: tempo changes are now collected at their real
-           position in the score (not just "the first <sound tempo>
-           found anywhere"), and <attributes> (divisions) are read
-           in document order so a mid-measure divisions change is
-           honored. A single shared tempo map (musicTempoConverter)
-           is built here and reused by the cursor code below, so
-           playback timing and cursor timing can never disagree.
         ========================================================= */
 
         function parseMusicXML(xmlText) {
@@ -2013,7 +2009,7 @@
 
             let globalMaximum = 0;
 
-            // ADDED: every <sound tempo="..."> found, tagged with its
+            // Every <sound tempo="..."> found, tagged with its
             // quarter-note position in the score.
             const tempoEvents = [];
 
@@ -2050,10 +2046,8 @@
                         const tag =
                             child.localName;
 
-                        // UPDATED: divisions are now updated in
-                        // document order as <attributes> elements are
-                        // encountered, instead of only reading the
-                        // first <attributes> block in the measure.
+                        // Divisions are updated in document order as
+                        // <attributes> elements are encountered.
                         if (tag === "attributes") {
 
                             const divisionNode =
@@ -2088,7 +2082,7 @@
 
                         }
 
-                        // ADDED: capture every tempo mark at its real
+                        // Capture every tempo mark at its real
                         // position. Only read from the first part to
                         // avoid recording the same tempo change once
                         // per staff.
@@ -2856,10 +2850,6 @@
 
         /* =========================================================
            FIND CURSOR POSITION
-
-           UPDATED: seconds are now converted to a musical (quarter
-           note) position via the shared tempo map instead of a flat
-           tempo assumption, so tempo changes stay in sync.
         ========================================================= */
 
         function findCursorIndexForSeconds(seconds) {
@@ -3837,7 +3827,7 @@
 
             musicDuration = 0;
 
-            musicTempoConverter = null; // ADDED
+            musicTempoConverter = null;
 
             musicPlay.disabled = true;
 
@@ -4212,6 +4202,171 @@
 
             }
         );
+
+
+        /* =========================================================
+           RECENTLY VIEWED SCORES
+
+           Records a score as "recently viewed" for the logged-in
+           user, ONLY after that score's MusicXML has successfully
+           loaded (see the call inside openMusicXML's try block).
+
+           - Not logged in            -> silently does nothing.
+           - Score already in list    -> its viewed_at is refreshed
+                                          instead of creating a
+                                          duplicate row (via upsert
+                                          on the (user_id, title)
+                                          unique constraint).
+           - More than 10 rows        -> oldest rows beyond the
+                                          10 most recent are deleted.
+           - Any Supabase/database
+             error                    -> logged to console, page
+                                          keeps working normally.
+
+           This never touches playback, the OSMD cursor, or any
+           other part of the page.
+        ========================================================= */
+
+        async function saveRecentlyViewed(piece) {
+
+            if (!piece || !window.concertoiSupabase) {
+                return;
+            }
+
+            try {
+
+                const {
+                    data: {
+                        session
+                    },
+                    error: sessionError
+                } =
+                    await window.concertoiSupabase.auth.getSession();
+
+                if (
+                    sessionError ||
+                    !session
+                ) {
+
+                    // Not logged in — Recently Viewed is skipped
+                    // entirely, exactly as required.
+                    return;
+
+                }
+
+                const userId =
+                    session.user.id;
+
+                const {
+                    error: upsertError
+                } =
+                    await window.concertoiSupabase
+                        .from("recently_viewed")
+                        .upsert(
+                            {
+                                user_id: userId,
+                                title: piece.title,
+                                artist: piece.artist || "",
+                                image: piece.image || "",
+                                pdf: piece.pdf || "",
+                                musicxml: piece.musicxml || "",
+                                difficulty: piece.difficulty || "",
+                                viewed_at: new Date().toISOString()
+                            },
+                            {
+                                onConflict: "user_id,title"
+                            }
+                        );
+
+                if (upsertError) {
+
+                    console.error(
+                        "Could not save recently viewed:",
+                        upsertError
+                    );
+
+                    return;
+
+                }
+
+                /*
+                 * Keep only the 10 most recently viewed rows for
+                 * this user. Anything older gets deleted.
+                 */
+
+                const {
+                    data: allRows,
+                    error: listError
+                } =
+                    await window.concertoiSupabase
+                        .from("recently_viewed")
+                        .select("id")
+                        .eq("user_id", userId)
+                        .order("viewed_at", {
+                            ascending: false
+                        });
+
+                if (
+                    listError ||
+                    !allRows
+                ) {
+
+                    console.error(
+                        "Could not load recently viewed list:",
+                        listError
+                    );
+
+                    return;
+
+                }
+
+                const staleRows =
+                    allRows.slice(10);
+
+                if (staleRows.length) {
+
+                    const staleIds =
+                        staleRows.map(
+                            row => row.id
+                        );
+
+                    const {
+                        error: deleteError
+                    } =
+                        await window.concertoiSupabase
+                            .from("recently_viewed")
+                            .delete()
+                            .eq("user_id", userId)
+                            .in("id", staleIds);
+
+                    if (deleteError) {
+
+                        console.error(
+                            "Could not trim recently viewed list:",
+                            deleteError
+                        );
+
+                    }
+
+                }
+
+                console.log(
+                    "Recently viewed saved:",
+                    piece.title
+                );
+
+            } catch (error) {
+
+                // Any unexpected error (network, Supabase outage,
+                // etc.) is logged but never breaks the page.
+                console.error(
+                    "Recently viewed error:",
+                    error
+                );
+
+            }
+
+        }
 
 
         /* =========================================================
