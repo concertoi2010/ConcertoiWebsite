@@ -449,7 +449,7 @@
 
     <!-- =========================================================
          MAIN
-    ========================================================= -->
+    ========================================= -->
 
     <main class="sheetmusic-page">
 
@@ -4419,7 +4419,89 @@
         }
 
 
+        /* =========================================================
+           OPEN A SPECIFIC PIECE FROM THE URL
+
+           Supports links like:
+               sheetmusic.html?piece=Soda%20Pop
+               sheetmusic.html?piece=Where%20Is%20My%20Husband
+
+           Used by the "Recently Viewed" list on account.html so
+           clicking an item opens that exact piece in the existing
+           MusicXML/Tone.js player — the same one the sheet music
+           grid's "View Sheet Music" button opens.
+
+           - URLSearchParams.get() already decodes the value (so
+             spaces, apostrophes, and punctuation are handled
+             correctly without needing a manual decodeURIComponent
+             call, which could otherwise throw on malformed input).
+           - The match is done against the existing `sheetMusic`
+             array by title only — no second data source, and the
+             database `id` is never needed.
+           - Matching is case/whitespace tolerant so small
+             differences (e.g. trailing spaces) still resolve.
+           - If nothing matches, the page simply behaves like a
+             normal visit to sheetmusic.html — nothing opens and
+             no error is shown.
+        ========================================================= */
+
+        function openPieceFromURL() {
+
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+            const requestedPiece =
+                params.get("piece");
+
+            if (!requestedPiece) {
+                return;
+            }
+
+            const requestedTitle =
+                requestedPiece
+                    .trim()
+                    .toLowerCase();
+
+            if (!requestedTitle) {
+                return;
+            }
+
+            const matchedPiece =
+                sheetMusic.find(
+                    piece =>
+                        piece.title
+                            .trim()
+                            .toLowerCase() ===
+                        requestedTitle
+                );
+
+            if (!matchedPiece) {
+
+                console.warn(
+                    "No sheet music found matching:",
+                    requestedPiece
+                );
+
+                return;
+
+            }
+
+            // Reuse the exact same function the "View Sheet Music"
+            // button uses, so the full player (OSMD, Tone.js,
+            // cursor, loop A/B, progress bar, PDF button) opens
+            // exactly as it normally would.
+            openMusicXML(
+                matchedPiece
+            );
+
+        }
+
+
         loadRequestedSheetMusic();
+
+        openPieceFromURL();
 
 
         /* =========================================================

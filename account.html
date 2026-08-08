@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,8 +14,8 @@
 
     <style>
         /* =========================================
-       ACCOUNT PAGE
-    ========================================= */
+           ACCOUNT PAGE
+        ========================================= */
 
         .account-page {
             min-height: calc(100vh - 80px);
@@ -40,8 +38,8 @@
 
 
         /* =========================================
-       AVATAR
-    ========================================= */
+           AVATAR
+        ========================================= */
 
         .account-avatar-wrapper {
             position: relative;
@@ -145,8 +143,8 @@
 
 
         /* =========================================
-       ACCOUNT TEXT
-    ========================================= */
+           ACCOUNT TEXT
+        ========================================= */
 
         .account-eyebrow {
             margin-bottom: 8px;
@@ -169,8 +167,8 @@
 
 
         /* =========================================
-       ACCOUNT DETAILS
-    ========================================= */
+           ACCOUNT DETAILS
+        ========================================= */
 
         .account-details {
             display: flex;
@@ -205,53 +203,8 @@
 
 
         /* =========================================
-       LOGOUT
-    ========================================= */
-
-        .logout-button {
-            width: 100%;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 12px;
-            background: #fbff00;
-            color: #000;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
-        }
-
-        .logout-button:hover {
-            transform: translateY(-2px);
-        }
-
-        .logout-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-
-        /* =========================================
-       MESSAGE
-    ========================================= */
-
-        .account-message {
-            min-height: 22px;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .account-message.error {
-            color: #ff6b6b;
-        }
-
-        .account-message.success {
-            color: #8cff8c;
-        }
-
-        /* =========================================
-   RECENTLY VIEWED
-========================================= */
+           RECENTLY VIEWED
+        ========================================= */
 
         .recently-viewed {
             margin-top: 25px;
@@ -317,6 +270,11 @@
             gap: 10px;
         }
 
+
+        /* =========================================
+           CLICKABLE RECENTLY VIEWED ITEM
+        ========================================= */
+
         .recently-viewed-item {
             display: flex;
             align-items: center;
@@ -325,6 +283,21 @@
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .recently-viewed-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(251, 255, 0, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .recently-viewed-item:active {
+            transform: translateY(0);
         }
 
         .recently-viewed-image {
@@ -364,22 +337,68 @@
             margin-top: 3px;
         }
 
-        @media (max-width: 600px) {
-
-            .recently-viewed-item {
-                padding: 9px;
-            }
-
-            .recently-viewed-image {
-                width: 48px;
-                height: 48px;
-            }
-
+        .recently-viewed-arrow {
+            font-size: 18px;
+            opacity: 0.45;
+            flex-shrink: 0;
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
+        .recently-viewed-item:hover .recently-viewed-arrow {
+            opacity: 0.9;
+            transform: translateX(3px);
+        }
+
+
         /* =========================================
-       MOBILE
-    ========================================= */
+           LOGOUT
+        ========================================= */
+
+        .logout-button {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            background: #fbff00;
+            color: #000;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .logout-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .logout-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+
+        /* =========================================
+           MESSAGE
+        ========================================= */
+
+        .account-message {
+            min-height: 22px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .account-message.error {
+            color: #ff6b6b;
+        }
+
+        .account-message.success {
+            color: #8cff8c;
+        }
+
+
+        /* =========================================
+           MOBILE
+        ========================================= */
 
         @media (max-width: 600px) {
 
@@ -395,9 +414,17 @@
                 font-size: 30px;
             }
 
+            .recently-viewed-item {
+                padding: 9px;
+            }
+
+            .recently-viewed-image {
+                width: 48px;
+                height: 48px;
+            }
+
         }
     </style>
-
 
 </head>
 
@@ -405,8 +432,8 @@
 
 
     <!-- =========================================
-     NAVBAR
-========================================= -->
+         NAVBAR
+    ========================================= -->
 
     <header class="navbar">
 
@@ -447,8 +474,8 @@
 
 
     <!-- =========================================
-     ACCOUNT
-========================================= -->
+         ACCOUNT
+    ========================================= -->
 
     <main class="account-page">
 
@@ -469,13 +496,10 @@
 
 
                 <label for="avatarInput" class="avatar-edit-button" title="Change avatar" aria-label="Change avatar">
-
                     ✎
-
                 </label>
 
                 <input type="file" id="avatarInput" accept="image/jpeg,image/png">
-
 
             </div>
 
@@ -483,15 +507,11 @@
             <div class="avatar-actions">
 
                 <label for="avatarInput" class="avatar-action-button">
-
                     Change Avatar
-
                 </label>
 
                 <button type="button" class="avatar-action-button remove" id="removeAvatarButton">
-
                     Remove Avatar
-
                 </button>
 
             </div>
@@ -521,7 +541,6 @@
 
             <div class="account-details">
 
-
                 <div class="account-detail">
 
                     <span class="account-detail-label">
@@ -529,9 +548,7 @@
                     </span>
 
                     <span class="account-detail-value" id="accountName">
-
                         Loading...
-
                     </span>
 
                 </div>
@@ -544,9 +561,7 @@
                     </span>
 
                     <span class="account-detail-value" id="accountEmail">
-
                         Loading...
-
                     </span>
 
                 </div>
@@ -559,19 +574,17 @@
                     </span>
 
                     <span class="account-detail-value" id="accountProvider">
-
                         Loading...
-
                     </span>
 
                 </div>
 
-
             </div>
 
+
             <!-- =========================================
-     RECENTLY VIEWED
-========================================= -->
+                 RECENTLY VIEWED
+            ========================================= -->
 
             <div class="recently-viewed">
 
@@ -608,15 +621,11 @@
             <!-- LOGOUT -->
 
             <button type="button" class="logout-button" id="logoutButton">
-
                 Log Out
-
             </button>
 
 
-            <p class="account-message" id="accountMessage">
-
-            </p>
+            <p class="account-message" id="accountMessage"></p>
 
 
         </section>
@@ -625,8 +634,8 @@
 
 
     <!-- =========================================
-     FOOTER
-========================================= -->
+         FOOTER
+    ========================================= -->
 
     <footer class="site-footer">
 
@@ -650,8 +659,8 @@
 
 
     <!-- =========================================
-     SUPABASE
-========================================= -->
+         SUPABASE
+    ========================================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -767,20 +776,14 @@
            DISPLAY AVATAR
         ========================================= */
 
-        function displayAvatar(
-            imageUrl
-        ) {
+        function displayAvatar(imageUrl) {
 
             const existingImage =
-                accountAvatar.querySelector(
-                    "img"
-                );
+                accountAvatar.querySelector("img");
 
 
             if (existingImage) {
-
                 existingImage.remove();
-
             }
 
 
@@ -811,9 +814,7 @@
                     };
 
 
-                accountAvatar.appendChild(
-                    image
-                );
+                accountAvatar.appendChild(image);
 
             } else {
 
@@ -849,15 +850,11 @@
         function getAvatarUrl(path) {
 
             if (!path) {
-
                 return null;
-
             }
 
 
-            const {
-                data
-            } =
+            const { data } =
                 supabaseClient.storage
                     .from(AVATAR_BUCKET)
                     .getPublicUrl(path);
@@ -901,14 +898,6 @@
             }
 
 
-            /*
-    
-               No custom avatar.
-    
-               Try Google profile image.
-    
-            */
-
             const googleAvatar =
                 getGoogleAvatar(user);
 
@@ -924,15 +913,366 @@
             }
 
 
-            /*
-    
-               No image available.
-    
-               Show default avatar.
-    
-            */
-
             displayAvatar(null);
+
+        }
+
+
+        /* =========================================
+           LOAD RECENTLY VIEWED
+        ========================================= */
+
+        async function loadRecentlyViewed() {
+
+            const loading =
+                document.getElementById(
+                    "recentlyViewedLoading"
+                );
+
+            const empty =
+                document.getElementById(
+                    "recentlyViewedEmpty"
+                );
+
+            const errorMessage =
+                document.getElementById(
+                    "recentlyViewedError"
+                );
+
+            const list =
+                document.getElementById(
+                    "recentlyViewedList"
+                );
+
+
+            try {
+
+                loading.style.display =
+                    "block";
+
+                empty.style.display =
+                    "none";
+
+                errorMessage.style.display =
+                    "none";
+
+                list.style.display =
+                    "none";
+
+
+                /* GET CURRENT USER */
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth.getUser();
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                const user =
+                    data.user;
+
+
+                if (!user) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                /* GET RECENTLY VIEWED */
+
+                const {
+                    data: recentlyViewed,
+                    error: recentlyViewedError
+                } =
+                    await supabaseClient
+                        .from("recently_viewed")
+                        .select(
+                            "id, title, artist, image, viewed_at"
+                        )
+                        .eq(
+                            "user_id",
+                            user.id
+                        )
+                        .order(
+                            "viewed_at",
+                            {
+                                ascending: false
+                            }
+                        )
+                        .limit(10);
+
+
+                if (recentlyViewedError) {
+                    throw recentlyViewedError;
+                }
+
+
+                loading.style.display =
+                    "none";
+
+
+                /* NOTHING VIEWED */
+
+                if (
+                    !recentlyViewed ||
+                    recentlyViewed.length === 0
+                ) {
+
+                    empty.style.display =
+                        "block";
+
+                    return;
+
+                }
+
+
+                /* CREATE LIST */
+
+                list.innerHTML = "";
+
+
+                recentlyViewed.forEach(
+                    function (item) {
+
+                        const itemElement =
+                            document.createElement("div");
+
+
+                        itemElement.className =
+                            "recently-viewed-item";
+
+
+                        /* =================================
+                           MAKE ITEM CLICKABLE
+                        ================================= */
+
+                        itemElement.setAttribute(
+                            "role",
+                            "button"
+                        );
+
+                        itemElement.setAttribute(
+                            "tabindex",
+                            "0"
+                        );
+
+                        itemElement.title =
+                            "Open " +
+                            (item.title || "sheet music");
+
+
+                        function openSheetMusic() {
+
+                            if (!item.title) {
+                                return;
+                            }
+
+
+                            const url =
+                                "sheetmusic.html?piece=" +
+                                encodeURIComponent(
+                                    item.title
+                                );
+
+
+                            window.location.href =
+                                url;
+
+                        }
+
+
+                        itemElement.addEventListener(
+                            "click",
+                            openSheetMusic
+                        );
+
+
+                        itemElement.addEventListener(
+                            "keydown",
+                            function (event) {
+
+                                if (
+                                    event.key === "Enter" ||
+                                    event.key === " "
+                                ) {
+
+                                    event.preventDefault();
+
+                                    openSheetMusic();
+
+                                }
+
+                            }
+                        );
+
+
+                        /* IMAGE */
+
+                        if (item.image) {
+
+                            const image =
+                                document.createElement("img");
+
+                            image.className =
+                                "recently-viewed-image";
+
+                            image.src =
+                                item.image;
+
+                            image.alt =
+                                item.title ||
+                                "Sheet music";
+
+                            image.loading =
+                                "lazy";
+
+
+                            image.onerror =
+                                function () {
+
+                                    image.style.display =
+                                        "none";
+
+                                };
+
+
+                            itemElement.appendChild(
+                                image
+                            );
+
+                        }
+
+
+                        /* INFO */
+
+                        const info =
+                            document.createElement("div");
+
+                        info.className =
+                            "recently-viewed-info";
+
+
+                        const title =
+                            document.createElement("div");
+
+                        title.className =
+                            "recently-viewed-title";
+
+                        title.textContent =
+                            item.title ||
+                            "Untitled";
+
+
+                        const artist =
+                            document.createElement("div");
+
+                        artist.className =
+                            "recently-viewed-artist";
+
+                        artist.textContent =
+                            item.artist ||
+                            "Unknown artist";
+
+
+                        const date =
+                            document.createElement("div");
+
+                        date.className =
+                            "recently-viewed-date";
+
+
+                        if (item.viewed_at) {
+
+                            const viewedDate =
+                                new Date(
+                                    item.viewed_at
+                                );
+
+
+                            date.textContent =
+                                "Viewed " +
+                                viewedDate.toLocaleDateString(
+                                    undefined,
+                                    {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric"
+                                    }
+                                );
+
+                        }
+
+
+                        info.appendChild(title);
+                        info.appendChild(artist);
+                        info.appendChild(date);
+
+
+                        itemElement.appendChild(
+                            info
+                        );
+
+
+                        /* ARROW */
+
+                        const arrow =
+                            document.createElement("div");
+
+                        arrow.className =
+                            "recently-viewed-arrow";
+
+                        arrow.textContent =
+                            "›";
+
+
+                        itemElement.appendChild(
+                            arrow
+                        );
+
+
+                        list.appendChild(
+                            itemElement
+                        );
+
+                    }
+                );
+
+
+                list.style.display =
+                    "flex";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Recently viewed loading error:",
+                    error
+                );
+
+
+                loading.style.display =
+                    "none";
+
+                list.style.display =
+                    "none";
+
+                empty.style.display =
+                    "none";
+
+                errorMessage.style.display =
+                    "block";
+
+            }
 
         }
 
@@ -953,9 +1293,7 @@
 
 
                 if (error) {
-
                     throw error;
-
                 }
 
 
@@ -975,9 +1313,7 @@
                 }
 
 
-                /* =====================================
-                   NAME
-                ===================================== */
+                /* NAME */
 
                 const metadata =
                     user.user_metadata || {};
@@ -997,18 +1333,14 @@
                     name;
 
 
-                /* =====================================
-                   EMAIL
-                ===================================== */
+                /* EMAIL */
 
                 accountEmail.textContent =
                     user.email ||
                     "No email available";
 
 
-                /* =====================================
-                   SIGN-IN METHOD
-                ===================================== */
+                /* SIGN-IN METHOD */
 
                 const providers =
                     user.app_metadata?.providers || [];
@@ -1028,286 +1360,16 @@
 
                 }
 
-                /* =========================================
-   LOAD RECENTLY VIEWED
-========================================= */
 
-                async function loadRecentlyViewed() {
-
-                    const loading =
-                        document.getElementById(
-                            "recentlyViewedLoading"
-                        );
-
-                    const empty =
-                        document.getElementById(
-                            "recentlyViewedEmpty"
-                        );
-
-                    const errorMessage =
-                        document.getElementById(
-                            "recentlyViewedError"
-                        );
-
-                    const list =
-                        document.getElementById(
-                            "recentlyViewedList"
-                        );
-
-
-                    try {
-
-                        loading.style.display = "block";
-                        empty.style.display = "none";
-                        errorMessage.style.display = "none";
-                        list.style.display = "none";
-
-
-                        /* =====================================
-                           GET CURRENT USER
-                        ===================================== */
-
-                        const {
-                            data,
-                            error
-                        } =
-                            await supabaseClient.auth.getUser();
-
-
-                        if (error) {
-
-                            throw error;
-
-                        }
-
-
-                        const user =
-                            data.user;
-
-
-                        if (!user) {
-
-                            window.location.href =
-                                "login.html";
-
-                            return;
-
-                        }
-
-
-                        /* =====================================
-                           GET RECENTLY VIEWED
-                        ===================================== */
-
-                        const {
-                            data: recentlyViewed,
-                            error: recentlyViewedError
-                        } =
-                            await supabaseClient
-                                .from("recently_viewed")
-                                .select(
-                                    "id, title, artist, image, viewed_at"
-                                )
-                                .eq(
-                                    "user_id",
-                                    user.id
-                                )
-                                .order(
-                                    "viewed_at",
-                                    {
-                                        ascending: false
-                                    }
-                                )
-                                .limit(10);
-
-
-                        if (recentlyViewedError) {
-
-                            throw recentlyViewedError;
-
-                        }
-
-
-                        loading.style.display = "none";
-
-
-                        /* =====================================
-                           NOTHING VIEWED
-                        ===================================== */
-
-                        if (
-                            !recentlyViewed ||
-                            recentlyViewed.length === 0
-                        ) {
-
-                            empty.style.display = "block";
-
-                            return;
-
-                        }
-
-
-                        /* =====================================
-                           CREATE LIST
-                        ===================================== */
-
-                        list.innerHTML = "";
-
-
-                        recentlyViewed.forEach(
-                            function (item) {
-
-                                const itemElement =
-                                    document.createElement("div");
-
-                                itemElement.className =
-                                    "recently-viewed-item";
-
-
-                                /* IMAGE */
-
-                                if (item.image) {
-
-                                    const image =
-                                        document.createElement("img");
-
-                                    image.className =
-                                        "recently-viewed-image";
-
-                                    image.src =
-                                        item.image;
-
-                                    image.alt =
-                                        item.title || "Sheet music";
-
-                                    image.loading =
-                                        "lazy";
-
-                                    image.onerror =
-                                        function () {
-
-                                            image.style.display =
-                                                "none";
-
-                                        };
-
-                                    itemElement.appendChild(
-                                        image
-                                    );
-
-                                }
-
-
-                                /* INFO */
-
-                                const info =
-                                    document.createElement("div");
-
-                                info.className =
-                                    "recently-viewed-info";
-
-
-                                const title =
-                                    document.createElement("div");
-
-                                title.className =
-                                    "recently-viewed-title";
-
-                                title.textContent =
-                                    item.title ||
-                                    "Untitled";
-
-
-                                const artist =
-                                    document.createElement("div");
-
-                                artist.className =
-                                    "recently-viewed-artist";
-
-                                artist.textContent =
-                                    item.artist ||
-                                    "Unknown artist";
-
-
-                                const date =
-                                    document.createElement("div");
-
-                                date.className =
-                                    "recently-viewed-date";
-
-
-                                if (item.viewed_at) {
-
-                                    const viewedDate =
-                                        new Date(
-                                            item.viewed_at
-                                        );
-
-                                    date.textContent =
-                                        "Viewed " +
-                                        viewedDate.toLocaleDateString(
-                                            undefined,
-                                            {
-                                                day: "numeric",
-                                                month: "short",
-                                                year: "numeric"
-                                            }
-                                        );
-
-                                }
-
-
-                                info.appendChild(title);
-                                info.appendChild(artist);
-                                info.appendChild(date);
-
-
-                                itemElement.appendChild(
-                                    info
-                                );
-
-
-                                list.appendChild(
-                                    itemElement
-                                );
-
-                            }
-                        );
-
-
-                        list.style.display =
-                            "flex";
-
-
-                    } catch (error) {
-
-                        console.error(
-                            "Recently viewed loading error:",
-                            error
-                        );
-
-
-                        loading.style.display =
-                            "none";
-
-                        list.style.display =
-                            "none";
-
-                        empty.style.display =
-                            "none";
-
-                        errorMessage.style.display =
-                            "block";
-
-                    }
-
-                }
-
-                /* =====================================
-                   AVATAR
-                ===================================== */
+                /* AVATAR */
 
                 loadAvatar(user);
+
+
+                /* RECENTLY VIEWED */
+
+                loadRecentlyViewed();
+
 
             } catch (error) {
 
@@ -1340,15 +1402,9 @@
 
 
                 if (!file) {
-
                     return;
-
                 }
 
-
-                /* =====================================
-                   CHECK MIME TYPE
-                ===================================== */
 
                 if (
                     !ALLOWED_AVATAR_TYPES.includes(
@@ -1368,10 +1424,6 @@
 
                 }
 
-
-                /* =====================================
-                   CHECK FILE SIZE
-                ===================================== */
 
                 if (
                     file.size >
@@ -1406,9 +1458,7 @@
 
 
                     if (error) {
-
                         throw error;
-
                     }
 
 
@@ -1426,10 +1476,6 @@
                     }
 
 
-                    /* =================================
-                       FILE EXTENSION
-                    ================================= */
-
                     const extension =
                         file.type ===
                             "image/png"
@@ -1440,10 +1486,6 @@
                     const avatarPath =
                         `${user.id}/avatar.${extension}`;
 
-
-                    /* =================================
-                       UPLOAD
-                    ================================= */
 
                     const {
                         error: uploadError
@@ -1462,15 +1504,9 @@
 
 
                     if (uploadError) {
-
                         throw uploadError;
-
                     }
 
-
-                    /* =================================
-                       REMOVE OTHER EXTENSION
-                    ================================= */
 
                     const otherExtension =
                         extension === "png"
@@ -1489,36 +1525,22 @@
                         ]);
 
 
-                    /* =================================
-                       SAVE PATH TO USER METADATA
-                    ================================= */
-
                     const {
                         error: metadataError
                     } =
                         await supabaseClient.auth
                             .updateUser({
-
                                 data: {
-
                                     avatar_path:
                                         avatarPath
-
                                 }
-
                             });
 
 
                     if (metadataError) {
-
                         throw metadataError;
-
                     }
 
-
-                    /* =================================
-                       DISPLAY
-                    ================================= */
 
                     const avatarUrl =
                         getAvatarUrl(
@@ -1587,9 +1609,7 @@
 
 
                     if (error) {
-
                         throw error;
-
                     }
 
 
@@ -1611,10 +1631,6 @@
                         getCustomAvatarPath(user);
 
 
-                    /* =================================
-                       REMOVE STORED AVATAR
-                    ================================= */
-
                     if (customAvatarPath) {
 
                         const {
@@ -1628,44 +1644,27 @@
 
 
                         if (removeError) {
-
                             throw removeError;
-
                         }
 
                     }
 
-
-                    /* =================================
-                       REMOVE PATH FROM USER
-                       METADATA
-                    ================================= */
 
                     const {
                         error: metadataError
                     } =
                         await supabaseClient.auth
                             .updateUser({
-
                                 data: {
-
                                     avatar_path: null
-
                                 }
-
                             });
 
 
                     if (metadataError) {
-
                         throw metadataError;
-
                     }
 
-
-                    /* =================================
-                       GOOGLE FALLBACK
-                    ================================= */
 
                     const googleAvatar =
                         getGoogleAvatar(user);
@@ -1741,9 +1740,7 @@
 
 
                     if (error) {
-
                         throw error;
-
                     }
 
 
@@ -1795,10 +1792,8 @@
         ========================================= */
 
         loadAccount();
-        loadRecentlyViewed();
 
     </script>
-
 
 </body>
 
