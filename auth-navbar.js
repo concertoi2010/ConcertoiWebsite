@@ -475,7 +475,34 @@ async function updateConcertoiNavbar() {
         accountLink.innerHTML =
             `
                 <span>👤</span>
-                <span>Account</span>
+                <span>My Account</span>
+            `;
+
+
+        /* =====================================
+           FAVOURITES LINK
+
+           Sits between "My Account" and
+           "Log Out" in the dropdown, exactly
+           as requested. Just a plain link to
+           favourites.html — the favourites
+           page itself handles the logged-out
+           redirect, same as account.html does.
+        ===================================== */
+
+        const favouritesLink =
+            document.createElement("a");
+
+        favouritesLink.href =
+            "favourites.html";
+
+        favouritesLink.className =
+            "auth-dropdown-item";
+
+        favouritesLink.innerHTML =
+            `
+                <span>⭐</span>
+                <span>Favourites</span>
             `;
 
 
@@ -507,6 +534,10 @@ async function updateConcertoiNavbar() {
 
         dropdown.appendChild(
             accountLink
+        );
+
+        dropdown.appendChild(
+            favouritesLink
         );
 
         dropdown.appendChild(
@@ -667,4 +698,3 @@ concertoiSupabase.auth.onAuthStateChange(
 
     }
 );
-

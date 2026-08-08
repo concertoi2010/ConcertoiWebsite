@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Favourites — Concertoi</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="Images/favicon.ico?v=2">
+
+    <style>
+        /* =========================================
+           FAVOURITES PAGE
+        ========================================= */
+
+        .favourites-page {
+            min-height: calc(100vh - 80px);
+            padding: 60px 20px 80px;
+        }
+
+        .favourites-header {
+            max-width: 900px;
+            margin: 0 auto 34px;
+            text-align: center;
+        }
+
+        .favourites-header .eyebrow {
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .favourites-header h1 {
+            margin: 0 0 10px;
+            font-size: 38px;
+        }
+
+        .favourites-header p {
+            opacity: 0.7;
+        }
+
+
+        /* =========================================
+           GRID
+        ========================================= */
+
+        .favourites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 22px;
+
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+
+        /* =========================================
+           CARD
+
+           Deliberately mirrors the look of the
+           .sheet-card cards on sheetmusic.html so
+           favourites feel like part of the same
+           library, not a separate system.
+        ========================================= */
+
+        .favourite-card {
+            display: flex;
+            flex-direction: column;
+
+            border-radius: 18px;
+            overflow: hidden;
+
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .favourite-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(251, 255, 0, 0.25);
+        }
+
+        .favourite-image {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .favourite-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .favourite-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+
+            padding: 16px 16px 18px;
+        }
+
+        .favourite-difficulty {
+            display: inline-block;
+
+            width: fit-content;
+
+            padding: 3px 10px;
+
+            border-radius: 999px;
+
+            background: rgba(251, 255, 0, 0.12);
+            color: #fbff00;
+
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .favourite-info h3 {
+            margin: 2px 0 0;
+            font-size: 17px;
+        }
+
+        .favourite-info p {
+            margin: 0;
+            font-size: 13px;
+            opacity: 0.65;
+        }
+
+
+        /* =========================================
+           REMOVE BUTTON
+        ========================================= */
+
+        .favourite-remove-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+
+            margin-top: 10px;
+
+            width: 100%;
+
+            padding: 10px 12px;
+
+            border: 1px solid rgba(251, 255, 0, 0.3);
+            border-radius: 10px;
+
+            background: rgba(251, 255, 0, 0.1);
+            color: #fbff00;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                transform 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .favourite-remove-button:hover:not(:disabled) {
+            background: #fbff00;
+            color: #111;
+            transform: translateY(-1px);
+        }
+
+        .favourite-remove-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes favouriteCardRemovePulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.97);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+        }
+
+        .favourite-card.removing {
+            animation: favouriteCardRemovePulse 0.3s ease forwards;
+            pointer-events: none;
+        }
+
+
+        /* =========================================
+           EMPTY / LOADING / ERROR STATES
+        ========================================= */
+
+        .favourites-state {
+            max-width: 480px;
+            margin: 60px auto 0;
+            text-align: center;
+        }
+
+        .favourites-state p {
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .favourites-state .sheet-button {
+            display: inline-block;
+        }
+
+        .favourites-spinner {
+            width: 34px;
+            height: 34px;
+            margin: 0 auto 16px;
+
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #fbff00;
+
+            animation: favouritesSpin 0.8s linear infinite;
+        }
+
+        @keyframes favouritesSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 650px) {
+
+            .favourites-page {
+                padding: 40px 15px 60px;
+            }
+
+            .favourites-header h1 {
+                font-size: 28px;
+            }
+
+            .favourites-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 14px;
+            }
+
+            .favourite-info {
+                padding: 12px 12px 14px;
+            }
+
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth-navbar.js"></script>
+
+</head>
+
+<body>
+
+    <!-- =========================================================
+         NAVBAR
+    ========================================================= -->
+
+    <header class="navbar">
+
+        <a class="brand" href="index.html">
+
+            <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
+
+            <span>Concertoi</span>
+
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="sheetmusic.html">Sheet Music</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html" id="authLink">Login</a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================= -->
+
+    <main class="favourites-page">
+
+        <div class="favourites-header">
+
+            <p class="eyebrow">
+                Concertoi Library
+            </p>
+
+            <h1>
+                My Favourites
+            </h1>
+
+            <p>
+                The sheet music you've starred, all in one place.
+            </p>
+
+        </div>
+
+
+        <div id="favouritesLoading" class="favourites-state">
+
+            <div class="favourites-spinner"></div>
+
+            <p>
+                Loading your favourites...
+            </p>
+
+        </div>
+
+
+        <div id="favouritesEmpty" class="favourites-state" style="display: none;">
+
+            <p>
+                You haven't added any favourites yet.
+            </p>
+
+            <a href="sheetmusic.html" class="sheet-button">
+                Browse Sheet Music
+            </a>
+
+        </div>
+
+
+        <div id="favouritesError" class="favourites-state" style="display: none;">
+
+            <p>
+                Could not load your favourites. Please try again.
+            </p>
+
+            <a href="sheetmusic.html" class="sheet-button">
+                Browse Sheet Music
+            </a>
+
+        </div>
+
+
+        <section id="favouritesGrid" class="favourites-grid"></section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================= -->
+
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+            <p>
+                © 2026 Concertoi. All rights reserved.
+            </p>
+
+            <p>
+                <a href="mailto:concertoi2010@gmail.com">
+                    concertoi2010@gmail.com
+                </a>
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+        "use strict";
+
+
+        /* =========================================================
+           ELEMENTS
+        ========================================================= */
+
+        const favouritesLoading =
+            document.getElementById("favouritesLoading");
+
+        const favouritesEmpty =
+            document.getElementById("favouritesEmpty");
+
+        const favouritesError =
+            document.getElementById("favouritesError");
+
+        const favouritesGrid =
+            document.getElementById("favouritesGrid");
+
+
+        /* =========================================================
+           SAFE HTML
+        ========================================================= */
+
+        function escapeHTML(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================================================
+           OPEN A FAVOURITE
+
+           Reuses the exact same mechanism the Recently Viewed list
+           on account.html already uses: navigate to sheetmusic.html
+           with a ?piece= query param, which sheetmusic.html's own
+           openPieceFromURL() picks up and opens in the existing
+           MusicXML/Tone.js player. No second piece-opening system.
+        ========================================================= */
+
+        function openFavourite(title) {
+
+            if (!title) {
+                return;
+            }
+
+            const url =
+                "sheetmusic.html?piece=" +
+                encodeURIComponent(
+                    title
+                );
+
+            window.location.href =
+                url;
+
+        }
+
+
+        /* =========================================================
+           REMOVE A FAVOURITE
+        ========================================================= */
+
+        async function removeFavourite(
+            userId,
+            title,
+            cardElement,
+            button
+        ) {
+
+            if (button.disabled) {
+                return;
+            }
+
+            button.disabled = true;
+
+            button.textContent =
+                "Removing...";
+
+            try {
+
+                const {
+                    error
+                } =
+                    await window.concertoiSupabase
+                        .from("favourites")
+                        .delete()
+                        .eq("user_id", userId)
+                        .eq("title", title);
+
+                if (error) {
+                    throw error;
+                }
+
+                cardElement.classList.add(
+                    "removing"
+                );
+
+                setTimeout(
+                    () => {
+
+                        cardElement.remove();
+
+                        if (
+                            !favouritesGrid.children.length
+                        ) {
+
+                            favouritesEmpty.style.display =
+                                "block";
+
+                        }
+
+                    },
+                    300
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Could not remove favourite:",
+                    error
+                );
+
+                button.disabled = false;
+
+                button.textContent =
+                    "★ Remove Favourite";
+
+                alert(
+                    "Could not remove this favourite. Please try again."
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           BUILD A CARD
+        ========================================================= */
+
+        function buildFavouriteCard(favourite, userId) {
+
+            const card =
+                document.createElement("article");
+
+            card.className =
+                "favourite-card";
+
+            card.innerHTML = `
+
+                <div class="favourite-image">
+
+                    <img
+                        src="${escapeHTML(favourite.image || "")}"
+                        alt="${escapeHTML(favourite.title || "Sheet music")} sheet music"
+                        loading="lazy"
+                    >
+
+                </div>
+
+                <div class="favourite-info">
+
+                    ${
+                        favourite.difficulty
+                            ? `<span class="favourite-difficulty">${escapeHTML(favourite.difficulty)}</span>`
+                            : ""
+                    }
+
+                    <h3>
+                        ${escapeHTML(favourite.title || "Untitled")}
+                    </h3>
+
+                    <p>
+                        ${escapeHTML(favourite.artist || "Piano Sheet Music")}
+                    </p>
+
+                    <button
+                        type="button"
+                        class="favourite-remove-button"
+                    >
+                        ★ Remove Favourite
+                    </button>
+
+                </div>
+
+            `;
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    openFavourite(
+                        favourite.title
+                    );
+
+                }
+            );
+
+            const removeButton =
+                card.querySelector(
+                    ".favourite-remove-button"
+                );
+
+            removeButton.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    removeFavourite(
+                        userId,
+                        favourite.title,
+                        card,
+                        removeButton
+                    );
+
+                }
+            );
+
+            return card;
+
+        }
+
+
+        /* =========================================================
+           LOAD FAVOURITES
+        ========================================================= */
+
+        async function loadFavourites() {
+
+            try {
+
+                const {
+                    data: {
+                        session
+                    },
+                    error: sessionError
+                } =
+                    await window.concertoiSupabase.auth.getSession();
+
+                if (sessionError) {
+                    throw sessionError;
+                }
+
+                if (!session) {
+
+                    window.location.href =
+                        "login.html?returnTo=" +
+                        encodeURIComponent(
+                            "favourites.html"
+                        );
+
+                    return;
+
+                }
+
+                const userId =
+                    session.user.id;
+
+                const {
+                    data: favourites,
+                    error: favouritesError2
+                } =
+                    await window.concertoiSupabase
+                        .from("favourites")
+                        .select(
+                            "id, title, artist, image, pdf, musicxml, difficulty, created_at"
+                        )
+                        .eq("user_id", userId)
+                        .order("created_at", {
+                            ascending: false
+                        });
+
+                if (favouritesError2) {
+                    throw favouritesError2;
+                }
+
+                favouritesLoading.style.display =
+                    "none";
+
+                if (
+                    !favourites ||
+                    !favourites.length
+                ) {
+
+                    favouritesEmpty.style.display =
+                        "block";
+
+                    return;
+
+                }
+
+                favouritesGrid.innerHTML =
+                    "";
+
+                favourites.forEach(favourite => {
+
+                    favouritesGrid.appendChild(
+
+                        buildFavouriteCard(
+                            favourite,
+                            userId
+                        )
+
+                    );
+
+                });
+
+            } catch (error) {
+
+                console.error(
+                    "Favourites loading error:",
+                    error
+                );
+
+                favouritesLoading.style.display =
+                    "none";
+
+                favouritesError.style.display =
+                    "block";
+
+            }
+
+        }
+
+
+        /* =========================================================
+           START
+
+           Wait a tick so auth-navbar.js (loaded in <head>) has
+           created window.concertoiSupabase before we use it.
+        ========================================================= */
+
+        function startFavourites() {
+
+            if (window.concertoiSupabase) {
+
+                loadFavourites();
+
+            } else {
+
+                setTimeout(
+                    startFavourites,
+                    30
+                );
+
+            }
+
+        }
+
+        startFavourites();
+
+    </script>
+
+</body>
+
+</html>

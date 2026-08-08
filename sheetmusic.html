@@ -112,6 +112,47 @@
         }
 
         /* =========================================================
+           FAVOURITE BUTTON
+        ========================================================= */
+
+        .music-control-button.favourite {
+            font-size: 12px;
+        }
+
+        .music-control-button.favourite.active {
+            background: #fbff00;
+            color: #111;
+            border-color: rgba(251, 255, 0, 0.35);
+            font-weight: 700;
+        }
+
+        .music-control-button.favourite.active:hover:not(:disabled) {
+            background: #fff475;
+        }
+
+        @keyframes favouritePulse {
+            0% {
+                transform: scale(1);
+            }
+
+            35% {
+                transform: scale(1.18);
+            }
+
+            60% {
+                transform: scale(0.94);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .music-control-button.favourite.pulse {
+            animation: favouritePulse 0.35s ease;
+        }
+
+        /* =========================================================
            STATUS
         ========================================================= */
 
@@ -588,6 +629,11 @@
                 <button id="musicStop" class="music-control-button" type="button" disabled aria-label="Stop"
                     title="Stop">
                     ■
+                </button>
+
+                <button id="musicFavourite" class="music-control-button favourite" type="button" disabled
+                    aria-label="Add to Favourites" title="Add to Favourites">
+                    ☆ Favourite
                 </button>
 
                 <button id="loopStart" class="music-control-button" type="button" aria-label="Set loop start"
@@ -1127,6 +1173,9 @@
         const musicStop =
             document.getElementById("musicStop");
 
+        const musicFavourite =
+            document.getElementById("musicFavourite");
+
         const musicStatus =
             document.getElementById("musicStatus");
 
@@ -1198,6 +1247,11 @@
         // Shared tempo-map converter used by BOTH the Tone.js
         // scheduler and the OSMD cursor, so they can never disagree.
         let musicTempoConverter = null;
+
+        // Favourites state for the currently open piece.
+        let currentPieceFavourited = false;
+
+        let favouriteBusy = false;
 
 
         /* =========================================================
@@ -1651,6 +1705,309 @@
 
 
         /* =========================================================
+           FAVOURITE BUTTON UI
+        ========================================================= */
+
+        function updateFavouriteButtonUI() {
+
+            if (!musicFavourite) {
+                return;
+            }
+
+            if (currentPieceFavourited) {
+
+                musicFavourite.textContent =
+                    "★ Favourited";
+
+                musicFavourite.classList.add(
+                    "active"
+                );
+
+                musicFavourite.setAttribute(
+                    "aria-label",
+                    "Remove from Favourites"
+                );
+
+                musicFavourite.title =
+                    "Remove from Favourites";
+
+            } else {
+
+                musicFavourite.textContent =
+                    "☆ Favourite";
+
+                musicFavourite.classList.remove(
+                    "active"
+                );
+
+                musicFavourite.setAttribute(
+                    "aria-label",
+                    "Add to Favourites"
+                );
+
+                musicFavourite.title =
+                    "Add to Favourites";
+
+            }
+
+        }
+
+
+        /* =========================================================
+           CHECK FAVOURITE STATUS
+
+           Mirrors saveRecentlyViewed()'s pattern: called after a
+           piece's MusicXML has successfully loaded. Silently does
+           nothing if the user isn't logged in — the button simply
+           stays in its default (unfavourited) state and the login
+           check happens again when they actually click it.
+        ========================================================= */
+
+        async function checkFavouriteStatus(piece) {
+
+            currentPieceFavourited = false;
+
+            updateFavouriteButtonUI();
+
+            if (musicFavourite) {
+
+                musicFavourite.disabled = false;
+
+            }
+
+            if (!piece || !window.concertoiSupabase) {
+                return;
+            }
+
+            try {
+
+                const {
+                    data: {
+                        session
+                    },
+                    error: sessionError
+                } =
+                    await window.concertoiSupabase.auth.getSession();
+
+                if (
+                    sessionError ||
+                    !session
+                ) {
+
+                    // Not logged in — button stays unfavourited.
+                    return;
+
+                }
+
+                const userId =
+                    session.user.id;
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.concertoiSupabase
+                        .from("favourites")
+                        .select("id")
+                        .eq("user_id", userId)
+                        .eq("title", piece.title)
+                        .maybeSingle();
+
+                if (error) {
+
+                    console.error(
+                        "Could not check favourite status:",
+                        error
+                    );
+
+                    return;
+
+                }
+
+                // Only apply the result if the user hasn't already
+                // switched to a different piece while this was
+                // in flight.
+                if (currentMusicPiece === piece) {
+
+                    currentPieceFavourited =
+                        !!data;
+
+                    updateFavouriteButtonUI();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Favourite status check error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           TOGGLE FAVOURITE
+        ========================================================= */
+
+        async function toggleFavourite() {
+
+            if (
+                !currentMusicPiece ||
+                favouriteBusy
+            ) {
+                return;
+            }
+
+            const piece =
+                currentMusicPiece;
+
+            favouriteBusy = true;
+
+            musicFavourite.disabled = true;
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await window.concertoiSupabase.auth.getSession();
+
+                if (error) {
+
+                    console.error(
+                        "Could not check login status:",
+                        error
+                    );
+
+                    alert(
+                        "We couldn't check your login status. Please try again."
+                    );
+
+                    return;
+
+                }
+
+                if (!data.session) {
+
+                    const returnUrl =
+                        window.location.pathname +
+                        window.location.search;
+
+                    window.location.href =
+                        "login.html?returnTo=" +
+                        encodeURIComponent(returnUrl);
+
+                    return;
+
+                }
+
+                const userId =
+                    data.session.user.id;
+
+                if (currentPieceFavourited) {
+
+                    const {
+                        error: deleteError
+                    } =
+                        await window.concertoiSupabase
+                            .from("favourites")
+                            .delete()
+                            .eq("user_id", userId)
+                            .eq("title", piece.title);
+
+                    if (deleteError) {
+                        throw deleteError;
+                    }
+
+                    currentPieceFavourited = false;
+
+                } else {
+
+                    const {
+                        error: upsertError
+                    } =
+                        await window.concertoiSupabase
+                            .from("favourites")
+                            .upsert(
+                                {
+                                    user_id: userId,
+                                    title: piece.title,
+                                    artist: piece.artist || "",
+                                    image: piece.image || "",
+                                    pdf: piece.pdf || "",
+                                    musicxml: piece.musicxml || "",
+                                    difficulty: piece.difficulty || ""
+                                },
+                                {
+                                    onConflict: "user_id,title"
+                                }
+                            );
+
+                    if (upsertError) {
+                        throw upsertError;
+                    }
+
+                    currentPieceFavourited = true;
+
+                }
+
+                if (currentMusicPiece === piece) {
+
+                    updateFavouriteButtonUI();
+
+                    musicFavourite.classList.add(
+                        "pulse"
+                    );
+
+                    setTimeout(
+                        () => {
+
+                            musicFavourite.classList.remove(
+                                "pulse"
+                            );
+
+                        },
+                        350
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Favourite toggle error:",
+                    error
+                );
+
+                alert(
+                    "Could not update favourites. Please try again."
+                );
+
+            } finally {
+
+                favouriteBusy = false;
+
+                if (currentMusicPiece === piece) {
+
+                    musicFavourite.disabled = false;
+
+                }
+
+            }
+
+        }
+
+
+        musicFavourite.addEventListener(
+            "click",
+            toggleFavourite
+        );
+
+
+        /* =========================================================
            OPEN MUSICXML
         ========================================================= */
 
@@ -1729,6 +2086,12 @@
             musicPause.disabled = true;
 
             musicStop.disabled = true;
+
+            musicFavourite.disabled = true;
+
+            currentPieceFavourited = false;
+
+            updateFavouriteButtonUI();
 
             musicProgress.value = 0;
 
@@ -1927,6 +2290,10 @@
                 // The score has now loaded successfully — and only now —
                 // so this is the correct place to record it as viewed.
                 saveRecentlyViewed(piece);
+
+                // Same idea for favourites: check status only once
+                // the piece is actually ready.
+                checkFavouriteStatus(piece);
 
             } catch (error) {
 
@@ -3835,6 +4202,12 @@
 
             musicStop.disabled = true;
 
+            musicFavourite.disabled = true;
+
+            currentPieceFavourited = false;
+
+            updateFavouriteButtonUI();
+
         }
 
 
@@ -4426,10 +4799,11 @@
                sheetmusic.html?piece=Soda%20Pop
                sheetmusic.html?piece=Where%20Is%20My%20Husband
 
-           Used by the "Recently Viewed" list on account.html so
-           clicking an item opens that exact piece in the existing
-           MusicXML/Tone.js player — the same one the sheet music
-           grid's "View Sheet Music" button opens.
+           Used by the "Recently Viewed" list on account.html (and
+           now also by favourites.html) so clicking an item opens
+           that exact piece in the existing MusicXML/Tone.js player
+           — the same one the sheet music grid's "View Sheet Music"
+           button opens.
 
            - URLSearchParams.get() already decodes the value (so
              spaces, apostrophes, and punctuation are handled
@@ -4490,8 +4864,8 @@
 
             // Reuse the exact same function the "View Sheet Music"
             // button uses, so the full player (OSMD, Tone.js,
-            // cursor, loop A/B, progress bar, PDF button) opens
-            // exactly as it normally would.
+            // cursor, loop A/B, progress bar, PDF button, favourite
+            // button) opens exactly as it normally would.
             openMusicXML(
                 matchedPiece
             );
