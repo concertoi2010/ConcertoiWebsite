@@ -612,6 +612,36 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+
+        /* =========================================================
+           RECENTLY ADDED
+        ========================================================= */
+
+        .recently-added-section {
+            max-width: 1100px;
+            margin: 0 auto 28px;
+        }
+
+        .recently-added-heading {
+            margin: 0 0 14px;
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .recently-added-grid {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 650px) {
+
+            .recently-added-heading {
+                font-size: 17px;
+            }
+
+        }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -672,6 +702,19 @@
         </div>
 
 
+        <!-- RECENTLY ADDED -->
+
+        <section id="recentlyAddedSection" class="recently-added-section">
+
+            <h2 class="recently-added-heading">
+                Recently Added
+            </h2>
+
+            <div id="recentlyAddedGrid" class="sheet-grid recently-added-grid"></div>
+
+        </section>
+
+
         <!-- SEARCH -->
 
         <div class="sheet-search">
@@ -697,6 +740,7 @@
                 <option value="default">Default</option>
                 <option value="az">A–Z</option>
                 <option value="za">Z–A</option>
+                <option value="recent">Recently Added</option>
             </select>
 
             <button type="button" id="clearFiltersButton" class="clear-filters-button">
@@ -1102,6 +1146,7 @@
                 artist: "RAYE",
                 difficulty: "Intermediate",
                 genre: "Pop",
+                addedAt: "2026-05-24",
                 image: "Images/raye image.png",
                 pdf: "PDFs/Where Is My Husband.pdf",
                 musicxml: "MusicXML/whereismyhusbandmidi.musicxml",
@@ -1116,6 +1161,7 @@
                 artist: "Saja Boys",
                 difficulty: "Intermediate",
                 genre: "Soundtrack",
+                addedAt: "2026-05-31",
                 image: "Images/soda pop image.png",
                 pdf: "PDFs/Soda Pop.pdf",
                 musicxml: "MusicXML/sodapopmidi.musicxml",
@@ -1133,6 +1179,7 @@
                 artist: "Celine Dion",
                 difficulty: "Advanced",
                 genre: "Soundtrack",
+                addedAt: "2026-06-07",
                 image: "Images/My heart will go on image.png",
                 pdf: "PDFs/My Heart Will Go On.pdf",
                 musicxml: "MusicXML/myheartwillgoon.musicxml",
@@ -1150,6 +1197,7 @@
                 artist: "Harold Faltermeyer",
                 difficulty: "Advanced",
                 genre: "Soundtrack",
+                addedAt: "2026-06-14",
                 image: "Images/axel f image.png",
                 pdf: "PDFs/Axel F.pdf",
                 musicxml: "MusicXML/axelfmidi.musicxml",
@@ -1166,6 +1214,7 @@
                 artist: "Fall Out Boy",
                 difficulty: "Advanced",
                 genre: "Soundtrack",
+                addedAt: "2026-06-21",
                 image: "Images/immortals image.png",
                 pdf: "PDFs/Immortals.pdf",
                 musicxml: "MusicXML/immortalsmidi.musicxml",
@@ -1184,6 +1233,7 @@
                 artist: "",
                 difficulty: "Intermediate",
                 genre: "Other",
+                addedAt: "2026-06-28",
                 image: "Images/zoo image.png",
                 pdf: "PDFs/Zoo.pdf",
                 musicxml: "MusicXML/zoomidi.musicxml",
@@ -1197,6 +1247,7 @@
                 artist: "Ed Sheeran",
                 difficulty: "Intermediate",
                 genre: "Pop",
+                addedAt: "2026-07-05",
                 image: "Images/azizam image.png",
                 pdf: "PDFs/Azizam.pdf",
                 musicxml: "MusicXML/azizammidi.musicxml",
@@ -1211,6 +1262,7 @@
                 artist: "The Cranberries",
                 difficulty: "Intermediate",
                 genre: "Rock",
+                addedAt: "2026-07-12",
                 image: "Images/zombie image.png",
                 pdf: "PDFs/Zombie.pdf",
                 musicxml: "MusicXML/zombiemidi.musicxml",
@@ -1226,6 +1278,7 @@
                 artist: "Luis Fonsi",
                 difficulty: "Intermediate",
                 genre: "Pop",
+                addedAt: "2026-07-19",
                 image: "Images/despacito image.png",
                 pdf: "PDFs/Despacito.pdf",
                 musicxml: "MusicXML/despacitomidi.musicxml",
@@ -1241,6 +1294,7 @@
                 artist: "Idina Menzel",
                 difficulty: "Advanced",
                 genre: "Soundtrack",
+                addedAt: "2026-07-26",
                 image: "Images/let it go image.png",
                 pdf: "PDFs/Let It Go.pdf",
                 musicxml: "MusicXML/letitgomidi.musicxml",
@@ -1259,6 +1313,7 @@
                 artist: "Sia",
                 difficulty: "Intermediate",
                 genre: "Pop",
+                addedAt: "2026-08-02",
                 image: "Images/snowman image.png",
                 pdf: "PDFs/Snowman.pdf",
                 musicxml: "MusicXML/snowmanmidi.musicxml",
@@ -1273,6 +1328,7 @@
                 artist: "Jessie J",
                 difficulty: "Intermediate",
                 genre: "Soundtrack",
+                addedAt: "2026-08-09",
                 image: "Images/flashlight image.png",
                 pdf: "PDFs/Flashlight.pdf",
                 musicxml: "MusicXML/flashlightmidi.musicxml",
@@ -1314,6 +1370,12 @@
 
         const resultCountEl =
             document.getElementById("resultCount");
+
+        const recentlyAddedSection =
+            document.getElementById("recentlyAddedSection");
+
+        const recentlyAddedGrid =
+            document.getElementById("recentlyAddedGrid");
 
 
         /* =========================================================
@@ -1873,6 +1935,14 @@
                         b.title.localeCompare(a.title)
                 );
 
+            } else if (currentSort === "recent") {
+
+                list.sort(
+                    (a, b) =>
+                        new Date(b.addedAt) -
+                        new Date(a.addedAt)
+                );
+
             }
 
             return list;
@@ -1955,7 +2025,113 @@
 
         /* =========================================================
            CARDS
+
+           createSheetMusicCardElement() builds a single card exactly
+           as before (same markup, same click/favourite wiring). Both
+           the main grid and the Recently Added grid call this same
+           function, so there is only one card-rendering system.
         ========================================================= */
+
+        function createSheetMusicCardElement(piece) {
+
+            const card =
+                document.createElement("article");
+
+            card.className =
+                "sheet-card";
+
+            card.dataset.title =
+                piece.title;
+
+            const isFavourited =
+                favouritedTitles.has(piece.title);
+
+            card.innerHTML = `
+
+                <div class="sheet-image">
+
+                    <img
+                        src="${piece.image}"
+                        alt="${escapeHTML(piece.title)} sheet music"
+                        loading="lazy"
+                    >
+
+                    <button
+                        type="button"
+                        class="card-favourite-star${isFavourited ? " active" : ""}"
+                        aria-label="${isFavourited ? "Remove from Favourites" : "Add to Favourites"}"
+                        title="${isFavourited ? "Remove from Favourites" : "Add to Favourites"}"
+                    >${isFavourited ? "★" : "☆"}</button>
+
+                </div>
+
+                <div class="sheet-info">
+
+                    <span class="difficulty">
+                        ${escapeHTML(piece.difficulty)}
+                    </span>
+
+                    <h3>
+                        ${escapeHTML(piece.title)}
+                    </h3>
+
+                    <p>
+                        ${escapeHTML(
+                piece.artist ||
+                "Piano Sheet Music"
+            )}
+                    </p>
+
+                    <div class="sheet-actions">
+
+                        <button
+                            class="sheet-button music-button"
+                            type="button"
+                        >
+                            View Sheet Music
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+            card
+                .querySelector(".music-button")
+                .addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        openMusicXML(piece);
+
+                    }
+                );
+
+            card
+                .querySelector(".card-favourite-star")
+                .addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        event.preventDefault();
+
+                        handleCardFavouriteClick(
+                            piece,
+                            event.currentTarget
+                        );
+
+                    }
+                );
+
+            return card;
+
+        }
+
 
         function displaySheetMusic(list) {
 
@@ -1975,103 +2151,62 @@
 
             list.forEach(piece => {
 
-                const card =
-                    document.createElement("article");
-
-                card.className =
-                    "sheet-card";
-
-                card.dataset.title =
-                    piece.title;
-
-                const isFavourited =
-                    favouritedTitles.has(piece.title);
-
-                card.innerHTML = `
-
-                    <div class="sheet-image">
-
-                        <img
-                            src="${piece.image}"
-                            alt="${escapeHTML(piece.title)} sheet music"
-                            loading="lazy"
-                        >
-
-                        <button
-                            type="button"
-                            class="card-favourite-star${isFavourited ? " active" : ""}"
-                            aria-label="${isFavourited ? "Remove from Favourites" : "Add to Favourites"}"
-                            title="${isFavourited ? "Remove from Favourites" : "Add to Favourites"}"
-                        >${isFavourited ? "★" : "☆"}</button>
-
-                    </div>
-
-                    <div class="sheet-info">
-
-                        <span class="difficulty">
-                            ${escapeHTML(piece.difficulty)}
-                        </span>
-
-                        <h3>
-                            ${escapeHTML(piece.title)}
-                        </h3>
-
-                        <p>
-                            ${escapeHTML(
-                    piece.artist ||
-                    "Piano Sheet Music"
-                )}
-                        </p>
-
-                        <div class="sheet-actions">
-
-                            <button
-                                class="sheet-button music-button"
-                                type="button"
-                            >
-                                View Sheet Music
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-                card
-                    .querySelector(".music-button")
-                    .addEventListener(
-                        "click",
-                        event => {
-
-                            event.stopPropagation();
-
-                            openMusicXML(piece);
-
-                        }
-                    );
-
-                card
-                    .querySelector(".card-favourite-star")
-                    .addEventListener(
-                        "click",
-                        event => {
-
-                            event.stopPropagation();
-
-                            event.preventDefault();
-
-                            handleCardFavouriteClick(
-                                piece,
-                                event.currentTarget
-                            );
-
-                        }
-                    );
-
-                grid.appendChild(card);
+                grid.appendChild(
+                    createSheetMusicCardElement(piece)
+                );
 
             });
+
+        }
+
+
+        /* =========================================================
+           RECENTLY ADDED
+
+           Reads addedAt straight from the existing sheetMusic array
+           — never mutates it — and reuses the exact same card
+           element builder as the main grid.
+        ========================================================= */
+
+        function getRecentlyAddedList(count) {
+
+            return sheetMusic
+                .slice()
+                .sort(
+                    (a, b) =>
+                        new Date(b.addedAt) -
+                        new Date(a.addedAt)
+                )
+                .slice(0, count);
+
+        }
+
+
+        function renderRecentlyAdded() {
+
+            if (!recentlyAddedGrid) {
+                return;
+            }
+
+            const recentPieces =
+                getRecentlyAddedList(6);
+
+            recentlyAddedGrid.innerHTML = "";
+
+            recentPieces.forEach(piece => {
+
+                recentlyAddedGrid.appendChild(
+                    createSheetMusicCardElement(piece)
+                );
+
+            });
+
+            if (recentlyAddedSection) {
+
+                recentlyAddedSection.style.display =
+                    recentPieces.length ? "" : "none";
+
+            }
 
         }
 
@@ -2232,35 +2367,48 @@
             const isFavourited =
                 favouritedTitles.has(title);
 
-            const button =
-                starButton ||
-                grid.querySelector(
-                    `.sheet-card[data-title="${CSS.escape(title)}"] .card-favourite-star`
+            const applyState = button => {
+
+                button.textContent =
+                    isFavourited ? "★" : "☆";
+
+                button.classList.toggle(
+                    "active",
+                    isFavourited
                 );
 
-            if (!button) {
-                return;
+                button.setAttribute(
+                    "aria-label",
+                    isFavourited
+                        ? "Remove from Favourites"
+                        : "Add to Favourites"
+                );
+
+                button.title =
+                    isFavourited
+                        ? "Remove from Favourites"
+                        : "Add to Favourites";
+
+            };
+
+            // A piece can appear in BOTH the main grid and the
+            // Recently Added grid at the same time, so every
+            // matching star across the page is kept in sync —
+            // not just the one that was clicked.
+            document
+                .querySelectorAll(
+                    `.sheet-card[data-title="${CSS.escape(title)}"] .card-favourite-star`
+                )
+                .forEach(applyState);
+
+            if (
+                starButton &&
+                !starButton.isConnected
+            ) {
+
+                applyState(starButton);
+
             }
-
-            button.textContent =
-                isFavourited ? "★" : "☆";
-
-            button.classList.toggle(
-                "active",
-                isFavourited
-            );
-
-            button.setAttribute(
-                "aria-label",
-                isFavourited
-                    ? "Remove from Favourites"
-                    : "Add to Favourites"
-            );
-
-            button.title =
-                isFavourited
-                    ? "Remove from Favourites"
-                    : "Add to Favourites";
 
         }
 
@@ -5637,6 +5785,8 @@
 
             await loadFavouritedTitles();
 
+            renderRecentlyAdded();
+
             loadRequestedSheetMusic();
 
             openPieceFromURL();
@@ -5659,6 +5809,8 @@
                         () => {
 
                             applyFiltersAndRender();
+
+                            renderRecentlyAdded();
 
                         }
                     );
