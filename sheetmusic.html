@@ -614,6 +614,34 @@
         }
 
         /* =========================================================
+           NEW BADGE
+        ========================================================= */
+
+        .new-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+
+            padding: 3px 9px;
+
+            border-radius: 999px;
+
+            background: #fbff00;
+            color: #111;
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            line-height: 1.4;
+
+            pointer-events: none;
+
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        /* =========================================================
            RECENTLY ADDED
         ========================================================= */
 
@@ -2024,6 +2052,42 @@
 
 
         /* =========================================================
+           NEW BADGE
+
+           Single source of truth: the existing `addedAt` field.
+           A piece counts as "new" only while addedAt is within the
+           last 7 days of the current moment — recomputed every time
+           a card is built, so the badge appears/disappears on its
+           own as time passes, with no separate date system and no
+           per-piece flags to maintain.
+        ========================================================= */
+
+        function isRecentlyAdded(piece) {
+
+            if (!piece || !piece.addedAt) {
+                return false;
+            }
+
+            const addedTime =
+                new Date(piece.addedAt).getTime();
+
+            if (!Number.isFinite(addedTime)) {
+                return false;
+            }
+
+            const daysSinceAdded =
+                (Date.now() - addedTime) /
+                (1000 * 60 * 60 * 24);
+
+            return (
+                daysSinceAdded >= 0 &&
+                daysSinceAdded <= 7
+            );
+
+        }
+
+
+        /* =========================================================
            CARDS
 
            createSheetMusicCardElement() builds a single card exactly
@@ -2046,6 +2110,9 @@
             const isFavourited =
                 favouritedTitles.has(piece.title);
 
+            const isNew =
+                isRecentlyAdded(piece);
+
             card.innerHTML = `
 
                 <div class="sheet-image">
@@ -2055,6 +2122,8 @@
                         alt="${escapeHTML(piece.title)} sheet music"
                         loading="lazy"
                     >
+
+                    ${isNew ? '<span class="new-badge">NEW</span>' : ""}
 
                     <button
                         type="button"
