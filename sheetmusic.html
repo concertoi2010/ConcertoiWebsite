@@ -404,6 +404,192 @@
         }
 
         /* =========================================================
+           PRACTICE MODE
+        ========================================================= */
+
+        .music-control-button.practice-toggle.active {
+            background: #fbff00;
+            color: #111;
+            border-color: rgba(251, 255, 0, 0.35);
+        }
+
+        .practice-panel {
+            padding: 10px 12px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            background: rgba(10, 10, 10, 0.96);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .practice-panel[hidden] {
+            display: none;
+        }
+
+        .practice-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .practice-mode-indicator {
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fbff00;
+            letter-spacing: 0.02em;
+        }
+
+        .practice-exit-button {
+            height: 28px;
+
+            padding: 0 10px;
+
+            border-radius: 7px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: background 0.15s ease;
+        }
+
+        .practice-exit-button:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .practice-label {
+            display: block;
+            margin-bottom: 6px;
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .practice-speed-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .practice-speed-button {
+            height: 28px;
+
+            padding: 0 10px;
+
+            border-radius: 7px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                color 0.15s ease;
+        }
+
+        .practice-speed-button:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .practice-speed-button.active {
+            background: #fbff00;
+            color: #111;
+            border-color: rgba(251, 255, 0, 0.35);
+        }
+
+        .practice-section-bar {
+            position: relative;
+
+            height: 6px;
+
+            border-radius: 999px;
+
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .practice-section-fill {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            width: 0;
+
+            border-radius: 999px;
+
+            background: rgba(251, 255, 0, 0.35);
+        }
+
+        .practice-section-marker {
+            position: absolute;
+            top: 50%;
+            left: 0;
+
+            transform: translate(-50%, -50%);
+
+            width: 16px;
+            height: 16px;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #fbff00;
+            color: #111;
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .practice-section-marker.visible {
+            display: flex;
+        }
+
+        .practice-controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .practice-control-button {
+            font-size: 11px;
+        }
+
+        @media (max-width: 650px) {
+
+            .practice-controls-row {
+                flex-direction: column;
+            }
+
+            .practice-control-button {
+                width: 100%;
+            }
+
+        }
+
+        /* =========================================================
            MOBILE PLAYER
         ========================================================= */
 
@@ -640,7 +826,6 @@
 
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
-
         /* =========================================================
            RECENTLY ADDED
         ========================================================= */
@@ -911,6 +1096,11 @@
                     🔁
                 </button>
 
+                <button id="practiceModeToggle" class="music-control-button practice-toggle" type="button"
+                    aria-label="Toggle Practice Mode" title="Practice Mode">
+                    🎯 Practice
+                </button>
+
                 <div class="music-status">
 
                     <span id="musicStatus" class="music-status-text">
@@ -925,6 +1115,87 @@
                 <a id="downloadPdf" class="music-download-button" href="#" download title="Download PDF">
                     ↓ PDF
                 </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 PRACTICE MODE PANEL
+
+                 Layered on top of the existing player: every button
+                 here calls the SAME playMusic()/pauseMusic()/loop
+                 functions the normal toolbar already uses. Hidden
+                 by default; only shown while Practice Mode is on.
+                 ================================================= -->
+
+            <div id="practicePanel" class="practice-panel" hidden>
+
+                <div class="practice-panel-header">
+
+                    <span class="practice-mode-indicator">
+                        🎯 Practice Mode
+                    </span>
+
+                    <button type="button" id="exitPracticeMode" class="practice-exit-button">
+                        Exit Practice Mode
+                    </button>
+
+                </div>
+
+                <div class="practice-speed-row">
+
+                    <span class="practice-label">
+                        Speed
+                    </span>
+
+                    <div class="practice-speed-buttons">
+
+                        <button type="button" class="practice-speed-button" data-speed="0.5">0.5×</button>
+                        <button type="button" class="practice-speed-button" data-speed="0.75">0.75×</button>
+                        <button type="button" class="practice-speed-button active" data-speed="1">1×</button>
+                        <button type="button" class="practice-speed-button" data-speed="1.25">1.25×</button>
+
+                    </div>
+
+                </div>
+
+                <div class="practice-section-row">
+
+                    <span class="practice-label">
+                        Practice Section
+                    </span>
+
+                    <div class="practice-section-bar">
+
+                        <div class="practice-section-fill" id="practiceSectionFill"></div>
+
+                        <span class="practice-section-marker" id="practiceMarkerA">A</span>
+
+                        <span class="practice-section-marker" id="practiceMarkerB">B</span>
+
+                    </div>
+
+                </div>
+
+                <div class="practice-controls-row">
+
+                    <button type="button" id="practiceStart" class="music-control-button practice-control-button">
+                        ▶ Start Practice
+                    </button>
+
+                    <button type="button" id="practicePause" class="music-control-button practice-control-button">
+                        ⏸ Pause
+                    </button>
+
+                    <button type="button" id="practiceRepeat" class="music-control-button practice-control-button">
+                        ↻ Repeat Section
+                    </button>
+
+                    <button type="button" id="practiceClearLoop" class="music-control-button practice-control-button">
+                        Clear Loop
+                    </button>
+
+                </div>
 
             </div>
 
@@ -1502,6 +1773,39 @@
         const loopToggleButton =
             document.getElementById("loopToggle");
 
+        const practiceModeToggle =
+            document.getElementById("practiceModeToggle");
+
+        const practicePanel =
+            document.getElementById("practicePanel");
+
+        const exitPracticeModeButton =
+            document.getElementById("exitPracticeMode");
+
+        const practiceSpeedButtons =
+            document.querySelectorAll(".practice-speed-button");
+
+        const practiceSectionFill =
+            document.getElementById("practiceSectionFill");
+
+        const practiceMarkerA =
+            document.getElementById("practiceMarkerA");
+
+        const practiceMarkerB =
+            document.getElementById("practiceMarkerB");
+
+        const practiceStartButton =
+            document.getElementById("practiceStart");
+
+        const practicePauseButton =
+            document.getElementById("practicePause");
+
+        const practiceRepeatButton =
+            document.getElementById("practiceRepeat");
+
+        const practiceClearLoopButton =
+            document.getElementById("practiceClearLoop");
+
 
         /* =========================================================
            MUSIC STATE
@@ -1557,6 +1861,35 @@
         let currentPieceFavourited = false;
 
         let favouriteBusy = false;
+
+        /* =========================================================
+           PRACTICE MODE STATE
+
+           playbackSpeed is a multiplier applied on top of the
+           existing Tone.js/Transport playback system — it does not
+           create a second player. 1 = normal speed, so whenever
+           Practice Mode is untouched every conversion below is a
+           no-op (divide/multiply by 1) and playback is byte-for-byte
+           identical to before this feature existed.
+        ========================================================= */
+
+        let practiceModeActive = false;
+
+        let playbackSpeed = 1;
+
+
+        function musicalToTransportSeconds(musicalSeconds) {
+
+            return musicalSeconds / playbackSpeed;
+
+        }
+
+
+        function transportToMusicalSeconds(transportSeconds) {
+
+            return transportSeconds * playbackSpeed;
+
+        }
 
 
         /* =========================================================
@@ -3035,6 +3368,8 @@
                 "active"
             );
 
+            resetPracticeModeState();
+
             musicViewer.innerHTML = `
 
                 <div class="pdf-loading">
@@ -3974,11 +4309,11 @@
 
                 events.push({
 
-                    time: start,
+                    time: start / playbackSpeed,
 
                     note: noteName,
 
-                    duration: duration
+                    duration: duration / playbackSpeed
 
                 });
 
@@ -4266,7 +4601,38 @@
                 return;
             }
 
-            const margin = 32;
+            const viewportHeight =
+                musicViewer.clientHeight;
+
+            if (!viewportHeight) {
+                return;
+            }
+
+            // Keep the current line near the TOP of the viewer so
+            // the current system is clearly visible at the top and
+            // the next system is visible underneath it — roughly
+            // two complete systems on screen at once. This applies
+            // to both desktop and mobile since it's a proportion
+            // of the viewer's own height, not a fixed pixel value.
+            const targetOffset =
+                Math.max(
+                    20,
+                    viewportHeight * 0.08
+                );
+
+            // Comfort zone: only rescroll once the cursor line
+            // actually drifts out of this band. Movement across
+            // notes on the SAME line keeps cursorTop constant, so
+            // this still only fires on real line changes — and it
+            // fires while the current line is still comfortably
+            // visible near the top, rather than waiting until it's
+            // about to leave the viewport, so the next line eases
+            // into view instead of jumping.
+            const comfortTopEdge =
+                targetOffset * 0.3;
+
+            const comfortBottomEdge =
+                viewportHeight * 0.65;
 
             const cursorTop =
                 cursorElement.offsetTop;
@@ -4278,13 +4644,15 @@
             const viewTop =
                 musicViewer.scrollTop;
 
-            const viewBottom =
-                viewTop +
-                musicViewer.clientHeight;
+            const relativeTop =
+                cursorTop - viewTop;
+
+            const relativeBottom =
+                cursorBottom - viewTop;
 
             const outOfView =
-                cursorBottom > viewBottom - margin ||
-                cursorTop < viewTop + margin;
+                relativeTop < comfortTopEdge ||
+                relativeBottom > comfortBottomEdge;
 
             if (!outOfView) {
                 return;
@@ -4293,7 +4661,7 @@
             const targetTop =
                 Math.max(
                     0,
-                    cursorTop - margin
+                    cursorTop - targetOffset
                 );
 
             try {
@@ -4461,7 +4829,9 @@
                 0,
                 Math.min(
                     musicDuration,
-                    Tone.Transport.seconds
+                    transportToMusicalSeconds(
+                        Tone.Transport.seconds
+                    )
                 )
             );
 
@@ -4542,7 +4912,9 @@
                 );
 
                 Tone.Transport.seconds =
-                    startPosition;
+                    musicalToTransportSeconds(
+                        startPosition
+                    );
 
                 Tone.Transport.start();
 
@@ -4591,7 +4963,9 @@
             }
 
             const elapsed =
-                Tone.Transport.seconds;
+                transportToMusicalSeconds(
+                    Tone.Transport.seconds
+                );
 
             if (
                 musicLoopEnabled &&
@@ -4600,7 +4974,9 @@
             ) {
 
                 Tone.Transport.seconds =
-                    musicLoopStart;
+                    musicalToTransportSeconds(
+                        musicLoopStart
+                    );
 
                 resetMusicCursor();
 
@@ -4909,7 +5285,9 @@
                     }
 
                     Tone.Transport.seconds =
-                        position;
+                        musicalToTransportSeconds(
+                            position
+                        );
 
                     resetMusicCursor();
 
@@ -4928,7 +5306,9 @@
                     position > 0;
 
                 Tone.Transport.seconds =
-                    position;
+                    musicalToTransportSeconds(
+                        position
+                    );
 
                 resetMusicCursor();
 
@@ -4976,6 +5356,8 @@
                         musicLoopStart
                     );
 
+                updatePracticeSectionDisplay();
+
             }
         );
 
@@ -5010,7 +5392,22 @@
 
                     musicLoopEnd = 0;
 
+                    updatePracticeSectionDisplay();
+
                     return;
+
+                }
+
+                if (
+                    practiceModeActive &&
+                    !musicLoopEnabled
+                ) {
+
+                    musicLoopEnabled = true;
+
+                    loopToggleButton.classList.add(
+                        "active"
+                    );
 
                 }
 
@@ -5019,6 +5416,8 @@
                     formatMusicTime(
                         musicLoopEnd
                     );
+
+                updatePracticeSectionDisplay();
 
             }
         );
@@ -5063,6 +5462,362 @@
 
             }
         );
+
+
+        /* =========================================================
+           PRACTICE MODE
+
+           A layer on top of the existing player: it reuses
+           playMusic(), pauseMusic(), the existing loopStart/loopEnd
+           buttons, and the existing cursor/progress update loop.
+           No second player, no second cursor system.
+        ========================================================= */
+
+        function updatePracticeSectionDisplay() {
+
+            if (
+                !practiceSectionFill ||
+                !practiceMarkerA ||
+                !practiceMarkerB
+            ) {
+                return;
+            }
+
+            if (!musicDuration || musicDuration <= 0) {
+
+                practiceSectionFill.style.width = "0%";
+
+                practiceMarkerA.classList.remove("visible");
+
+                practiceMarkerB.classList.remove("visible");
+
+                return;
+
+            }
+
+            const startPercent =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        (musicLoopStart / musicDuration) * 100
+                    )
+                );
+
+            practiceMarkerA.style.left =
+                startPercent + "%";
+
+            practiceMarkerA.classList.add("visible");
+
+            const hasValidLoop =
+                musicLoopEnd > musicLoopStart;
+
+            if (hasValidLoop) {
+
+                const endPercent =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            (musicLoopEnd / musicDuration) * 100
+                        )
+                    );
+
+                practiceMarkerB.style.left =
+                    endPercent + "%";
+
+                practiceMarkerB.classList.add("visible");
+
+                practiceSectionFill.style.left =
+                    startPercent + "%";
+
+                practiceSectionFill.style.width =
+                    (endPercent - startPercent) + "%";
+
+            } else {
+
+                practiceMarkerB.classList.remove("visible");
+
+                practiceSectionFill.style.width = "0%";
+
+            }
+
+        }
+
+
+        function updateSpeedButtonUI() {
+
+            practiceSpeedButtons.forEach(button => {
+
+                const buttonSpeed =
+                    parseFloat(button.dataset.speed);
+
+                button.classList.toggle(
+                    "active",
+                    buttonSpeed === playbackSpeed
+                );
+
+            });
+
+        }
+
+
+        function setPracticeSpeed(newSpeed) {
+
+            if (
+                !Number.isFinite(newSpeed) ||
+                newSpeed <= 0
+            ) {
+                return;
+            }
+
+            if (newSpeed === playbackSpeed) {
+
+                updateSpeedButtonUI();
+
+                return;
+
+            }
+
+            // Capture position under the OLD speed before switching,
+            // then rebuild the part (which reads playbackSpeed fresh)
+            // and reposition the Transport under the NEW speed — the
+            // cursor and progress bar keep working untouched since
+            // they only ever deal in musical time, never raw
+            // Transport seconds.
+            const currentMusicalPosition =
+                getCurrentMusicPosition();
+
+            playbackSpeed = newSpeed;
+
+            if (musicNotes.length) {
+
+                createMusicPart();
+
+            }
+
+            Tone.Transport.seconds =
+                musicalToTransportSeconds(
+                    currentMusicalPosition
+                );
+
+            resetMusicCursor();
+
+            updateMusicCursor(
+                currentMusicalPosition
+            );
+
+            updateSpeedButtonUI();
+
+        }
+
+
+        function togglePracticeMode() {
+
+            practiceModeActive =
+                !practiceModeActive;
+
+            if (practicePanel) {
+
+                practicePanel.hidden =
+                    !practiceModeActive;
+
+            }
+
+            if (practiceModeToggle) {
+
+                practiceModeToggle.classList.toggle(
+                    "active",
+                    practiceModeActive
+                );
+
+            }
+
+            updatePracticeSectionDisplay();
+
+        }
+
+
+        function exitPracticeMode() {
+
+            practiceModeActive = false;
+
+            if (practicePanel) {
+
+                practicePanel.hidden = true;
+
+            }
+
+            if (practiceModeToggle) {
+
+                practiceModeToggle.classList.remove(
+                    "active"
+                );
+
+            }
+
+            // Normal (non-Practice) playback is always 1x.
+            setPracticeSpeed(1);
+
+        }
+
+
+        function repeatPracticeSection() {
+
+            if (!(musicLoopEnd > musicLoopStart)) {
+
+                musicStatus.textContent =
+                    "Set A and B first";
+
+                return;
+
+            }
+
+            musicPausePosition =
+                musicLoopStart;
+
+            musicPaused = true;
+
+            Tone.Transport.seconds =
+                musicalToTransportSeconds(
+                    musicLoopStart
+                );
+
+            resetMusicCursor();
+
+            updateMusicCursor(
+                musicLoopStart
+            );
+
+            musicProgress.value =
+                musicDuration
+                    ? (musicLoopStart / musicDuration) * 100
+                    : 0;
+
+            musicCurrentTime.textContent =
+                formatMusicTime(
+                    musicLoopStart
+                );
+
+            playMusic();
+
+        }
+
+
+        function resetPracticeModeState() {
+
+            practiceModeActive = false;
+
+            if (practicePanel) {
+
+                practicePanel.hidden = true;
+
+            }
+
+            if (practiceModeToggle) {
+
+                practiceModeToggle.classList.remove(
+                    "active"
+                );
+
+            }
+
+            playbackSpeed = 1;
+
+            updateSpeedButtonUI();
+
+            updatePracticeSectionDisplay();
+
+        }
+
+
+        if (practiceModeToggle) {
+
+            practiceModeToggle.addEventListener(
+                "click",
+                togglePracticeMode
+            );
+
+        }
+
+        if (exitPracticeModeButton) {
+
+            exitPracticeModeButton.addEventListener(
+                "click",
+                exitPracticeMode
+            );
+
+        }
+
+        practiceSpeedButtons.forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    setPracticeSpeed(
+                        parseFloat(button.dataset.speed)
+                    );
+
+                }
+            );
+
+        });
+
+        if (practiceStartButton) {
+
+            practiceStartButton.addEventListener(
+                "click",
+                playMusic
+            );
+
+        }
+
+        if (practicePauseButton) {
+
+            practicePauseButton.addEventListener(
+                "click",
+                pauseMusic
+            );
+
+        }
+
+        if (practiceRepeatButton) {
+
+            practiceRepeatButton.addEventListener(
+                "click",
+                repeatPracticeSection
+            );
+
+        }
+
+        if (practiceClearLoopButton) {
+
+            practiceClearLoopButton.addEventListener(
+                "click",
+                () => {
+
+                    musicLoopStart = 0;
+
+                    musicLoopEnd = 0;
+
+                    musicLoopEnabled = false;
+
+                    loopToggleButton.classList.remove(
+                        "active"
+                    );
+
+                    musicStatus.textContent =
+                        musicPlaying
+                            ? "Playing"
+                            : "Ready";
+
+                    updatePracticeSectionDisplay();
+
+                }
+            );
+
+        }
 
 
         /* =========================================================
@@ -5131,6 +5886,8 @@
             currentPieceFavourited = false;
 
             updateFavouriteButtonUI();
+
+            resetPracticeModeState();
 
         }
 
