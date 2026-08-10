@@ -3096,3 +3096,237 @@ MOBILE AI
   }
 
 }
+
+
+/* =========================================
+   404 ERROR PAGE
+========================================= */
+
+.error-page {
+  min-height: calc(100vh - 84px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.error-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+
+.error-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.04em;
+  font-size: clamp(7rem, 22vw, 15rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  margin-bottom: 10px;
+  user-select: none;
+}
+
+.error-code span {
+  display: inline-block;
+}
+
+.error-zero {
+  color: var(--accent);
+  text-shadow: 0 0 60px rgba(251, 255, 0, 0.35);
+  animation: errorZeroFloat 3.5s ease-in-out infinite;
+}
+
+@keyframes errorZeroFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-14px) rotate(4deg);
+  }
+}
+
+.error-title {
+  font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+
+.error-message {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  max-width: 560px;
+  margin: 0 auto 34px;
+}
+
+.error-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.error-home-button {
+  padding: 13px 24px;
+  border-radius: 999px;
+}
+
+.error-sheet-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: var(--text);
+  font-weight: 600;
+  transition: transform 0.2s ease, border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.error-sheet-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(251, 255, 0, 0.5);
+  background: rgba(251, 255, 0, 0.08);
+}
+
+
+/* =========================================
+   FLOATING MUSIC NOTES
+========================================= */
+
+.error-notes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.error-note {
+  position: absolute;
+  color: var(--accent);
+  opacity: 0.12;
+  font-size: 2.2rem;
+  line-height: 1;
+  animation: errorNoteFloat 7s ease-in-out infinite;
+}
+
+.error-note-1 {
+  left: 8%;
+  top: 22%;
+  font-size: 2.6rem;
+  animation-delay: 0s;
+}
+
+.error-note-2 {
+  right: 10%;
+  top: 18%;
+  font-size: 2rem;
+  animation-delay: 1.2s;
+}
+
+.error-note-3 {
+  left: 14%;
+  bottom: 24%;
+  font-size: 1.8rem;
+  animation-delay: 2.4s;
+}
+
+.error-note-4 {
+  right: 16%;
+  bottom: 28%;
+  font-size: 2.4rem;
+  animation-delay: 0.6s;
+}
+
+.error-note-5 {
+  left: 48%;
+  top: 10%;
+  font-size: 1.6rem;
+  animation-delay: 3.2s;
+}
+
+.error-note-6 {
+  right: 42%;
+  bottom: 12%;
+  font-size: 1.9rem;
+  animation-delay: 1.8s;
+}
+
+@keyframes errorNoteFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.08;
+  }
+
+  50% {
+    transform: translateY(-22px) rotate(8deg);
+    opacity: 0.16;
+  }
+}
+
+
+/* =========================================
+   404 RESPONSIVE
+========================================= */
+
+@media (max-width: 760px) {
+
+  .error-page {
+    min-height: calc(100vh - 140px);
+    padding: 60px 18px;
+  }
+
+  .error-code {
+    font-size: clamp(6rem, 30vw, 9rem);
+  }
+
+  .error-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .error-home-button,
+  .error-sheet-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .error-note-1 {
+    left: 4%;
+    top: 14%;
+  }
+
+  .error-note-2 {
+    right: 5%;
+    top: 12%;
+  }
+
+  .error-note-3 {
+    left: 6%;
+    bottom: 16%;
+  }
+
+  .error-note-4 {
+    right: 8%;
+    bottom: 20%;
+  }
+
+  .error-note-5 {
+    left: 40%;
+    top: 6%;
+  }
+
+  .error-note-6 {
+    right: 34%;
+    bottom: 8%;
+  }
+}

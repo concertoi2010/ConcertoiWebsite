@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Page Not Found — Concertoi</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="icon" type="image/x-icon" href="Images/favicon.ico">
+
+  <link rel="shortcut icon" href="Images/favicon.ico?v=2">
+
+</head>
+
+<body>
+
+  <!-- ================================
+       NAVBAR
+  ================================= -->
+
+  <header class="navbar">
+
+    <a class="brand" href="index.html">
+
+      <img class="logo" src="Images/favicon.ico" alt="Concertoi logo">
+
+      <span>Concertoi</span>
+
+    </a>
+
+    <nav class="nav-links">
+
+      <a href="index.html">
+        Home
+      </a>
+
+      <a href="about.html">
+        About
+      </a>
+
+      <a href="sheetmusic.html">
+        Sheet Music
+      </a>
+
+      <a href="contact.html">
+        Contact
+      </a>
+
+      <!-- Changes automatically to Account when logged in -->
+
+      <a href="login.html" id="authLink">
+        Login
+      </a>
+
+    </nav>
+
+  </header>
+
+
+  <!-- ================================
+       MAIN — 404
+  ================================= -->
+
+  <main class="error-page">
+
+    <div class="error-notes" aria-hidden="true">
+      <span class="error-note error-note-1">♪</span>
+      <span class="error-note error-note-2">♫</span>
+      <span class="error-note error-note-3">♬</span>
+      <span class="error-note error-note-4">♪</span>
+      <span class="error-note error-note-5">♩</span>
+      <span class="error-note error-note-6">♫</span>
+    </div>
+
+    <div class="error-content">
+
+      <p class="eyebrow">
+        Error 404
+      </p>
+
+      <h1 class="error-code" aria-label="404">
+        <span>4</span>
+        <span class="error-zero">0</span>
+        <span>4</span>
+      </h1>
+
+      <h2 class="error-title">
+        Oops! This page hit a wrong note.
+      </h2>
+
+      <p class="error-message">
+        The page you're looking for doesn't exist or may have been moved.
+        Let's get you back to the music.
+      </p>
+
+      <div class="error-actions">
+
+        <a href="index.html" class="cta-button error-home-button">
+          Back to Home
+        </a>
+
+        <a href="sheetmusic.html" class="error-sheet-button">
+          Browse Sheet Music →
+        </a>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- ================================
+       FOOTER
+  ================================= -->
+
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+
+      <p>
+        © 2026 Concertoi. All rights reserved.
+      </p>
+
+      <p>
+
+        <a href="mailto:concertoi2010@gmail.com">
+          concertoi2010@gmail.com
+        </a>
+
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- ================================
+       SUPABASE
+  ================================= -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="auth-navbar.js"></script>
+
+</body>
+
+</html>
